@@ -1,0 +1,50 @@
+grammar         = whitespace rule+.
+rule            = name '=' peg '.'.
+
+peg             = term ('/' term)*.
+term            = factor+.
+factor          = '&' primary
+                / '!' primary
+                / primary '*'
+                / primary '+'
+                / primary '?'
+                / primary.
+
+primary         = '(' peg ')'
+                / "[" char_class* ']'
+                / "\"" dquoted_char* '"'     # literal token (w/ optional white)
+                / "'" quoted_char* '\''      # literal string
+                / name
+                / '$'.   # for end of input
+
+char_class      = lit_char_class ("-" lit_char_class)?.
+
+lit_char_class  = "\\" _ / !"]" _.
+quoted_char     = "\\" _ / !"'" _.
+dquoted_char    = "\\" _ / !"\"" _.
+
+name            = alpha alphanum* !alphanum whitespace.
+alpha           = [A-Za-z_].
+alphanum        = [A-Za-z_0-9]. 
+
+whitespace      = (white_char / comment)*.
+white_char      = [ \t\r\n\f].
+comment         = "#" (!"\n" _)* "\n".
+
+# TODO: add AST info
+# TODO: support for identifiers vs. keywords
+# TODO: precedence
+# TODO: more char-class syntax, e.g. [^abc]
+# TODO: combinators for lists with separators
+
+# To parse into ASTs automatically, we need two more bits of info in
+# the grammar:
+#  - a class-name for each branch of a rule
+#  - a marker for 'punctuation' rules to be left out
+# The general rule is, each branch of a non-noise rule should have a
+# name, and we get a tree node with that name, consed with the items
+# on the RHS that are not punctuation. An item is punctuation if it
+# is a 'punctuation' rule or an exact literal ('foo' or "bar").
+# N.B. this doesn't spell out how to handle fancier PE's.
+
+# So invent a concrete syntax for this, now.
