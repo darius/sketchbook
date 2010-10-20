@@ -1,0 +1,11 @@
+Idea: nicer hand-coding of finite-state recognizers in C.
+
+Sketch in sketch.c.
+
+Inspired by psnoise.c [*], and before that by wanting a task to
+drive-test my crusoe-parsing ideas on.
+[*] http://newsgroups.derkeiler.com/Archive/Comp/comp.lang.postscript/2009-03/msg00100.html
+
+Task to drive further development, supposing it ever happens: a
+Postscript lexer or lexical-syntax checker.
+See js-postscript/PLRM2.pdf for spec.
