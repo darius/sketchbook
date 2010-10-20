@@ -1,0 +1,45 @@
+define a 'frame' type that subsumes patterns and templates
+
+two generic operations: match and instantiate
+
+implement them in a direct style without precomputing matchers and instantiators.
+(the precomputing is too much boilerplate now that we have two operations.)
+
+but use symbolic execution to compile out efficient matchers and instantiators.
+(or is there some better, more specific idea?)
+(you'll want a special loop combinator to avoid infinite loops in the
+partial evaluator. hm, and you'd still run into that trouble with the 
+odd-even example in ps03.)
+anyway, this part can wait.
+
+define a parser over all that, roughly as in ps04
+
+frame objects should be distinguishable from procedures, so we can
+include procedures literally in rule syntax. (a procedure in the car
+of a template should be called to produce the expansion.)
+
+example syntax:
+
+(define algebra-2
+  (make-simplifier
+   (let ((a (?))
+         (x (?))
+         (y (?))
+         (a... (??))
+         (b... (??)))
+     `(
+       ((+ ,a)
+        none
+        ,a)
+        
+       ((+ ,a... (+ ,b...))
+        none
+        (+ ,a... ,b...))
+
+       ; etc.        
+       ))))
+
+
+I'm not so sure of this overall rule syntax.
+How about skipping the 'none' and expressing those restrictions as one kind 
+of pattern?

@@ -1,0 +1,33 @@
+Problems with the original code:
+
+Doesn't check pattern syntax. It happily supplies meaning to patterns like
+(a . b) and (? whee whee whee). I don't think this is what you meant by
+robustness... OTOH it does make it easier to extend with overlapping 
+syntax like (? x symbol?).
+
+Doesn't document behavior on dotted-pair data.
+
+The comments didn't emphasize the data structures enough for me -- I'd lose
+track of the fact that the top-level data is a *list* of items that are 
+either atoms or lists of items -- so no dotted pairs and no top-level atoms.
+(Of course you could add matchers that don't follow that scheme, but that's
+how the existing ones are structured.)
+
+
+Style differences:
+
+Different interface for success continuations.
+
+Defining match.list in terms of match.compose and match.end, and suchlike.
+
+Using matchers in the pattern parser.
+This required defining MATCH.RESTRICT to check pattern syntax with.
+
+Different match.fetch interface.
+
+Naming, comments, ...
+
+
+Problems with the new code:
+
+The pattern compiler is more complex and must be somewhat slower.
