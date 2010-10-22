@@ -4,8 +4,6 @@ http://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch
 (without any entropy coder or codebook size limit)
 """
 
-loud = False
-
 ## message = 'TOBEORNOTTOBEORTOBEORNOT'
 ## encoded = list(encode(message))
 ## output = ''.join(decode(encoded))
@@ -31,7 +29,6 @@ def encode(s, codebook=default_codebook):
         if chunk not in codes:
             yield codes[chunk[:-1]]
             codes[chunk] = len(codes)
-            if loud: print '\t%d = %r' % (codes[chunk], chunk)
             chunk = chunk[-1]
     if chunk:
         yield codes[chunk]
@@ -64,7 +61,7 @@ def chunked_decode(codes_iter, codebook=default_codebook):
 #. True
 
 def rle_test():
-    for L in range(1000):
+    for L in range(100):
         test_reversible('x' * L)
 
 def exhaustive_binary_test():
@@ -74,7 +71,7 @@ def exhaustive_binary_test():
             test_reversible(binary)
 
 def test_reversible(s):
-    assert s == ''.join(decode(encode(s)))
+    assert s == ''.join(decode(encode(s))), s
 
 ## rle_test()
 ## exhaustive_binary_test()
