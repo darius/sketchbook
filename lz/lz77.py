@@ -1,5 +1,6 @@
 """
-First cut at LZ77 from http://en.wikipedia.org/wiki/LZ77_and_LZ78
+LZ77 from http://en.wikipedia.org/wiki/LZ77_and_LZ78
+with an unlimited 'window'.
 """
 
 ## printit(encode('much wood would a woodchuck chuck if a woodchuck would'))
@@ -28,52 +29,41 @@ def encode(s):
     """Generate LZ77 triples encoding s. The triple (n, k, c) means
     that each of the next n characters is equal to the character k
     places behind it; then the next character after them is c."""
-    input = iter(s)
-    window = ''
-    try:
-        while True:
-            chunk = ''
-            while chunk in window: # TODO: be able to output n > k
-                c = input.next()
-                chunk += c
-            i = window.rindex(chunk[:-1])
-            yield len(chunk)-1, len(window) - i, c
-            window += chunk
-    except StopIteration:
-        if chunk:
-            i = window.rindex(chunk[:-1])
-            yield len(chunk)-1, len(window) - i, c
+    buffer = ''                 # The input so far
+    p = 0                       # Position in buffer of the current chunk
+    def triple():
+        n = len(buffer) - 1 - p
+        k = p - buffer.rindex(buffer[p:-1], 0, -2) if n else 0
+        return n, k, buffer[-1]
+    for c in s:
+        buffer += c
+        if buffer[p:] not in buffer[:-1]:
+            yield triple()
+            p = len(buffer)
+    if p < len(buffer):
+        yield triple()
 
 def decode(triples):
     """Given an LZ77-code iterable, generate string chunks that,
     concatenated, form the original plaintext."""
-    window = ''
-    for length, offset, c in triples:
-        chunk = window[-offset:(-offset+length or None)] if length else ''
-        yield chunk + c
-        window += chunk + c
-
-def test_reversible(s):
-    assert s == ''.join(decode(encode(s)))
+    buffer = ''
+    for n, k, c in triples:
+        for i in range(n):
+            buffer += buffer[-k]
+        buffer += c
+        yield buffer[-n-1:]
 
 def printit(iterable):
     for x in iterable: print x
 
-## printit(decode(encode('AAAAAAAAAAAAAAAAAAAAAA')))
-#. A
-#. AA
-#. AAAA
-#. AAAAAAAA
-#. AAAAAAA
-#. 
-
-## test_reversible('')
-## test_reversible('x')
 ## test_reversible('xxxxxxxxxyyyyyyyyyyyyyyxxxxxxxxx')
 ## test_reversible('when in the course of human events to be or not to be')
 
+def test_reversible(s):
+    assert s == ''.join(decode(encode(s))), s
+
 def rle_test():
-    for L in range(1000):
+    for L in range(100):
         test_reversible('x' * L)
 
 def exhaustive_binary_test():
@@ -85,5 +75,5 @@ def exhaustive_binary_test():
 ## rle_test()
 ## exhaustive_binary_test()
 
-## len(list(encode('a' * 1000)))
-#. 10
+## list(encode('a' * 1000))
+#. [(0, 0, 'a'), (998, 1, 'a')]
