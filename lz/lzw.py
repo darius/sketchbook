@@ -60,6 +60,12 @@ def chunked_decode(codes_iter, codebook=default_codebook):
 ## m == ''.join(chunked_decode(iter(x)))
 #. True
 
+## test_reversible('xxxxxxxxxyyyyyyyyyyyyyyxxxxxxxxx')
+## test_reversible('when in the course of human events to be or not to be')
+
+def test_reversible(s):
+    assert s == ''.join(decode(encode(s))), s
+
 def rle_test():
     for L in range(100):
         test_reversible('x' * L)
@@ -69,9 +75,6 @@ def exhaustive_binary_test():
         for input in range(2**L):
             binary = bin(input)[2:]
             test_reversible(binary)
-
-def test_reversible(s):
-    assert s == ''.join(decode(encode(s))), s
 
 ## rle_test()
 ## exhaustive_binary_test()
