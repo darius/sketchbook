@@ -1,8 +1,7 @@
 """
 Find good rational approximations of real numbers. 
 
-I don't remember where I got this algorithm; I think I adapted it from
-some online discussion of Scheme's 'rationalize' primitive.
+I don't remember where I got this algorithm; 
 """
 
 def rationalize(x, limit):
@@ -39,3 +38,30 @@ def rationalizations(x):
 #. (355, 113)
 ## rationalize(1.125, 1000)
 #. (9, 8)
+
+"""
+Ah, here's my source: I derived the logic from this Scheme code, whose
+author I'm afraid I didn't record -- I think it was from some online
+discussion of Scheme's 'rationalize' primitive.:
+
+(define (find-ratio-between x y)
+  (define (sr x y)
+    (let ((fx (exact (floor x))) 
+          (fy (exact (floor y))))
+      (cond 
+       ((>= fx x) (list fx 1))
+       ((= fx fy) (let ((rat (sr (/ (- y fy))
+                                 (/ (- x fx)))))
+                    (list (+ (cadr rat) (* fx (car rat))) (car rat))))
+       (else (list (+ 1 fx) 1)))))
+  (cond 
+    ((< y x) (find-ratio-between y x))
+    ((>= x y) (list x 1))
+    ((positive? x) (sr x y))
+    ((negative? y) (let ((rat (sr (- y) (- x))))
+                     (list (- (car rat)) (cadr rat))))
+    (else '(0 1))))
+
+N.B. you can't define find-ratio-between in terms of my
+rationalizations().
+"""
