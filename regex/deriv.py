@@ -89,25 +89,45 @@ class Maker:
         return self.lits.enter(c, lambda: Lit(c))
 
     def alt(self, *res):
-        res = frozenset(re for re in res if re is not fail)
-        if len(res) == 0: return fail
-        if len(res) == 1: return first(res)
+        acc = collect_alternatives(res)
+        if len(acc) == 0: return fail
+        if len(acc) == 1: return acc[0]
+        res = frozenset(acc)
         return self.alts.enter(res, lambda: Alt(self, res))
 
     def seq(self, *res):
         if fail in res: return fail
-        res = tuple(re for re in res if re is not empty)
+        res = collect_sequence(res)
         if len(res) == 0: return empty
         if len(res) == 1: return res[0]
         return self.seqs.enter(res, lambda: Seq(self, res))
 
     def many(self, re):
         if re is fail or re is empty: return empty
+        if isinstance(re, Many): return re
         return self.stars.enter(re, lambda: Many(self, re))
 
-def first(xs):
-    for x in xs:
-        return x
+def collect_alternatives(res):
+    acc = []
+    for re in res:
+        if re is fail:
+            pass
+        elif isinstance(re, Alt):
+            acc.extend(re.re_set)
+        else:
+            acc.append(re)
+    return acc
+
+def collect_sequence(res):
+    acc = []
+    for re in res:
+        if re is empty:
+            pass
+        elif isinstance(re, Seq):
+            acc.extend(re.res)
+        else:
+            acc.append(re)
+    return tuple(res)
 
 
 ## mk = Maker()
