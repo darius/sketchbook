@@ -9,27 +9,19 @@ def match(re, s):
     return any(BING in state(EOF) for state in states)
 
 EOF, BING = object(), object()
-def accepting(c): return set([BING]) if c is EOF else set()
 
-def fail(k):
-    return lambda c: set()
-
-def empty(k):
-    return accepting
-
-def lit(char):
-    return lambda k: lambda c: set([k]) if char == c else set()
-
-def seq(re1, re2):
-    return lambda k: re1(re2(k))
-
-def alt(re1, re2):
-    return lambda k: lambda c: re1(k)(c) | re2(k)(c)
+def accepting(c):  return                     set([BING]) if c is EOF else set()
+def fail(k):       return           lambda c: set()
+def empty(k):      return           accepting
+def lit(char):     return lambda k: lambda c: set([k]) if char == c else set()
+def seq(re1, re2): return lambda k: re1(re2(k))
+def alt(re1, re2): return lambda k: lambda c: re1(k)(c) | re2(k)(c)
 
 def many(re):
     def me(k):
         def state(c):
-            return k(c) | re(state)(c)
+            return k(c) | re_state(c)
+        re_state = re(state)
         return state
     return me
 

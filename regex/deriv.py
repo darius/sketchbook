@@ -1,6 +1,17 @@
 """
 Regular expression matching, and incremental DFA construction, using
 even-more-simplified and memoized Brzozowski derivatives.
+TODO:
+ - Show the DFAs
+ - Generalize the paths taken, a la EBG, so you don't have to
+   re-derive derivatives for different characters that you can
+   tell act the same. (Though this can be more costly -- the
+   other characters might never appear.)
+   Scheme: make deriv(c) return both the derivative and a set
+   of characters that give the same derivative.
+ - intersection and complement
+ - more tests
+ - fuller API
 """
 
 def match(re, s):
