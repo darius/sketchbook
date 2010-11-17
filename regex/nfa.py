@@ -2,12 +2,11 @@
 Regular-expression matching by the Thompson construction.
 Explained in C at http://swtch.com/~rsc/regexp/regexp1.html
 
-This code follows the same interface as backtrack.py in this
-same directory. backtrack.py is easier to follow but suffers
-exponential blowup on some regexes. Both of these blow up on
-nested stars like r'a**', though (as Thompson himself pointed
-out in his paper). deriv.py OTOH should work in all cases, but
-needs more code.
+This code follows the same interface as backtrack.py in this same
+directory. backtrack.py is easier to follow but suffers exponential
+blowup on some regexes. Both of these loop on nested stars like
+r'a**', though (as Thompson himself pointed out in his
+paper). deriv.py OTOH should work in all cases, but needs more code.
 """
 
 def match(re, s):
