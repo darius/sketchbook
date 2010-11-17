@@ -15,7 +15,7 @@ def match(re, s):
         states = set.union(*[state(c) for state in states])
     return any(BING in state(EOF) for state in states)
 
-def empty(k):  return accepting
+def empty(k):  return k
 def lit(char): return lambda k: lambda c: set([k]) if char == c else set()
 
 EOF, BING = object(), object()
@@ -86,3 +86,9 @@ def many(re):
 
 # N.B. infinite recursion, like Thompson's original code:
 ### match(many(many(lit('x'))), 'xxxx')
+
+# Had a bug: empty forced a match regardless of the continuation.
+## match(seq(empty, lit('x')), '')
+#. False
+## match(seq(empty, lit('x')), 'x')
+#. True
