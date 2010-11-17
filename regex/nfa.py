@@ -78,3 +78,6 @@ def many(re):
 #. True
 ## match(complicated, 'ababaxyaxz')
 #. False
+
+# N.B. infinite recursion, like Thompson's original code:
+### match(many(many(lit('x'))), 'xxxx')
