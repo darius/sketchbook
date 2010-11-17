@@ -1,5 +1,6 @@
 """
 Regular-expression matching by the Thompson construction.
+Explained in C at http://swtch.com/~rsc/regexp/regexp1.html
 """
 
 def match(re, s):
