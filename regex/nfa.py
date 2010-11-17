@@ -15,12 +15,12 @@ def match(re, s):
         states = set.union(*[state(c) for state in states])
     return any(BING in state(EOF) for state in states)
 
-EOF, BING = object(), object()
+def empty(k):  return accepting
+def lit(char): return lambda k: lambda c: set([k]) if char == c else set()
 
-def accepting(c):  return                     set([BING]) if c is EOF else set()
-def fail(k):       return           lambda c: set()
-def empty(k):      return           accepting
-def lit(char):     return lambda k: lambda c: set([k]) if char == c else set()
+EOF, BING = object(), object()
+accepting = lit(EOF)(BING)
+
 def seq(re1, re2): return lambda k: re1(re2(k))
 
 def alt(re1, re2):
@@ -37,8 +37,6 @@ def many(re):
     return re_star
 
 
-## match(fail, '')
-#. False
 ## match(empty, '')
 #. True
 ## match(empty, 'A')
