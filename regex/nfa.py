@@ -18,12 +18,11 @@ def seq(re1, re2): return lambda k: re1(re2(k))
 def alt(re1, re2): return lambda k: lambda c: re1(k)(c) | re2(k)(c)
 
 def many(re):
-    def me(k):
-        def state(c):
-            return k(c) | re_state(c)
-        re_state = re(state)
-        return state
-    return me
+    def re_star(k):
+        def loop(c): return k(c) | re_plus(c)
+        re_plus = re(loop)
+        return loop
+    return re_star
 
 
 ## match(fail, '')
