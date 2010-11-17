@@ -15,7 +15,12 @@ def fail(k):       return           lambda c: set()
 def empty(k):      return           accepting
 def lit(char):     return lambda k: lambda c: set([k]) if char == c else set()
 def seq(re1, re2): return lambda k: re1(re2(k))
-def alt(re1, re2): return lambda k: lambda c: re1(k)(c) | re2(k)(c)
+
+def alt(re1, re2):
+    def either(k):
+        k1, k2 = re1(k), re2(k)
+        return lambda c: k1(c) | k2(c)
+    return either
 
 def many(re):
     def re_star(k):
