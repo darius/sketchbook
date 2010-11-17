@@ -3,10 +3,11 @@ Regular-expression matching by the Thompson construction.
 Explained in C at http://swtch.com/~rsc/regexp/regexp1.html
 
 This code follows the same interface as backtrack.py in this same
-directory. backtrack.py is easier to follow but suffers exponential
-blowup on some regexes. Both of these loop on nested stars like
-r'a**', though (as Thompson himself pointed out in his
-paper). deriv.py OTOH should work in all cases, but needs more code.
+directory (except we dropped 'fail' as uninteresting). backtrack.py is
+easier to follow but suffers exponential blowup on some regexes. Both
+of these loop on nested stars like r'a**', though (as Thompson himself
+pointed out in his paper). deriv.py OTOH should work in all cases, but
+needs more code.
 """
 
 def match(re, s):
@@ -15,12 +16,11 @@ def match(re, s):
         states = set.union(*[state(c) for state in states])
     return any(BING in state(EOF) for state in states)
 
-def empty(k):  return k
 def lit(char): return lambda k: lambda c: set([k]) if char == c else set()
-
 EOF, BING = object(), object()
 accepting = lit(EOF)(BING)
 
+def empty(k):      return k
 def seq(re1, re2): return lambda k: re1(re2(k))
 
 def alt(re1, re2):
