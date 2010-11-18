@@ -110,4 +110,4 @@ abc|*.d.        0 abccbcccde
 """.splitlines()
 for line in tests:
     re, should_match, s = line.split()
-    assert int(should_match) == match(re, s)
+    assert int(should_match) == match(re, s), 'match(%r, %r)' % (re, s)
