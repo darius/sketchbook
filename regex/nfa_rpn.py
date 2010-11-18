@@ -99,3 +99,15 @@ accept = expect(EOF, ACCEPTED)
 #. True
 ## match(complicated, 'ababaxyaxz')
 #. False
+
+tests = """\
+ab.c.d.e.f.g.   1 abcdefg
+ab|*a.          0 ababababab
+ab|*a.          1 aaaaaaaaba
+ab|*a.          0 aaaaaabac
+abc|*.d.        1 abccbcccd
+abc|*.d.        0 abccbcccde
+""".splitlines()
+for line in tests:
+    re, should_match, s = line.split()
+    assert int(should_match) == match(re, s)
