@@ -55,7 +55,7 @@ def emit_jump(insns, k):
     if len(insns) - 1 != k:
         emit(insns, jump, k)
 
-def emit(insns, operation, operand=None):
+def emit(insns, operation, operand):
     insns.append([operation, operand])
     return len(insns) - 1
 
