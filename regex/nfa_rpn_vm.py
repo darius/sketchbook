@@ -70,6 +70,7 @@ def run(insns, start, s):
     agenda = set([start])
     for c in s:
         agenda = step(insns, agenda, c)
+        if not agenda: break    # Redundant test, can speed it
     return ACCEPTED in step(insns, agenda, EOF)
 
 def step(insns, agenda, c):
