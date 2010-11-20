@@ -67,27 +67,27 @@ def emit(insns, operation, operand):
     return len(insns) - 1
 
 def run(insns, start, s):
-    states = set([start])
+    agenda = set([start])
     for c in s:
-        states = step(insns, states, c)
-    return ACCEPTED in step(insns, states, EOF)
+        agenda = step(insns, agenda, c)
+    return ACCEPTED in step(insns, agenda, EOF)
 
-def step(insns, states, c):
+def step(insns, agenda, c):
     next = set()
-    while states:
-        pc = states.pop()
+    while agenda:
+        pc = agenda.pop()
         while pc is not None:
             operator, operand = insns[pc]
-            pc = operator(states, next, pc, c, operand)
+            pc = operator(agenda, next, pc, c, operand)
     return next
 
-def jump(states, next, pc, c, k):
+def jump(agenda, next, pc, c, k):
     return k
-def expect(states, next, pc, c, literal):
+def expect(agenda, next, pc, c, literal):
     if c == literal: next.add(pc - 1)
     return None
-def alt(states, next, pc, c, k):
-    states.add(k)
+def alt(agenda, next, pc, c, k):
+    agenda.add(k)
     return pc - 1
 
 EOF, ACCEPTED = 'EOF', -1
