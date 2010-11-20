@@ -34,6 +34,13 @@ def parse(insns, re, k):
             fork = emit_fork(insns, k)
             patch(insns, fork, parse(insns, re, fork))
             return fork
+        elif c == '?':
+            return emit_alt(insns, parse(insns, re, k), k)
+        elif c == '+':
+            fork = emit_fork(insns, k)
+            plus = parse(insns, re, fork)
+            patch(insns, fork, plus)
+            return plus
         else:
             return emit_expect(insns, c, k)
 
@@ -145,6 +152,12 @@ ab|*a.          1 aaaaaaaaba
 ab|*a.          0 aaaaaabac
 abc|*.d.        1 abccbcccd
 abc|*.d.        0 abccbcccde
+ab?.c.          0 abbc
+ab?.c.          1 abc
+ab?.c.          1 ac
+ab.+c.          0 c
+ab.+c.          1 abc
+ab.+c.          1 ababc
 """.splitlines()
 for line in tests:
     re, should_match, s = line.split()
