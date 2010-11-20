@@ -3,6 +3,8 @@ The Thompson algorithm again but starting from a regex in RPN, as
 Thompson did. In a more C-like style now, compiling to a virtual
 machine. We differ from Thompson in parsing from right to left, and
 thus needing fewer jump instructions and backpatching only for loops.
+Also in detecting loops at match-time -- we should always terminate,
+if this is correct.
 """
 
 def match(re, s):
@@ -74,22 +76,23 @@ def run(insns, start, s):
     return ACCEPTED in step(insns, agenda, EOF)
 
 def step(insns, agenda, c):
-    next = set()
+    done, next = set(), set()
     while agenda:
         pc = agenda.pop()
         while pc is not None:
+            done.add(pc) # TODO: we could get away with only adding loop headers
             operator, operand = insns[pc]
-            pc = operator(agenda, next, pc, c, operand)
+            pc = operator(done, agenda, next, pc, c, operand)
     return next
 
-def jump(agenda, next, pc, c, k):
-    return k
-def expect(agenda, next, pc, c, literal):
+def jump(done, agenda, next, pc, c, k):
+    return (k not in done) and k
+def expect(done, agenda, next, pc, c, literal):
     if c == literal: next.add(pc - 1)
     return None
-def alt(agenda, next, pc, c, k):
-    agenda.add(k)
-    return pc - 1
+def alt(done, agenda, next, pc, c, k):
+    if k not in done: agenda.add(k)
+    return pc-1
 
 EOF, ACCEPTED = 'EOF', -1
 
@@ -159,6 +162,7 @@ ab?.c.          1 ac
 ab.+c.          0 c
 ab.+c.          1 abc
 ab.+c.          1 ababc
+a**x.           1 aaax
 """.splitlines()
 for line in tests:
     re, should_match, s = line.split()
