@@ -31,9 +31,9 @@ def parse(insns, re, k):
             rhs = parse(insns, re, k)
             return emit_alt(insns, parse(insns, re, k), rhs)
         elif c == '*':
-            star = emit_loop(insns, k)
-            patch(insns, star, parse(insns, re, star))
-            return star
+            fork = emit_fork(insns, k)
+            patch(insns, fork, parse(insns, re, fork))
+            return fork
         else:
             return emit_expect(insns, c, k)
 
@@ -45,7 +45,7 @@ def emit_alt(insns, k1, k2):
     emit_jump(insns, k1)
     return emit(insns, alt, k2)
 
-def emit_loop(insns, k):
+def emit_fork(insns, k):
     return emit_alt(insns, k, None)
 
 def patch(insns, k, target):
