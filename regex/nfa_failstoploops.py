@@ -3,8 +3,7 @@ Regular-expression matching by the Thompson construction.
 Explained in C at http://swtch.com/~rsc/regexp/regexp1.html
 """
 
-def match((null, re), s):
-    states = re(state_node(accepting_state))()
+def run(states, s):
     for c in s:
         states = set.union(*[state(c) for state in states])
     return accepting_state in states
@@ -18,6 +17,8 @@ def loop_node(k, make_k):
     def loop(): return k() | looping()
     looping = make_k(loop)
     return loop
+
+def match((null, re), s): return run(re(state_node(accepting_state))(), s)
 
 def lit(char):
     return False, lambda k: state_node(expecting_state(char, k))
@@ -81,16 +82,16 @@ def seq((null1, re1), (null2, re2)):
 # N.B. infinite recursion, like Thompson's original code:
 ## match(many(many(lit('x'))), 'xxxx')
 #. Traceback (most recent call last):
-#.   File "nfa_failstoploops.py", line 82, in <module>
+#.   File "nfa_failstoploops.py", line 83, in <module>
 #.     ## match(many(many(lit('x'))), 'xxxx')
-#.   File "nfa_failstoploops.py", line 27, in many
+#.   File "nfa_failstoploops.py", line 28, in many
 #.     assert not null, "I can't handle nested stars"
 #. AssertionError: I can't handle nested stars
 ## match(many(many(lit('x'))), 'xxxxy')
 #. Traceback (most recent call last):
-#.   File "nfa_failstoploops.py", line 87, in <module>
+#.   File "nfa_failstoploops.py", line 88, in <module>
 #.     ## match(many(many(lit('x'))), 'xxxxy')
-#.   File "nfa_failstoploops.py", line 27, in many
+#.   File "nfa_failstoploops.py", line 28, in many
 #.     assert not null, "I can't handle nested stars"
 #. AssertionError: I can't handle nested stars
 
