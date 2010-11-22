@@ -10,7 +10,7 @@ if this is correct.
 def match(re, s):
     re = list(re)
     insns = []
-    start = parse(insns, re, emit(insns, expect, EOF))
+    start = parse(insns, re, emit(insns, expect, EOF, -1))
     assert not re, "Syntax error"
     return run(insns, start, s)
 
@@ -31,40 +31,30 @@ def parse(insns, re, k):
             return parse(insns, re, rhs)
         elif c == '|':
             rhs = parse(insns, re, k)
-            return emit_alt(insns, parse(insns, re, k), rhs)
+            return emit(insns, alt, rhs, parse(insns, re, k))
         elif c == '*':
             fork = emit_fork(insns, k)
             patch(insns, fork, parse(insns, re, fork))
             return fork
         elif c == '?':
-            return emit_alt(insns, parse(insns, re, k), k)
+            return emit(insns, alt, k, parse(insns, re, k))
         elif c == '+':
             fork = emit_fork(insns, k)
             plus = parse(insns, re, fork)
             patch(insns, fork, plus)
             return plus
         else:
-            return emit_expect(insns, c, k)
-
-def emit_expect(insns, literal, k):
-    emit_jump(insns, k)
-    return emit(insns, expect, literal)
-
-def emit_alt(insns, k1, k2):
-    emit_jump(insns, k1)
-    return emit(insns, alt, k2)
+            return emit(insns, expect, c, k)
 
 def emit_fork(insns, k):
-    return emit_alt(insns, k, None)
+    return emit(insns, alt, None, k)
 
 def patch(insns, k, target):
     insns[k][1] = target
 
-def emit_jump(insns, k):
+def emit(insns, operation, operand, k):
     if len(insns) - 1 != k:
-        emit(insns, jump, k)
-
-def emit(insns, operation, operand):
+        insns.append([jump, k])
     insns.append([operation, operand])
     return len(insns) - 1
 
