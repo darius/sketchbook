@@ -80,3 +80,13 @@ def many(re):
 #. True
 ## match(complicated, 'ababaxyaxz')
 #. False
+
+## match(many(many(lit('x'))), 'xxxx')
+#. True
+## match(many(many(lit('x'))), 'xxxxy')
+#. False
+
+## match(seq(empty, lit('x')), '')
+#. False
+## match(seq(empty, lit('x')), 'x')
+#. True
