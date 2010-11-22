@@ -4,10 +4,10 @@ Explained in C at http://swtch.com/~rsc/regexp/regexp1.html
 """
 
 def match(re, s):
-    agenda = re(state_node(accepting_state))()
+    states = re(state_node(accepting_state))()
     for c in s:
-        agenda = set.union(*[state(c) for state in agenda])
-    return accepting_state in agenda
+        states = set.union(*[state(c) for state in states])
+    return accepting_state in states
 
 def accepting_state(c): return set()
 def expecting_state(char, k): return lambda c: k() if c == char else set()
