@@ -8,11 +8,14 @@ if this is correct.
 """
 
 def match(re, s):
+    return run(prepare(re), s)
+
+def prepare(re):
     re = list(re)
     insns = []
     start = parse(insns, re, emit(insns, expect, EOF, -1))
     assert not re, "Syntax error"
-    return run(insns, start, s)
+    return insns, start
 
 def show(insns, pc):
     for k, (operator, operand) in enumerate(insns):
@@ -46,11 +49,8 @@ def parse(insns, re, k):
         else:
             return emit(insns, expect, c, k)
 
-def emit_fork(insns, k):
-    return emit(insns, alt, None, k)
-
-def patch(insns, k, target):
-    insns[k][1] = target
+def emit_fork(insns, k): return emit(insns, alt, None, k)
+def patch(insns, k, target): insns[k][1] = target
 
 def emit(insns, operation, operand, k):
     if len(insns) - 1 != k:
@@ -58,7 +58,7 @@ def emit(insns, operation, operand, k):
     insns.append([operation, operand])
     return len(insns) - 1
 
-def run(insns, start, s):
+def run((insns, start), s):
     agenda = set([start])
     for c in s:
         agenda = step(insns, agenda, c)
