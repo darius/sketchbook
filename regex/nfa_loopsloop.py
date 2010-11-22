@@ -3,6 +3,8 @@ Regular-expression matching by the Thompson construction.
 Explained in C at http://swtch.com/~rsc/regexp/regexp1.html
 """
 
+def match(re, s): return run(prepare(re), s)
+
 def run(states, s):
     for c in s:
         states = set.union(*[state(c) for state in states])
@@ -18,7 +20,7 @@ def loop_node(k, make_k):
     looping = make_k(loop)
     return loop
 
-def match(re, s): return run(re(state_node(accepting_state))(), s)
+def prepare(re): return re(state_node(accepting_state))()
 
 def lit(char):     return lambda k: state_node(expecting_state(char, k))
 def alt(re1, re2): return lambda k: alt_node(re1(k), re2(k))

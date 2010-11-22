@@ -5,6 +5,8 @@ Explained in C at http://swtch.com/~rsc/regexp/regexp1.html
 Avoid epsilon-loops by construction. Needs more testing.
 """
 
+def match(re, s): return run(prepare(re), s)
+
 def run(states, s):
     for c in s:
         states = set.union(*[state(c) for state in states])
@@ -20,8 +22,8 @@ def loop_node(k, make_k):
     looping = make_k(loop)
     return looping
 
-def match(re, s):
-    return run(optionalize(re)(state_node(accepting_state))(), s)
+def prepare(re):
+    return optionalize(re)(state_node(accepting_state))()
 
 def optionalize((null, re)):
     return lambda k: alt_node(k, re(k)) if null else re(k)
