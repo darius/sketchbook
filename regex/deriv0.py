@@ -4,54 +4,33 @@ Regular expression matching using Brzozowski derivatives.
 
 def match(re, s):
     for c in s:
-        re = re.deriv(c)
+        re = re(c)
     return re.nullable
 
-class Fail:
-    nullable = False
-    def deriv(self, c):
-        return self
-fail = Fail()
+def mark(nullable, deriv):
+    deriv.nullable = nullable
+    return deriv
 
-class Empty:
-    nullable = True
-    def deriv(self, c):
-        return fail
-empty = Empty()
+fail = mark(False, lambda c: fail)
+empty = mark(True, lambda c: fail)
 
-class Lit:
-    nullable = False
-    def __init__(self, c):
-        assert len(c) == 1
-        self.c = c
-    def deriv(self, c):
-        return empty if c == self.c else fail
+def lit(literal):
+    return mark(False, lambda c: empty if c == literal else fail)
 
-class Alt:
-    def __init__(self, re1, re2):
-        self.nullable = re1.nullable or re2.nullable
-        self.re1 = re1
-        self.re2 = re2
-    def deriv(self, c):
-        return Alt(self.re1.deriv(c), self.re2.deriv(c))
+def alt(re1, re2):
+    return mark(re1.nullable or re2.nullable,
+                lambda c: alt(re1(c), re2(c)))
 
-class Seq:
-    def __init__(self, re1, re2):
-        self.nullable = re1.nullable and re2.nullable
-        self.re1 = re1
-        self.re2 = re2
-    def deriv(self, c):
-        blocking = Seq(self.re1.deriv(c), self.re2)
-        if self.re1.nullable: return Alt(blocking, self.re2.deriv(c))
-        else: return blocking
+def seq(re1, re2):
+    if re1.nullable:
+        def sequence(c): return alt(seq(re1(c), re2), re2(c))
+    else:
+        def sequence(c): return seq(re1(c), re2)
+    return mark(re1.nullable and re2.nullable, sequence)
 
-class Many:
-    nullable = True
-    def __init__(self, re):
-        self.re = re
-    def deriv(self, c):
-        return Seq(self.re.deriv(c), self)
-
+def many(re):
+    def loop(c): return seq(re(c), loop)
+    return mark(True, loop)
 
 ## match(fail, '')
 #. False
@@ -59,35 +38,35 @@ class Many:
 #. True
 ## match(empty, 'A')
 #. False
-## match(Lit('x'), '')
+## match(lit('x'), '')
 #. False
-## match(Lit('x'), 'y')
+## match(lit('x'), 'y')
 #. False
-## match(Lit('x'), 'x')
+## match(lit('x'), 'x')
 #. True
-## match(Lit('x'), 'xx')
+## match(lit('x'), 'xx')
 #. False
-### match(Lit('abc'), 'abc')
-## match(Seq(Lit('a'), Lit('b')), '')
+### match(lit('abc'), 'abc')
+## match(seq(lit('a'), lit('b')), '')
 #. False
-## match(Seq(Lit('a'), Lit('b')), 'ab')
+## match(seq(lit('a'), lit('b')), 'ab')
 #. True
-## match(Alt(Lit('a'), Lit('b')), 'b')
+## match(alt(lit('a'), lit('b')), 'b')
 #. True
-## match(Alt(Lit('a'), Lit('b')), 'a')
+## match(alt(lit('a'), lit('b')), 'a')
 #. True
-## match(Alt(Lit('a'), Lit('b')), 'x')
+## match(alt(lit('a'), lit('b')), 'x')
 #. False
-## match(Many(Lit('a')), '')
+## match(many(lit('a')), '')
 #. True
-## match(Many(Lit('a')), 'a')
+## match(many(lit('a')), 'a')
 #. True
-## match(Many(Lit('a')), 'x')
+## match(many(lit('a')), 'x')
 #. False
-## match(Many(Lit('a')), 'aa')
+## match(many(lit('a')), 'aa')
 #. True
 
-## complicated = Seq(Many(Alt(Seq(Lit('a'), Lit('b')), Seq(Lit('a'), Seq(Lit('x'), Lit('y'))))), Lit('z'))
+## complicated = seq(many(alt(seq(lit('a'), lit('b')), seq(lit('a'), seq(lit('x'), lit('y'))))), lit('z'))
 ## match(complicated, '')
 #. False
 ## match(complicated, 'z')
@@ -100,3 +79,13 @@ class Many:
 #. True
 ## match(complicated, 'ababaxyaxz')
 #. False
+
+## match(many(many(lit('x'))), 'xxxx')
+#. True
+## match(many(many(lit('x'))), 'xxxxy')
+#. False
+
+## match(seq(empty, lit('x')), '')
+#. False
+## match(seq(empty, lit('x')), 'x')
+#. True
