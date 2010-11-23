@@ -138,7 +138,7 @@ def collect_sequence(res):
             acc.extend(re.res)
         else:
             acc.append(re)
-    return tuple(res)
+    return tuple(acc)
 
 
 ## mk = Maker()
