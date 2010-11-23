@@ -121,22 +121,18 @@ class Maker:
 def collect_alternatives(res):
     acc = []
     for re in res:
-        if re is fail:
-            pass
-        elif isinstance(re, Alt):
+        if isinstance(re, Alt):
             acc.extend(re.re_set)
-        else:
+        elif re is not fail:
             acc.append(re)
     return acc
 
 def collect_sequence(res):
     acc = []
     for re in res:
-        if re is empty:
-            pass
-        elif isinstance(re, Seq):
+        if isinstance(re, Seq):
             acc.extend(re.res)
-        else:
+        elif re is not empty:
             acc.append(re)
     return tuple(acc)
 
