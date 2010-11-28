@@ -84,15 +84,11 @@ def seq((null1, re1), (null2, re2)):
 # N.B. infinite recursion, like Thompson's original code:
 ## match(many(many(lit('x'))), 'xxxx')
 #. Traceback (most recent call last):
-#.   File "nfa_failstoploops.py", line 85, in <module>
-#.     ## match(many(many(lit('x'))), 'xxxx')
 #.   File "nfa_failstoploops.py", line 30, in many
 #.     assert not null, "I can't handle nested stars"
 #. AssertionError: I can't handle nested stars
 ## match(many(many(lit('x'))), 'xxxxy')
 #. Traceback (most recent call last):
-#.   File "nfa_failstoploops.py", line 90, in <module>
-#.     ## match(many(many(lit('x'))), 'xxxxy')
 #.   File "nfa_failstoploops.py", line 30, in many
 #.     assert not null, "I can't handle nested stars"
 #. AssertionError: I can't handle nested stars
