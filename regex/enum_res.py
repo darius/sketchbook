@@ -22,12 +22,33 @@ def gen_res(maker, alphabet, size):
     return acc
 
 
-from parse import TreeMaker
-#for re in gen_res(TreeMaker(), '01', 5): print re
-for size in range(9): print 2, size, len(gen_res(TreeMaker(), '01', size))
-print
-for size in range(9): print 3, size, len(gen_res(TreeMaker(), '012', size))
+## from parse import TreeMaker
 
+## for re in gen_res(TreeMaker(), '01', 3): print re
+#. Many(Many(empty))
+#. Many(Many('0'))
+#. Many(Many('1'))
+#. Alt(empty, empty)
+#. Seq(empty, empty)
+#. Alt(empty, '0')
+#. Seq(empty, '0')
+#. Alt(empty, '1')
+#. Seq(empty, '1')
+#. Alt('0', empty)
+#. Seq('0', empty)
+#. Alt('0', '0')
+#. Seq('0', '0')
+#. Alt('0', '1')
+#. Seq('0', '1')
+#. Alt('1', empty)
+#. Seq('1', empty)
+#. Alt('1', '0')
+#. Seq('1', '0')
+#. Alt('1', '1')
+#. Seq('1', '1')
+#. 
+
+## for size in range(9): print 2, size, len(gen_res(TreeMaker(), '01', size))
 #. 2 0 0
 #. 2 1 3
 #. 2 2 3
@@ -38,6 +59,8 @@ for size in range(9): print 3, size, len(gen_res(TreeMaker(), '012', size))
 #. 2 7 6753
 #. 2 8 30621
 #. 
+
+## for size in range(9): print 3, size, len(gen_res(TreeMaker(), '012', size))
 #. 3 0 0
 #. 3 1 4
 #. 3 2 4
@@ -48,3 +71,4 @@ for size in range(9): print 3, size, len(gen_res(TreeMaker(), '012', size))
 #. 3 7 18404
 #. 3 8 90276
 #. 
+
