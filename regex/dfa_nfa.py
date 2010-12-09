@@ -8,37 +8,30 @@ did improve on naive Thompson NFA->DFA here.
 """
 
 ## nfa = prepare(alt(seq(lit('A'), lit('C')), seq(lit('B'), lit('C'))))
-## nfa
-#. set([<function <lambda> at 0x1006d6b90>, <function <lambda> at 0x1006d6c80>])
 ## dfa = make_dfa(nfa)
-## len(dfa.keys())
-#. 4
-## for state in dfa: print state, '->', dfa[state]
-#. start -> frozenset([<function <lambda> at 0x1006d6b90>, <function <lambda> at 0x1006d6c80>])
-#. frozenset([<function accepting_state at 0x1006d2cf8>]) -> (True, {})
-#. frozenset([<function <lambda> at 0x1006d6aa0>]) -> (False, {'C': frozenset([<function accepting_state at 0x1006d2cf8>])})
-#. frozenset([<function <lambda> at 0x1006d6b90>, <function <lambda> at 0x1006d6c80>]) -> (False, {'A': frozenset([<function <lambda> at 0x1006d6aa0>]), 'B': frozenset([<function <lambda> at 0x1006d6aa0>])})
+## for i, (accepting, moves) in enumerate(dfa): print i, ' *'[accepting], moves
+#. 0   {'A': 1, 'B': 1}
+#. 1   {'C': 2}
+#. 2 * {}
 #. 
 
 def make_dfa(nfa_start_states):
-    """A DFA is a dict mapping key: state -> (accepting: bool,
-                                              moves: dict(char->state))
-    where a state is a frozenset(node)
-    and 'accepting' is true iff the key is an accepting state
-    and moves[c] is omitted if c leads to the failure state.
-    (This keeps the tables much smaller for toy examples at least.)
-    Also, dfa['start'] = the start state."""
-    dfa = {}
+    """A DFA is a list of pairs (accepting: bool, moves: dict(char->index)).
+    where an index is a state number -- a position in the list;
+    and 'accepting' means state #i is an accepting state;
+    and moves[c] is omitted if c leads to the (implicit) failure state.
+    (This keeps the tables much smaller for toy examples at least.)"""
+    state_nums, dfa = {}, []
     def fill_in(state):
         moves = {}
-        dfa[state] = (accepting_state in state, moves)
+        state_nums[state] = len(dfa)
+        dfa.append((accepting_state in state, moves))
         for c in range(256):
             next_state = step(state, chr(c))
             if next_state:
-                moves[chr(c)] = next_state
-                if next_state not in dfa: fill_in(next_state)
-    dfa['start'] = start_state = frozenset(nfa_start_states)
-    fill_in(start_state)
+                if next_state not in state_nums: fill_in(next_state)
+                moves[chr(c)] = state_nums[next_state]
+    fill_in(frozenset(nfa_start_states))
     return dfa
 
 def step(state, c):
