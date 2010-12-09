@@ -57,8 +57,11 @@ def expecting_state(char, k): return lambda c: k(set()) if c == char else set()
 
 @memoize
 def state_node(state): return lambda seen: set([state])
-@memoize                        # TODO: use associativity to memoize more
-def alt_node(k1, k2):  return lambda seen: k1(seen) | k2(seen)
+@memoize       # TODO: use associativity/commutativity to memoize more
+def alt_node(k1, k2):
+    if k1 is k2: return k1
+    else: return lambda seen: k1(seen) | k2(seen)
+
 @memoize
 def loop_node(k, make_k):
     def loop(seen):
