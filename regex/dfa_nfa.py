@@ -8,14 +8,14 @@ did improve on naive Thompson NFA->DFA here.
 """
 
 ## re = alt(seq(lit('A'), lit('C')), seq(lit('B'), lit('C')))
-## dfa = make_dfa(prepare(re))
+## dfa = make_dfa(re)
 ## for i, (accepting, moves) in enumerate(dfa): print i, ' *'[accepting], moves
 #. 0   {'A': 1, 'B': 1}
 #. 1   {'C': 2}
 #. 2 * {}
 #. 
 
-def make_dfa(nfa_start_states):
+def make_dfa(re):
     """A DFA is a list of pairs (accepting: bool, moves: dict(char->index)).
     where an index is a state number -- a position in the list;
     and 'accepting' means state #i is an accepting state;
@@ -31,7 +31,7 @@ def make_dfa(nfa_start_states):
             if next_state:
                 if next_state not in state_nums: fill_in(next_state)
                 moves[chr(c)] = state_nums[next_state]
-    fill_in(frozenset(nfa_start_states))
+    fill_in(frozenset(prepare(re)))
     return dfa
 
 def step(state, c):
