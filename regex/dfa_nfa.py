@@ -38,16 +38,11 @@ def step(state, c):
     return frozenset(set.union(*[nfa_state(c) for nfa_state in state]))
 
 
-def memoize(f):
-    memos = {}
-    def memoized(*args):
-        if args not in memos: memos[args] = f(*args)
-        return memos[args]
-    return memoized
-
+from memo import memoize
 # To try it without memoization, reenable this:
 if False:
     def memoize(f): return f
+
 
 # N.B. 'state' here in an NFA means something different from the DFA
 # states above. I should fix this or something.

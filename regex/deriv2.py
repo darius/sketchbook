@@ -5,19 +5,14 @@ even-more-simplified and memoized Brzozowski derivatives.
 Rather less clunky, but also less Pythonic, than deriv.py.
 """
 
+from memo import memoize
+
 def match(re, s):
     for c in s:
         re = re.deriv(c)
         # (This redundant test lets us exit early sometimes.)
         if re is fail: return False
     return re.nullable
-
-def memoize(f):
-    memos = {}
-    def memoized(x):
-        if x not in memos: memos[x] = f(x)
-        return memos[x]
-    return memoized
 
 def mark(nullable, deriv, tag, args):
     deriv.nullable = nullable
