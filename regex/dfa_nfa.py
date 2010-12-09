@@ -7,8 +7,8 @@ derivatives, since we don't use all the simplification rules; but it
 did improve on naive Thompson NFA->DFA here.
 """
 
-## nfa = prepare(alt(seq(lit('A'), lit('C')), seq(lit('B'), lit('C'))))
-## dfa = make_dfa(nfa)
+## re = alt(seq(lit('A'), lit('C')), seq(lit('B'), lit('C')))
+## dfa = make_dfa(prepare(re))
 ## for i, (accepting, moves) in enumerate(dfa): print i, ' *'[accepting], moves
 #. 0   {'A': 1, 'B': 1}
 #. 1   {'C': 2}
