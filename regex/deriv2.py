@@ -31,6 +31,7 @@ def _lit(literal): return mark(False,
 class Maker:
 
     def __init__(self):
+        self.empty  = empty
         self.lit    = memoize(_lit)
         self.mkalt  = memoize(self._alt)
         self.mkseq  = memoize(self._seq)

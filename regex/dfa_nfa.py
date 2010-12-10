@@ -79,3 +79,10 @@ def many(re):      return lambda k: loop_node(k, re)
 def empty(k):      return k
 @memoize
 def seq(re1, re2): return lambda k: re1(re2(k))
+
+class Struct:
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+def Maker():
+    return Struct(**globals())
