@@ -79,27 +79,27 @@ prim    = '(' expr ')'
 class TreeMaker:
     empty = 'empty'
     def lit(self, s): return repr(s)
-    def alt(self, t1, t2): return 'Alt(%s, %s)' % (t1, t2)
-    def seq(self, t1, t2): return 'Seq(%s, %s)' % (t1, t2)
-    def many(self, t): return 'Many(%s)' % t
+    def alt(self, t1, t2): return 'alt(%s, %s)' % (t1, t2)
+    def seq(self, t1, t2): return 'seq(%s, %s)' % (t1, t2)
+    def many(self, t): return 'many(%s)' % t
 
 p = make_parser(TreeMaker())
 
 ## p(r'')
 #. 'empty'
 ## p(r'hello')
-#. "Seq('h', Seq('e', Seq('l', Seq('l', 'o'))))"
+#. "seq('h', seq('e', seq('l', seq('l', 'o'))))"
 ## p(r'hello|goodbye')
-#. "Alt(Seq('h', Seq('e', Seq('l', Seq('l', 'o')))), Seq('g', Seq('o', Seq('o', Seq('d', Seq('b', Seq('y', 'e')))))))"
+#. "alt(seq('h', seq('e', seq('l', seq('l', 'o')))), seq('g', seq('o', seq('o', seq('d', seq('b', seq('y', 'e')))))))"
 ## p(r'hello*')
-#. "Seq('h', Seq('e', Seq('l', Seq('l', Many('o')))))"
+#. "seq('h', seq('e', seq('l', seq('l', many('o')))))"
 ## p(r'()')
 #. 'empty'
 ## p(r'(hey)you')
-#. "Seq(Seq('h', Seq('e', 'y')), Seq('y', Seq('o', 'u')))"
+#. "seq(seq('h', seq('e', 'y')), seq('y', seq('o', 'u')))"
 ## p(r'hey*you')
-#. "Seq('h', Seq('e', Seq(Many('y'), Seq('y', Seq('o', 'u')))))"
+#. "seq('h', seq('e', seq(many('y'), seq('y', seq('o', 'u')))))"
 ## p(r'h(ey)*you')
-#. "Seq('h', Seq(Many(Seq('e', 'y')), Seq('y', Seq('o', 'u'))))"
+#. "seq('h', seq(many(seq('e', 'y')), seq('y', seq('o', 'u'))))"
 ## p(r'a\*b')
-#. "Seq('a', Seq('*', 'b'))"
+#. "seq('a', seq('*', 'b'))"
