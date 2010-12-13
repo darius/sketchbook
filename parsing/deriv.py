@@ -8,14 +8,20 @@ def parse(grammar, s):
     for c in s:
         states = step(grammar, states, c)
         if not states: return False
-    return any(nullable(grammar, state) for state in states)
+    return any(nullable(grammar, state, set()) for state in states)
 
-def nullable(grammar, state):
+def nullable(grammar, state, visited):
     if not state: return True
+    if state in visited: return False
+    visited.add(state)
     head = state[0]
-    # XXX can loop:
     return (head in grammar
-            and any(nullable(grammar, rhs) for rhs in grammar[head]))
+            and any(nullable(grammar, rhs, visited) for rhs in grammar[head]))
+
+lefty = dict(start = [('start', 'x'), ()])
+
+## nullable(lefty, ('start',), set())
+#. True
 
 def step(grammar, states, c):
     visited, next_states = set(), set()
@@ -63,6 +69,12 @@ intgrammar = dict(start = [('int',)],
 
 ## parse(intgrammar, '-42')
 #. True
+
+sub = dict(start = [('E',)],
+           E =     [('E', '-', 'T'),
+                    ('T',)])
+
+### parse(sub, 'T-T-T')
 
 empty = dict(start = [()])
 
