@@ -5,6 +5,8 @@ and test that different implementations work the same.
 
 import dfa_deriv2 as m1
 import dfa_nfa as m2
+
+import dfa_minimize
 import enum_res
 import parse
 
@@ -23,22 +25,64 @@ def a_bunch(maker):             # TODO use flatmap
         acc.extend(enum_res.gen_res(maker, '01', size))
     return acc
 
+testing = False
+
 def test(module1, module2):
     "Look for inconsistency between module1 and module2's re implementations."
-    test_strings = collect_test_strings()
+    if testing: test_strings = collect_test_strings()
+    maxdiff = 1
+    maxmindiff = 0
     for re1, re2, re_string in zip(a_bunch(module1.Maker()),
                                    a_bunch(module2.Maker()),
                                    a_bunch(parse.TreeMaker())):
         dfa1 = module1.make_dfa(re1)
         dfa2 = module2.make_dfa(re2)
-        for s in test_strings:
+        if testing:
+          for s in test_strings:
             match1 = matches(dfa1, s)
             match2 = matches(dfa2, s)
             if match1 != match2:
-                print 'Conflict:', re_string
+                print '*** CONFLICT:', re_string
                 print module1.__name__, match1
                 print module2.__name__, match2
                 print
+        if len(dfa1) < len(dfa2):
+            print '*** m1 IS SMALLER FOR', re_string
+            print module1.__name__ + ':'
+            dump(dfa1)
+            print
+            print module2.__name__ + ':'
+            dump(dfa2)
+            print
+        else:
+            diff = len(dfa1) - len(dfa2)
+            if maxdiff < diff:
+                maxdiff = diff
+                print 'new maxdiff for', re_string
+                print module1.__name__ + ':'
+                dump(dfa1)
+                print
+                print module2.__name__ + ':'
+                dump(dfa2)
+                print
+        min_count = dfa_minimize.minimal_state_count(dfa2)
+        if min_count < min(len(dfa1), len(dfa2)):
+            diff = min(len(dfa1), len(dfa2)) - min_count
+            if maxmindiff < diff:
+                maxmindiff = diff
+                print 'DFA MINIMIZATION WINS for', re_string
+                print 'minimum state count:', min_count
+                print module1.__name__ + ':'
+                dump(dfa1)
+                print
+                print module2.__name__ + ':'
+                dump(dfa2)
+                print
+
+
+def dump(dfa):
+    for i, (accepting, moves) in enumerate(dfa):
+        print i, ' *'[accepting], moves
 
 def matches(dfa, s):
     state = 0

@@ -1,0 +1,11 @@
+The basic machinery of a lexical-scanner generator. Currently what I'm
+interested in is the size of the DFA produced by two different
+methods: Brzozowski derivatives like ML-ulex (see "Regular expression
+derivatives reexamined") vs. my own fancier version of the Thompson
+algorithm followed by the subset construction.
+
+So, we're not going to bother generating C code like Flex or RE2C yet.
+
+Some of the code is copied from ../regex. Not going to worry about
+keeping one reusable version of that code yet, either.
+x
