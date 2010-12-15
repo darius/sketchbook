@@ -7,6 +7,10 @@ derivatives, since we don't use all the simplification rules; but it
 did improve on naive Thompson NFA->DFA here.
 """
 
+
+### re = seq(lit('0'), many(many(seq(lit('1'), lit('0')))))
+### re = seq(alt(lit('A'), empty), many(lit('B')))
+
 ## re = alt(seq(lit('A'), lit('C')), seq(lit('B'), lit('C')))
 ## dfa = make_dfa(re)
 ## for i, (accepting, moves) in enumerate(dfa): print i, ' *'[accepting], moves
@@ -20,7 +24,8 @@ def make_dfa(re):
     where an index is a state number -- a position in the list;
     and 'accepting' means state #i is an accepting state;
     and moves[c] is omitted if c leads to the (implicit) failure state.
-    (This keeps the tables much smaller for toy examples at least.)"""
+    (This keeps the tables much smaller for toy examples at least.)
+    0 is the implicit start state."""
     state_nums, dfa = {}, []
     def fill_in(state):
         moves = {}
@@ -52,10 +57,12 @@ def expecting_state(char, k): return lambda c: k(set()) if c == char else set()
 
 @memoize
 def state_node(state): return lambda seen: set([state])
-@memoize       # TODO: use associativity/commutativity to memoize more
+@memoize       # TODO: use associativity to memoize more
 def alt_node(k1, k2):
     if k1 is k2: return k1
-    else: return lambda seen: k1(seen) | k2(seen)
+    # ('<' to canonicalize; but it doesn't seem to matter so far:)
+    if k2 < k1: return alt_node(k2, k1)
+    return lambda seen: k1(seen) | k2(seen)
 
 @memoize
 def loop_node(k, make_k):
@@ -64,6 +71,12 @@ def loop_node(k, make_k):
         seen.add(loop)
         return k(seen) | looping(seen)
     looping = make_k(loop)
+    # This optimization of the NFA makes no difference in the final
+    # DFA, but could help a bit if we use the NFA directly for
+    # matching. Or, perhaps, it could help expose opportunities for
+    # the other optimizations to work, though I haven't seen it to.
+    # XXX subsumed by many(re) check below
+    if looping is loop: return k
     return loop
 
 def prepare(re): return re(state_node(accepting_state))(set())
@@ -75,10 +88,16 @@ def lit(char):     return lambda k: state_node(expecting_state(char, k))
 @memoize
 def alt(re1, re2): return lambda k: alt_node(re1(k), re2(k))
 @memoize
-def many(re):      return lambda k: loop_node(k, re)
+def many(re):
+    def me(k): return loop_node(k, re)
+    if re.func_code is me.func_code: return re # XXX hack
+    return me
 def empty(k):      return k
 @memoize
-def seq(re1, re2): return lambda k: re1(re2(k))
+def seq(re1, re2):
+    if re1 is empty: return re2
+    if re2 is empty: return re1
+    return lambda k: re1(re2(k))
 
 class Struct:
     def __init__(self, **kwargs):
