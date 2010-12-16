@@ -12,17 +12,27 @@ did improve on naive Thompson NFA->DFA here.
 ### re = seq(alt(lit('A'), empty), many(lit('B')))
 
 ## re = alt(seq(lit('A'), lit('C')), seq(lit('B'), lit('C')))
-## dfa = make_dfa(re)
-## for i, (accepting, moves) in enumerate(dfa): print i, ' *'[accepting], moves
-#. 0   {'A': 1, 'B': 1}
-#. 1   {'C': 2}
-#. 2 * {}
+## dfa = make_dfa(prepare((1, re)))
+## dump(dfa)
+#. 0     {'A': 1, 'B': 1}
+#. 1     {'C': 2}
+#. 2 <1> {}
 #. 
 
-def make_scanner(whitespace, res):
-    return seq(many(whitespace), reduce(alt, res))
+def dump(dfa):
+    for i, (label, moves) in enumerate(dfa):
+        if label is None: label = '   '
+        else: label = '<%s>' % label
+        print i, label, ' '.join('%r:%d' % pair for pair in sorted(moves.items()))
 
-def make_dfa(re):
+def make_scanner(whitespace, res):
+    res = [whitespace] + res
+    return set.union(*map(prepare, enumerate(res)))
+
+def prepare((label, re)):
+    return re(state_node(make_accepting_state(label)))(set())
+
+def make_dfa(scanner):
     """A DFA is a list of pairs (accepting: bool, moves: dict(char->index)).
     where an index is a state number -- a position in the list;
     and 'accepting' means state #i is an accepting state;
@@ -33,13 +43,15 @@ def make_dfa(re):
     def fill_in(state):
         moves = {}
         state_nums[state] = len(dfa)
-        dfa.append((accepting_state in state, moves))
+        labels = [st.label for st in state if hasattr(st, 'label')]
+        label = min(labels) if labels else None
+        dfa.append((label, moves))
         for c in range(256):
             next_state = step(state, chr(c))
             if next_state:
                 if next_state not in state_nums: fill_in(next_state)
                 moves[chr(c)] = state_nums[next_state]
-    fill_in(frozenset(prepare(re)))
+    fill_in(frozenset(scanner))
     return dfa
 
 def step(state, c):
@@ -54,7 +66,11 @@ if False:
 
 # N.B. 'state' here in an NFA means something different from the DFA
 # states above. I should fix this or something.
-def accepting_state(c): return set()
+@memoize
+def make_accepting_state(label):
+    def accepting_state(c): return set()
+    accepting_state.label = label
+    return accepting_state
 @memoize
 def expecting_state(char, k): return lambda c: k(set()) if c == char else set()
 
@@ -81,8 +97,6 @@ def loop_node(k, make_k):
     # XXX subsumed by many(re) check below
     if looping is loop: return k
     return loop
-
-def prepare(re): return re(state_node(accepting_state))(set())
 
 # The following are memoized solely to help loop_node(), above, profit
 # from its own memoization.
