@@ -13,6 +13,9 @@ alts = maker.make_scanner(whitespace, res)
 dfa = dfa_module.make_dfa(alts)
 ## len(dfa)
 #. 48
+from dfa_minimize import minimal_state_count
+## minimal_state_count(dfa)
+#. 48
 
 def scan(s):
     while True:
@@ -32,7 +35,7 @@ def scan1(s):
         state = moves[c]
         if dfa[state][0]: accepted = i+1
     return accepted and s[:accepted], s[accepted:]
-            
+
 ## scan('  if for long defined   int world')
 #. '  if'
 #. ' for'
