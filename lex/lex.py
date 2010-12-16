@@ -36,6 +36,7 @@ def scan1(s):
         if dfa[state][0]: accepted = i+1
     return accepted and s[:accepted], s[accepted:]
 
+## scan('')
 ## scan('  if for long defined   int world')
 #. '  if'
 #. ' for'
