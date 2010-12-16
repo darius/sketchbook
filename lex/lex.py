@@ -13,6 +13,35 @@ alts = maker.make_scanner(whitespace, res)
 dfa = dfa_module.make_dfa(alts)
 ## len(dfa)
 #. 48
+
+def scan(s):
+    while True:
+        token, rest = scan1(s)
+        if token is None: break
+        print repr(token)
+        s = rest
+    if s: print 'left over: %r' % s
+
+def scan1(s):
+    state = 0
+    assert not dfa[state][0], "We're not designed to accept 0-length tokens"
+    accepted = None
+    for i, c in enumerate(s):
+        moves = dfa[state][1]
+        if c not in moves: break
+        state = moves[c]
+        if dfa[state][0]: accepted = i+1
+    return accepted and s[:accepted], s[accepted:]
+            
+## scan('  if for long defined   int world')
+#. '  if'
+#. ' for'
+#. ' long'
+#. ' defined'
+#. '   int'
+#. left over: ' world'
+#. 
+
 ## dfa_statecount.dump(dfa)
 #. 0   {' ': 0, 'c': 6, 'b': 1, 'e': 25, 'd': 16, 'f': 27, '\t': 0, 'l': 31, 'i': 30, 's': 34, 'u': 42, 'w': 46}
 #. 1   {'r': 2}
