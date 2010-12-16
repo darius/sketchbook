@@ -19,6 +19,9 @@ did improve on naive Thompson NFA->DFA here.
 #. 2 * {}
 #. 
 
+def make_scanner(whitespace, res):
+    return seq(many(whitespace), reduce(alt, res))
+
 def make_dfa(re):
     """A DFA is a list of pairs (accepting: bool, moves: dict(char->index)).
     where an index is a state number -- a position in the list;

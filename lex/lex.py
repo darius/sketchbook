@@ -1,20 +1,20 @@
 #import dfa_nfa as dfa_module
 import dfa_deriv2 as dfa_module
 import dfa_statecount
-import parse
+from parse import make_parser
 
 maker = dfa_module.Maker()
+parse = make_parser(maker)
 
+whitespace = parse('( |\t)*')
 re_strings = open('c-lex0').read().splitlines()
-res = map(parse.make_parser(maker), re_strings)
-
-all = reduce(maker.alt, res)
-
-dfa = dfa_module.make_dfa(all)
+res = map(parse, re_strings)
+alts = maker.make_scanner(whitespace, res)
+dfa = dfa_module.make_dfa(alts)
 ## len(dfa)
 #. 48
 ## dfa_statecount.dump(dfa)
-#. 0   {'c': 6, 'b': 1, 'e': 25, 'd': 16, 'f': 27, 'i': 30, 'l': 31, 's': 34, 'u': 42, 'w': 46}
+#. 0   {' ': 0, 'c': 6, 'b': 1, 'e': 25, 'd': 16, 'f': 27, '\t': 0, 'l': 31, 'i': 30, 's': 34, 'u': 42, 'w': 46}
 #. 1   {'r': 2}
 #. 2   {'e': 3}
 #. 3   {'a': 4}

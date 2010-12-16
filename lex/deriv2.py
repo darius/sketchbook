@@ -75,6 +75,10 @@ class Maker:
         def loop(c): return self.seq(re.deriv(c), loop)
         return mark(True, loop, 'many', (re,))
 
+    def make_scanner(self, whitespace, res):
+        return self.seq(self.many(whitespace), reduce(self.alt, res))
+
+
 def collect_alternatives(res):
     acc = []
     for re in res:
