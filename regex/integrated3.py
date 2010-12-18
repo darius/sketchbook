@@ -14,6 +14,8 @@ wordlen = 32
 
 class Bitset:
     def __init__(self, size): self.words = [0] * ((size + (wordlen-1)) // wordlen)
+    def clear(self): 
+        for i in range(len(self.words)): self.words[i] = 0
     def is_empty(self): return all(w == 0 for w in self.words)
     def has(self, i): return 0 != (self.words[i//wordlen] & (1 << (i%wordlen)))
     def add(self, i): self.words[i//wordlen] |= 1 << (i%wordlen)
@@ -33,8 +35,8 @@ def spread(insns, pc, agenda, visited):
             spread(insns, arg, agenda, visited)
             pc -= 1
 
-def step(insns, agenda, c):
-    visited, next = Bitset(len(insns)), Bitset(len(insns))
+def step(insns, agenda, next, visited, c):
+    visited.clear()
     for w, bits in enumerate(agenda.words):
         pc = wordlen * w
         while bits:
@@ -43,14 +45,17 @@ def step(insns, agenda, c):
                 assert op == op_expect
                 if arg == ord(c): spread(insns, pc-1, next, visited)
             pc += 1; bits >>= 1
-    return next
     
 def run((insns, start), s):
     agenda = Bitset(len(insns))
-    spread(insns, start, agenda, Bitset(len(insns)))
+    visited = Bitset(len(insns))
+    spread(insns, start, agenda, visited)
+    next = Bitset(len(insns))
     for c in s:
-        agenda = step(insns, agenda, c)
+        step(insns, agenda, next, visited, c)
+        agenda, next = next, agenda
         if agenda.is_empty(): break # Redundant test, can speed it
+        next.clear()
     return agenda.has(0) # (The accepting state is state #0)
 
 def emit_fork(insns, k): return emit(insns, op_split, 0, k)
