@@ -50,7 +50,7 @@ def prepare(re):
     insns = []
 
     def parse_expr(precedence, k):
-        rhs = parse_factor(ts, k)
+        rhs = parse_factor(k)
         while ts:
             if ts[-1] == '(': break
             prec = 2 if ts[-1] == '|' else 4
@@ -61,7 +61,7 @@ def prepare(re):
                 rhs = parse_expr(prec+1, rhs)
         return rhs
 
-    def parse_factor(ts, k):
+    def parse_factor(k):
         if not ts or ts[-1] in '|(':
             return k
         elif chomp(')'):
