@@ -61,8 +61,8 @@ def patch(insns, k, target):
 
 def emit(insns, op, arg, k):
     if len(insns) - 1 != k:
-        insns.append(op_jump | (k << ops_shift))
-    insns.append(op | (arg << ops_shift))
+        insns.append(encode(op_jump, k))
+    insns.append(encode(op, arg))
     return len(insns) - 1
 
 def prepare(re):
