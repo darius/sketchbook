@@ -47,10 +47,10 @@ def step(insns, agenda, next, visited, c):
                 if arg == ord(c): spread(insns, pc-1, next, visited)
             pc += 1; bits >>= 1
     
-def run((insns, start), s):
+def run(insns, s):
     agenda = Bitset(len(insns))
     visited = Bitset(len(insns))
-    spread(insns, start, agenda, visited)
+    spread(insns, len(insns)-1, agenda, visited)
     next = Bitset(len(insns))
     for c in s:
         step(insns, agenda, next, visited, c)
@@ -66,10 +66,13 @@ def patch(insns, k, target):
     insns[k] = encode(op, target)
 
 def emit(insns, op, arg, k):
-    if len(insns) - 1 != k:
-        insns.append(encode(op_jump, k))
+    emit_jump(insns, k)
     insns.append(encode(op, arg))
     return len(insns) - 1
+
+def emit_jump(insns, k):
+    if len(insns) - 1 != k:
+        insns.append(encode(op_jump, k))
 
 def prepare(re):
     ts = list(re)
@@ -109,7 +112,8 @@ def prepare(re):
     # (256 == an impossible character)
     start = parse_expr(0, emit(insns, op_expect, 256, -1))
     assert not ts
-    return insns, start
+    emit_jump(insns, start)
+    return insns
 
 
 def show(insns, pc):
@@ -209,3 +213,6 @@ def show(insns, pc):
 #. True
 ## match('a**', 'b')
 #. False
+
+## prepare('a(bc|d|)*e')
+#. [1024, 404, 34, 400, 10, 9, 396, 392, 18, 9, 388]
