@@ -13,7 +13,8 @@ def decode(insn): return insn & ((1 << ops_shift) - 1), insn >> ops_shift
 wordlen = 32
 
 class Bitset:
-    def __init__(self, size): self.words = [0] * ((size + (wordlen-1)) // wordlen)
+    def __init__(self, size):
+        self.words = [0] * ((size + (wordlen-1)) // wordlen)
     def clear(self): 
         for i in range(len(self.words)): self.words[i] = 0
     def is_empty(self): return all(w == 0 for w in self.words)
@@ -105,7 +106,8 @@ def prepare(re):
         if matches: ts.pop()
         return matches
 
-    start = parse_expr(0, emit(insns, op_expect, 256, -1)) # 256 = impossible character
+    # (256 == an impossible character)
+    start = parse_expr(0, emit(insns, op_expect, 256, -1))
     assert not ts
     return insns, start
 
