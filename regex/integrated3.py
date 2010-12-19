@@ -6,7 +6,9 @@ the simplest terminating NFA code. Practically C-level code now for realz.
 def match(re, s): return run(prepare(re), s)
 
 op_expect, op_jump, op_split = range(3)
+op_names = 'expect jump split'.split()
 ops_shift = 2
+
 def encode(op, arg): return op | (arg << ops_shift)
 def decode(insn): return insn & ((1 << ops_shift) - 1), insn >> ops_shift
 
@@ -118,8 +120,11 @@ def prepare(re):
 
 def show(insns, pc):
     for k, insn in enumerate(insns):
-        op, arg = decode(insns[pc])
-        print '%2d %s %-6s %s' % (k, '*' if k == pc else ' ', op, arg)
+        op, arg = decode(insn)
+        print ('%2d %s %-6s %r' 
+               % (k, '*' if k == pc else ' ',
+                  op_names[op], 
+                  chr(arg) if op == op_expect and 0 <= arg < 256 else arg))
 
 ## match('', '')
 #. True
@@ -216,3 +221,10 @@ def show(insns, pc):
 
 ## prepare('a(bc|d|)*e')
 #. [1024, 404, 34, 400, 10, 9, 396, 392, 18, 9, 388]
+## show(prepare('a**'), 4)
+#.  0   expect 256
+#.  1   split  2
+#.  2   split  3
+#.  3   expect 'a'
+#.  4 * jump   1
+#. 
