@@ -1,0 +1,12 @@
+#!/bin/bash
+# idx-search index-dir [keys...]
+# Look up keys in an index; print the filenames they're all in, one per line.
+
+dir=$1; shift
+
+if [ 1 == $# ]; then
+	cat $dir/$1 2>/dev/null
+elif [ 1 '<' $# ]; then
+	key=$1; shift
+	comm -12 <(cat $dir/$key 2>/dev/null) <(idx-search $dir "$@")
+fi

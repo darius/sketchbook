@@ -1,0 +1,7 @@
+# Produce keys from a file on stdin, to stdout.
+
+tr -s -C 'A-Za-z0-9' '\n' |		# get alphanumeric 'words'
+ cat -v |				# work around stupid tr bug
+ grep -v '^[0-9]*$' |			# drop blank lines and numbers
+ tr A-Z a-z |				# fold case
+ sort -u				# uniquify

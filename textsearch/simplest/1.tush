@@ -1,0 +1,49 @@
+Start with some sample files to index.
+
+$ echo  >two-cities 'It was the best of times, it was the worst of times.'
+$ echo >>two-cities 'It was the summer of hope, it was the winter of despair.'
+
+$ echo  >play       'Now is the winter of our discontent'
+$ echo >>play       'Made glorious summer by this sun of York.'
+
+$ echo  >hobbit     'In a hole in the ground there lived a hobbit.'
+
+$ echo  >scaramouche 'He was born with the gift of laughter'
+$ echo >>scaramouche 'and a sense that the world is mad.'
+
+$ echo  >walrus      'The Sun was shining on the sea,'
+$ echo >>walrus      '  Shining with all his might;'
+$ echo >>walrus      'He did his very best to make'
+$ echo >>walrus      '  The billows smooth and bright.'
+$ echo >>walrus      'And this was odd, because it was'
+$ echo >>walrus      '  The middle of the night.'
+
+Now make an index and query it.
+
+$ echo two-cities play hobbit scaramouche walrus | idx-make the-index
+
+A simple, failing query. (I didn't design it to have exit status 1 here,
+actually. Sadly, it doesn't do that in general.)
+
+$ idx-search the-index foofooraw
+? 1
+
+A simple, successful one.
+
+$ idx-search the-index sun
+| play
+| walrus
+
+Multiword queries.
+
+$ idx-search the-index it was the best of
+| two-cities
+| walrus
+
+$ idx-search the-index it was the best of times
+| two-cities
+
+$ idx-search the-index it was the best of billows
+| walrus
+
+$ idx-search the-index it was the best of sense

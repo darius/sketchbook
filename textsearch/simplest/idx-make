@@ -1,0 +1,12 @@
+# idx-make index-dir
+# Produce an index for a bunch of files named on stdin.
+
+mkdir $1
+
+for f in `cat`
+do
+	idx-extract-keys <$f | awk '{print $1, "'$f'"}'
+done |
+  sort |
+  awk '$1 != key { if (key != "") close("'$1/'" key); key = $1 }
+                 { print $2 >("'$1/'" key) }'
