@@ -1,0 +1,15 @@
+In ../simplest we represent an index as a directory, one file per
+key. That was, alas, costly, at least in OS X -- so let's try a tar
+file for the index.
+
+While we're tuning things, let's remove the worst redundancy: in
+../simplest each word's list of documents was just a list of
+filenames. By encoding them as (decimal) numeric docids, those lists
+get much much smaller. The docids then must be mapped to filenames --
+this info appears as a new subdirectory in the tar file.
+
+Unfortunately, the tar format turns out to be way too fat for
+this. Not as wasteful as an OS X directory, but, still, in my test
+70MB of text turns into 100MB of tarred index. (With gzip, that
+becomes about 3MB, or 5% of the size of the documents; but then search
+time gets kind of painful. It's already pretty bad even uncompressed.)

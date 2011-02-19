@@ -1,0 +1,4 @@
+# idx-search index-file [keys...]
+# Look up keys in an index; print the filenames they're all in, one per line.
+
+idx-searching "$@" | awk '{print "'docs/'" $1}' | xargs tar xf ${1} --to-stdout

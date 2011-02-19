@@ -1,0 +1,25 @@
+# Produce an index for a bunch of files named on stdin.
+
+if [ $# != 1 ]; then
+	echo 'usage: idx-make index-filename' >/dev/stderr
+	exit 1
+fi
+
+dir=`mktemp -d -t index`  || exit 1
+
+mkdir -p $dir/keys	|| exit 1
+mkdir -p $dir/docs	|| exit 1
+
+docid=0
+for f in `cat`; do
+	echo $f >$dir/docs/$docid
+	idx-extract-keys <$f | awk '{print $1, "'$docid'"}'
+	docid=`expr $docid + 1`
+done |
+  sort |
+  awk '$1 != key { if (key != "") close("'$dir/keys/'" key); key = $1 }
+                 { print $2 >("'$dir/keys/'" key) }'
+
+tar cf ${1} -C $dir keys docs
+
+rm -r $dir

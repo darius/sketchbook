@@ -1,0 +1,5 @@
+Searchable words are alphabetic strings. Search produces a list of
+filenames: the files that have all of the search words. There's no
+relevance ranking or general boolean queries or anything.
+
+The index lives in a directory, one file per search term.
