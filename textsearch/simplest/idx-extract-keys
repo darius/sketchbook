@@ -1,7 +1,21 @@
 # Produce keys from a file on stdin, to stdout.
 
-tr -s -C 'A-Za-z0-9' '\n' |		# get alphanumeric 'words'
+# For some godforsaken reason "tr A-Za-z" does not actually give us
+# just the alphabetic ASCII characters, at least here in OS X, while
+# setting LOCALE to C and specifying [:alpha:] *does*. We need some
+# such restriction because our keys appear directly as filenames, and
+# the equally godforsaken filesystem chokes on strange UTF8
+# characters.
+
+# Also, docids are integers stored in the same directory, mapping to
+# the document's filename; so while we could still allow alphanumeric
+# keys in our text search as long as they weren't pure integers, it's
+# simplest to just leave digit strings out of the index entirely.
+
+export LOCALE=C
+
+tr -cs '[:alpha:]' '\n' |		# get alphanumeric 'words'
  cat -v |				# work around stupid tr bug
- grep -v '^[0-9]*$' |			# drop blank lines and numbers
+ grep -v '^$' |				# drop blank lines
  tr A-Z a-z |				# fold case
  sort -u				# uniquify
