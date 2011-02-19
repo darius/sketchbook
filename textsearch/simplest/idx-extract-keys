@@ -7,11 +7,6 @@
 # the equally godforsaken filesystem chokes on strange UTF8
 # characters.
 
-# Also, docids are integers stored in the same directory, mapping to
-# the document's filename; so while we could still allow alphanumeric
-# keys in our text search as long as they weren't pure integers, it's
-# simplest to just leave digit strings out of the index entirely.
-
 export LOCALE=C
 
 tr -cs '[:alpha:]' '\n' |		# get alphanumeric 'words'
