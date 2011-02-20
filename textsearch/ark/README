@@ -1,0 +1,49 @@
+In ../simplest we represent an index as a directory, one file per
+key. That was, alas, costly, at least in OS X. In ../tarred I used a
+tar file instead, but that wasn't great either. This seems like the
+next step up in complexity:
+
+Keep the index in an 'ark' file, a static key-value store. Its format:
+
+   <values section>
+   <keys section>
+   <size of the keys section>
+
+The values section consists of simply one value after another, each
+corresponding to a key.
+
+The keys section holds one line per key. Each line holds a decimal
+number, followed by a space, followed by a key: all the remaining
+bytes short of the newline character. The number means the length in
+bytes of the corresponding value.
+
+The size of the key section appears as a 10-byte decimal number
+followed by a newline character.
+
+So to represent the table {'foo': 'GOOD\n', 'bar': ''BAD\n'}, we'd make
+this ark file:
+
+GOOD
+BAD
+5 foo
+4 bar
+        21
+
+To look up a key, first seek to the start of the keys section (using
+the section size given at the end of the file), then read forward
+sequentially until you find the key you want. Then, for the value,
+seek to the sum of the sizes of the preceding keys.
+
+Pluses of this format: it's very simple and pretty compact, and can be
+built in one pass.
+
+Minuses: key lookup requires sequential scanning; changing an entry
+requires rewriting the whale file.
+
+I split the keys from the values to make the key scanning faster, but
+of course it implies an extra seek once we've found it. It's not at
+all clear this was a win.
+
+One might think the next step up from here would support binary
+search; but this sequential scan seems fast enough, actually. I care
+more about how long it takes to build the index.

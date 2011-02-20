@@ -1,0 +1,4 @@
+ark-get: ark-get.o
+
+clean:
+	rm -f ark-get *.o

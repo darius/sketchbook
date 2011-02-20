@@ -1,0 +1,47 @@
+Start with some sample files to index.
+
+$ echo  >two-cities 'It was the best of times, it was the worst of times; it ws the age of wisdom, it was the age of foolishness; it was the epoch of belief, it was the epoch of incredulity; it was the season of Light, it was the season of Darkness; it was the spring of hope, it was the winter of despair; we had everything before us, we had nothing before us; we were all going directly to Heaven, we were all going the other way.'
+
+$ echo  >richard     'Now is the winter of our discontent'
+$ echo >>richard     'Made glorious summer by this son of York.'
+
+$ echo  >hobbit      'In a hole in the ground there lived a hobbit.'
+
+$ echo  >scaramouche 'He was born with a gift of laughter'
+$ echo >>scaramouche 'and a sense that the world was mad.'
+
+$ echo  >walrus      'The sun was shining on the sea,'
+$ echo >>walrus      'Shining with all his might:'
+$ echo >>walrus      'He did his very best to make'
+$ echo >>walrus      'The billows smooth and bright --'
+$ echo >>walrus      'And this was odd, because it was'
+$ echo >>walrus      'The middle of the night.'
+
+Now make an index and query it.
+
+$ echo two-cities richard hobbit scaramouche walrus | idx-make the-index
+
+A simple, failing query. (N.B. its exit status is 0. It'd be nice to 
+make it give status 1 on no matches.)
+
+$ idx-search the-index foofooraw
+
+A simple, successful one.
+
+$ idx-search the-index winter
+| two-cities
+| richard
+
+Multiword queries.
+
+$ idx-search the-index it was the best of
+| two-cities
+| walrus
+
+$ idx-search the-index it was the best of times
+| two-cities
+
+$ idx-search the-index it was the best of billows
+| walrus
+
+$ idx-search the-index it was the best of sense

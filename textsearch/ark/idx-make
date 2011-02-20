@@ -1,0 +1,33 @@
+# Produce an index for a bunch of files named on stdin.
+
+if [ $# != 1 ]; then
+	echo 'usage: idx-make index-filename' >/dev/stderr
+	exit 1
+fi
+
+docid=0
+for f in `cat`; do
+	idx-extract-keys <"$f" |
+          awk 'BEGIN {print '$docid', "'${f}'"}; {print $1, '$docid'}'
+	docid=`expr $docid + 1`
+done |
+#  sort |
+#  python foo.py >${1}
+#exit 0
+
+  sort |
+  awk '
+BEGIN     { key = "<>"; value = ""; }  # Dummy key to simplify logic -- ugh.
+$1 != key { flush_value(); key = $1 }
+          { value = value $2 "\n" }
+END       { flush_value(); flush_keys() }
+function flush_value() {
+    printf "%s", value
+    keys = keys sprintf("%d %s\n", length(value), key)
+    value = ""
+}
+function flush_keys(   k) {
+    printf "%s", keys
+    printf "%10d\n", length(keys)
+}
+' >${1}

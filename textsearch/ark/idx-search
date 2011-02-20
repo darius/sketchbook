@@ -1,0 +1,6 @@
+# idx-search index-file [keys...]
+# Look up keys in an index; print the filenames they're all in, one per line.
+
+for docid in `idx-searching "$@"`; do
+	ark-get ${1} $docid
+done
