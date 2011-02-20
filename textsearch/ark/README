@@ -38,7 +38,7 @@ Pluses of this format: it's very simple and pretty compact, and can be
 built in one pass.
 
 Minuses: key lookup requires sequential scanning; changing an entry
-requires rewriting the whale file.
+requires rewriting the whole file.
 
 I split the keys from the values to make the key scanning faster, but
 of course it implies an extra seek once we've found it. It's not at
