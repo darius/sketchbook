@@ -11,10 +11,6 @@ for f in `cat`; do
           awk 'BEGIN {print '$docid', "'${f}'"}; {print $1, '$docid'}'
 	docid=`expr $docid + 1`
 done |
-#  sort |
-#  python foo.py >${1}
-#exit 0
-
   sort |
   awk '
 BEGIN     { key = "<>"; value = ""; }  # Dummy key to simplify logic -- ugh.
