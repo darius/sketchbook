@@ -3,9 +3,9 @@
 # For some godforsaken reason "tr A-Za-z" does not actually give us
 # just the alphabetic ASCII characters, at least here in OS X, while
 # setting LOCALE to C and specifying [:alpha:] *does*. We need some
-# such restriction because our keys appear directly as filenames, and
-# the equally godforsaken filesystem chokes on strange UTF8
-# characters.
+# such restriction because (in some uses of this) our keys appear
+# directly as filenames, and the equally godforsaken filesystem chokes
+# on strange UTF8 characters.
 
 export LOCALE=C
 
