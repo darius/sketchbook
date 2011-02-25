@@ -1,0 +1,16 @@
+# Write, to stdout, an index for a bunch of files named on stdin.
+
+export LOCALE=C
+
+docid=0
+for f in `cat`; do
+        echo $docid "$f"
+        tr -cs '[:alpha:]' '\n' <"$f"|		# Get alphanumeric 'words'
+          tr A-Z a-z |				# Fold case
+          awk '1==NF && !($1 in keys) { print $1, '$docid'; keys[$1] = 1 }'
+	docid=`expr $docid + 1`
+done |
+  sort |
+  awk '1 < NR && $1 != key { printf "%s%s\n", key, value; value = "" }
+                           { key = $1; value = value " " $2 }
+       END                 { if (0 < NR) printf "%s%s\n", key, value }'

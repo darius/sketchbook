@@ -1,0 +1,13 @@
+#!/bin/bash
+# idx-searching index-file [keys...]
+# Look up keys in an index; print the docids they're all in, one per line.
+
+idx="$1"; shift
+
+if [ 1 == $# ]; then
+        idx-fetch "$idx" $1
+elif [ 1 '<' $# ]; then
+	key=$1; shift
+	comm -12 <(idx-fetch "$idx" $key) \
+                 <(idx-searching "$idx" "$@")
+fi
