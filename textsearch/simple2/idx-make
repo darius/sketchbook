@@ -5,7 +5,7 @@ export LOCALE=C
 docid=0
 for f in `cat`; do
         echo $docid "$f"
-        tr -cs '[:alpha:]' '\n' <"$f"|		# Get alphanumeric 'words'
+        tr -cs '[:alpha:]' '\n' <"$f"|		# Get alphabetic 'words'
           tr A-Z a-z |				# Fold case
           awk '1==NF && !($1 in keys) { print $1, '$docid'; keys[$1] = 1 }'
 	docid=`expr $docid + 1`
