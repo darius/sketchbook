@@ -23,8 +23,7 @@ def parse(s):
 def tokenize(s):
     for number, operator in re.findall(r'\s*(?:(\d+)|(.))', s):
         if number:
-            value = int(number)
-            yield Token(number, nud=lambda pe: value)
+            yield Token(number, nud=lambda pe, value=int(number): value)
         elif operator == '+':
             yield Token('+', lbp=10,
                         led=lambda left, pe: left + pe(10))
