@@ -7,10 +7,10 @@ the state counts against methods that go through an NFA.
 ## mk = Maker()
 ## re = mk.alt(mk.seq(mk.lit('A'), mk.lit('C')), mk.seq(mk.lit('B'), mk.lit('C')))
 ## dfa = make_dfa(re)
-## for i, (accepting, moves) in enumerate(dfa): print i, ' *'[accepting], moves
-#. 0   {'A': 1, 'B': 1}
-#. 1   {'C': 2}
-#. 2 * {}
+## dump(dfa)
+#. 0     'A':1 'B':1
+#. 1     'C':2
+#. 2 <*> 
 #. 
 
 from deriv2 import *
@@ -33,3 +33,11 @@ def make_dfa(re):
                 moves[chr(c)] = state_nums[next_state]
     fill_in(re)
     return dfa
+
+def dump(dfa):
+    for i, (label, moves) in enumerate(dfa):
+        if label in (None, False): label = '   '
+        elif label is True:        label = '<*>'
+        else:                      label = '<%s>' % label
+        moves = ' '.join('%r:%d' % move for move in sorted(moves.items()))
+        print i, label, moves
