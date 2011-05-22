@@ -36,7 +36,7 @@ stars   = '*' stars
 prim    = '(' expr ')'                  
         / '\\' any
         / ![*+?|()\\] any.
-        / ."""
+        / ."""                  # XXX "*" parses as epsilon*
 
     def parse_expr():
         term = parse_term()
