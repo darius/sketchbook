@@ -8,4 +8,3 @@ So, we're not going to bother generating C code like Flex or RE2C yet.
 
 Some of the code is copied from ../regex. Not going to worry about
 keeping one reusable version of that code yet, either.
-x
