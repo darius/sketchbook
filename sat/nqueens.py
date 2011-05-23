@@ -2,6 +2,37 @@
 The N-queens problem as a SAT problem.
 """
 
+import ttsat
+
+## queens(1)
+#. Q
+#. 
+## queens(2)
+#. none
+#. 
+## queens(3)
+#. none
+#. 
+## queens(4)
+#. . . Q .
+#. Q . . .
+#. . . . Q
+#. . Q . .
+#. 
+
+def queens(n):
+    env = ttsat.solve(queens_problem(n))
+    if env is None:
+        print 'none'
+    else:
+        show_board(n, env)
+
+def show_board(n, env):
+    for row in make_board(n):
+        for var in row:
+            print '.Q'[env[var]],
+        print
+
 def queens_problem(n):
     board = make_board(n)
     return conjoin(
