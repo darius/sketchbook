@@ -2,15 +2,12 @@
 The N-queens problem as a SAT problem.
 """
 
-import ttsat
+import prunettsat as sat
 
 ## queens(1)
 #. Q
 #. 
 ## queens(2)
-#. none
-#. 
-## queens(3)
 #. none
 #. 
 ## queens(4)
@@ -21,7 +18,7 @@ import ttsat
 #. 
 
 def queens(n):
-    env = ttsat.solve(queens_problem(n))
+    env = sat.solve(queens_problem(n))
     if env is None:
         print 'none'
     else:
@@ -112,3 +109,15 @@ def flatten(xss):
 
 def transpose(grid):
     return zip(*grid)
+
+queens(9)
+#. . . . . . . . . Q
+#. . . . . . . Q . .
+#. . . . Q . . . . .
+#. . Q . . . . . . .
+#. . . . . . . . Q .
+#. . . . . . Q . . .
+#. Q . . . . . . . .
+#. . . Q . . . . . .
+#. . . . . Q . . . .
+#. 
