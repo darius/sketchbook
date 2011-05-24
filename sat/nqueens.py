@@ -106,3 +106,10 @@ def flatten(xss):
 
 def transpose(grid):
     return zip(*grid)
+
+
+if __name__ == '__main__':
+    import sys
+    args = sys.argv
+    if len(args) == 2:
+        queens(int(args[1]))
