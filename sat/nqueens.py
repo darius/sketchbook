@@ -2,11 +2,8 @@
 The N-queens problem as a SAT problem.
 """
 
-import prunettsat as sat
+import unitsat as sat
 
-## queens(1)
-#. Q
-#. 
 ## queens(2)
 #. none
 #. 
@@ -109,15 +106,3 @@ def flatten(xss):
 
 def transpose(grid):
     return zip(*grid)
-
-queens(9)
-#. . . . . . . . . Q
-#. . . . . . . Q . .
-#. . . . Q . . . . .
-#. . Q . . . . . . .
-#. . . . . . . . Q .
-#. . . . . . Q . . .
-#. Q . . . . . . . .
-#. . . Q . . . . . .
-#. . . . . Q . . . .
-#. 
