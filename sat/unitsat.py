@@ -16,8 +16,7 @@ from sat import assign
 
 def solve(problem):
     "Return a satisfying assignment for problem, or None if impossible."
-    variables = sat.problem_variables(problem)
-    return solving(problem, {}, variables)
+    return solving(problem, {}, sat.problem_variables(problem))
 
 def solving(problem, env, variables):
     "Try to extend a consistent assignment for problem to a satisfying one."
