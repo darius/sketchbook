@@ -36,7 +36,7 @@ def solving(problem, env, variables):
             return result
     return None
 
-# Pre: problem_is_consistent(problem, env)
+# Pre: sat.seems_consistent(problem, env)
 def choose_unit_literal(problem, env, variables):
     for clause in problem:
         if clause_is_true(clause, env):
