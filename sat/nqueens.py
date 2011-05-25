@@ -2,8 +2,8 @@
 The N-queens problem as a SAT problem.
 """
 
-import unitsat as sat
-#import prunettsat as sat
+import unitsat as solver
+from sat import conjoin, flatten, exactly_one, at_most_one
 
 ## queens(2)
 #. none
@@ -16,7 +16,7 @@ import unitsat as sat
 #. 
 
 def queens(n):
-    env = sat.solve(queens_problem(n))
+    env = solver.solve(queens_problem(n))
     if env is None:
         print 'none'
     else:
@@ -71,39 +71,6 @@ def rising_diagonals(board):
 
 ## list(rising_diagonals(board3))
 #. [[7], [8, 4], [9, 5, 1], [6, 2], [3]]
-
-def at_least_one(literals):
-    return [literals]
-
-def at_most_one(literals):
-    return [[-literals[j], -xi]
-            for i, xi in enumerate(literals)
-            for j in range(i)]
-
-## at_most_one([9, 5, 1])
-#. [[-9, -5], [-9, -1], [-5, -1]]
-
-def exactly_one(literals):
-    return at_least_one(literals) + at_most_one(literals)
-
-## exactly_one([9, 5, 1])
-#. [[9, 5, 1], [-9, -5], [-9, -1], [-5, -1]]
-
-# XXX unused
-def not_all(literals):
-    return [[-v for v in literals]]
-
-## not_all([9, 5, 1])
-#. [[-9, -5, -1]]
-
-def conjoin(*problems):
-    return flatten(problems)
-
-def flatten(xss):
-    result = []
-    for xs in xss:
-        result.extend(xs)
-    return result
 
 def transpose(grid):
     return zip(*grid)

@@ -26,3 +26,41 @@ def seems_consistent(problem, env):
     return all(any(env.get(abs(literal), 0 < literal) == (0 < literal)
                    for literal in clause)
                for clause in problem)
+
+
+# Constraint constructors
+
+def at_least_one(literals):
+    return [literals]
+
+def at_most_one(literals):
+    return [[-literals[j], -xi]
+            for i, xi in enumerate(literals)
+            for j in range(i)]
+
+## at_most_one([9, 5, 1])
+#. [[-9, -5], [-9, -1], [-5, -1]]
+
+def exactly_one(literals):
+    return at_least_one(literals) + at_most_one(literals)
+
+## exactly_one([9, 5, 1])
+#. [[9, 5, 1], [-9, -5], [-9, -1], [-5, -1]]
+
+def not_all(literals):
+    return [[-v for v in literals]]
+
+## not_all([9, 5, 1])
+#. [[-9, -5, -1]]
+
+
+# Problem constructor
+
+def conjoin(*problems):
+    return flatten(problems)
+
+def flatten(xss):
+    result = []
+    for xs in xss:
+        result.extend(xs)
+    return result
