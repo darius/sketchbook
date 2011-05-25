@@ -1,13 +1,6 @@
 """
 Solve a SAT problem by truth-table enumeration with pruning and unit
 propagation.
-
-A problem is a list of clauses. It's satisfied when all are true.
-
-A clause is a list of literals. It's true when at least one is true.
-
-A literal is a positive or negative integer denoting a variable
-or its complement. Its truth depends on the environment.
 """
 
 ## solve([])
@@ -18,17 +11,17 @@ or its complement. Its truth depends on the environment.
 ## solve([[1,-2], [2,-3], [1,3]])
 #. {1: True, 2: False, 3: False}
 
+import sat
+from sat import assign
+
 def solve(problem):
     "Return a satisfying assignment for problem, or None if impossible."
-    variables = problem_variables(problem)
+    variables = sat.problem_variables(problem)
     return solving(problem, {}, variables)
-
-def problem_variables(problem):
-    return sorted(set(abs(literal) for clause in problem for literal in clause))
 
 def solving(problem, env, variables):
     "Try to extend a consistent assignment for problem to a satisfying one."
-    if not problem_is_consistent(problem, env):
+    if not sat.seems_consistent(problem, env):
         return None
     if not variables:
         return env
@@ -61,27 +54,5 @@ def removed(xs, x):
     xs.remove(x)
     return xs
 
-def assign(variable, value, env):
-    env = dict(env)
-    env[variable] = value
-    return env
-
-# A misnomer. Return true iff problem in env is not obviously inconsistent.
-def problem_is_consistent(problem, env):
-    return all(clause_is_consistent(clause, env) for clause in problem)
-
-def clause_is_consistent(clause, env):
-    return any(literal_is_consistent(literal, env) for literal in clause)
-
-def literal_is_consistent(literal, env):
-    var = abs(literal)
-    sign = (var == literal)
-    return env.get(var, sign) == sign
-
 def clause_is_true(clause, env):
-    return any(literal_is_true(literal, env) for literal in clause)
-
-def literal_is_true(literal, env):
-    var = abs(literal)
-    sign = (var == literal)
-    return env.get(var, None) == sign
+    return any(env.get(abs(literal)) == (0 < literal) for literal in clause)

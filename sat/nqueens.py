@@ -3,6 +3,7 @@ The N-queens problem as a SAT problem.
 """
 
 import unitsat as sat
+#import prunettsat as sat
 
 ## queens(2)
 #. none
