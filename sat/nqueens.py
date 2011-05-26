@@ -2,7 +2,7 @@
 The N-queens problem as a SAT problem.
 """
 
-import unitsat as solver
+import indexedsat as solver
 from sat import conjoin, flatten, exactly_one, at_most_one
 
 ## queens(2)
