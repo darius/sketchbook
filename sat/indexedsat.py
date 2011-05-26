@@ -27,7 +27,7 @@ def build_index(problem):
     index = {}
     for clause in problem:
         for literal in clause:
-            index.setdefault(abs(literal), []).append(clause)
+            index.setdefault(-literal, []).append(clause)
     return index
 
 def solving(problem, index, env, variables, unit_literals):
@@ -52,7 +52,8 @@ def solving(problem, index, env, variables, unit_literals):
 def assume(problem, index, env, variables, unit_literals, v, value):
     env = assign(v, value, env)
     return solving(problem, index, env, variables,
-                   on_update(index.get(v, ()), env, unit_literals))
+                   on_update(index.get(v if value else -v, ()),
+                             env, unit_literals))
 
 def on_update(clauses, env, unit_literals):
     new_unit_literals = []
