@@ -57,20 +57,18 @@ def solving(problem, index, env, variables, unit_literals):
 def on_update(clauses, env):
     unit_literals = []
     for clause in clauses:
-        no_true_literals = True
         unknown_literals = []
         for literal in clause:
             value = env.get(abs(literal))
             if value is None:
                 unknown_literals.append(literal)
             elif value == (0 < literal):
-                no_true_literals = False
-                unknown_literals = []
-                break
-        if no_true_literals and not unknown_literals:
-            return 'contradiction'
-        if len(unknown_literals) == 1:
-            unit_literals.append(unknown_literals[0])
+                break           # Clause is true
+        else:
+            if not unknown_literals:
+                return 'contradiction'
+            if len(unknown_literals) == 1:
+                unit_literals.extend(unknown_literals)
     return unit_literals
 
 def removed(xs, x):
