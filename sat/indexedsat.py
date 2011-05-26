@@ -36,20 +36,23 @@ def solving(problem, index, env, variables, unit_literals):
     "Try to extend a consistent assignment for problem to a satisfying one."
     if not variables:
         return env
-    if unit_literals:
+    while unit_literals:
         literal, unit_literals = unit_literals[0], unit_literals[1:]
         v, value = abs(literal), (0 < literal)
+        if v not in variables:
+            continue
         variables = removed(variables, v)
         env = assign(v, value, env)
-        unit_literals = on_update(index.get(v, ()), env)
-        if unit_literals is 'contradiction': return None
-        return solving(problem, index, env, variables, unit_literals)
+        new_unit_literals = on_update(index.get(v, ()), env)
+        if new_unit_literals is 'contradiction': return None
+        return solving(problem, index, env,
+                       variables, unit_literals + new_unit_literals)
     v, variables = variables[0], variables[1:]
     for value in (False, True):
         env = assign(v, value, env)
-        unit_literals = on_update(index.get(v, ()), env)
-        if unit_literals is 'contradiction': continue
-        result = solving(problem, index, env, variables, unit_literals)
+        new_unit_literals = on_update(index.get(v, ()), env)
+        if new_unit_literals is 'contradiction': continue
+        result = solving(problem, index, env, variables, new_unit_literals)
         if result is not None:
             return result
     return None
