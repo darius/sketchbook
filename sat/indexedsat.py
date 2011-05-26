@@ -42,13 +42,13 @@ def solving(problem, index, env, variables, unit_literals):
         variables = removed(variables, v)
         env = assign(v, value, env)
         unit_literals = on_update(index.get(v, ()), env)
-        if unit_literals == 'contradiction': return None
+        if unit_literals is 'contradiction': return None
         return solving(problem, index, env, variables, unit_literals)
     v, variables = variables[0], variables[1:]
     for value in (False, True):
         env = assign(v, value, env)
         unit_literals = on_update(index.get(v, ()), env)
-        if unit_literals == 'contradiction': continue
+        if unit_literals is 'contradiction': continue
         result = solving(problem, index, env, variables, unit_literals)
         if result is not None:
             return result
@@ -63,10 +63,10 @@ def on_update(clauses, env):
             if value is None:
                 unknown_literals.append(literal)
             elif value == (0 < literal):
-                break           # Clause is true
+                break                  # Clause is true
         else:
             if not unknown_literals:
-                return 'contradiction'
+                return 'contradiction' # Clause is false
             if len(unknown_literals) == 1:
                 unit_literals.extend(unknown_literals)
     return unit_literals
