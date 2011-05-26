@@ -18,12 +18,10 @@ from sat import assign
 def solve(problem):
     "Return a satisfying assignment for problem, or None if impossible."
     env = {}
-    if not sat.seems_consistent(problem, env):
-        return None
     index = build_index(problem)
     return solving(problem, index, env,
                    sat.problem_variables(problem),
-                   on_update(problem, env))
+                   on_update(problem, env, []))
 
 def build_index(problem):
     index = {}
@@ -34,31 +32,30 @@ def build_index(problem):
 
 def solving(problem, index, env, variables, unit_literals):
     "Try to extend a consistent assignment for problem to a satisfying one."
+    if unit_literals is 'contradiction':
+        return None
     if not variables:
         return env
-    while unit_literals:
+    if unit_literals:
         literal, unit_literals = unit_literals[0], unit_literals[1:]
         v, value = abs(literal), (0 < literal)
-        if v not in variables:
-            continue
         variables = removed(variables, v)
-        env = assign(v, value, env)
-        new_unit_literals = on_update(index.get(v, ()), env)
-        if new_unit_literals is 'contradiction': return None
-        return solving(problem, index, env,
-                       variables, unit_literals + new_unit_literals)
+        return assume(problem, index, env, variables, unit_literals, v, value)
     v, variables = variables[0], variables[1:]
     for value in (False, True):
         env = assign(v, value, env)
-        new_unit_literals = on_update(index.get(v, ()), env)
-        if new_unit_literals is 'contradiction': continue
-        result = solving(problem, index, env, variables, new_unit_literals)
+        result = assume(problem, index, env, variables, unit_literals, v, value)
         if result is not None:
             return result
     return None
 
-def on_update(clauses, env):
-    unit_literals = []
+def assume(problem, index, env, variables, unit_literals, v, value):
+    env = assign(v, value, env)
+    return solving(problem, index, env, variables,
+                   on_update(index.get(v, ()), env, unit_literals))
+
+def on_update(clauses, env, unit_literals):
+    new_unit_literals = []
     for clause in clauses:
         unknown_literals = []
         for literal in clause:
@@ -70,9 +67,10 @@ def on_update(clauses, env):
         else:
             if not unknown_literals:
                 return 'contradiction' # Clause is false
-            if len(unknown_literals) == 1:
-                unit_literals.extend(unknown_literals)
-    return unit_literals
+            if (len(unknown_literals) == 1
+                and unknown_literals[0] not in unit_literals):
+                new_unit_literals.extend(unknown_literals)
+    return unit_literals + new_unit_literals
 
 def removed(xs, x):
     xs = list(xs)
