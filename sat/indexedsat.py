@@ -43,8 +43,8 @@ def solving(index, env, variables, unit_literals):
         return assume(index, env, variables, unit_literals, v, value)
     v, variables = variables[0], variables[1:]
     for value in (False, True):
-        env = assign(v, value, env)
-        result = assume(index, env, variables, unit_literals, v, value)
+        new_env = assign(v, value, env)
+        result = assume(index, new_env, variables, unit_literals, v, value)
         if result is not None:
             return result
     return None
