@@ -2,12 +2,29 @@
 Generalized Sudoku as a SAT problem.
 """
 
+import sys
+sys.setrecursionlimit(5000)
+
 import indexedsat as solver
 from sat import conjoin, flatten, exactly_one, at_most_one
 from itertools import count
 
 ## sudoku(2)
-#. {1: False, 2: False, 3: False, 4: True, 5: False, 6: False, 7: True, 8: False, 9: False, 10: True, 11: False, 12: False, 13: True, 14: False, 15: False, 16: False, 17: False, 18: True, 19: False, 20: False, 21: True, 22: False, 23: False, 24: False, 25: False, 26: False, 27: False, 28: True, 29: False, 30: False, 31: True, 32: False, 33: False, 34: False, 35: True, 36: False, 37: False, 38: False, 39: False, 40: True, 41: True, 42: False, 43: False, 44: False, 45: False, 46: True, 47: False, 48: False, 49: True, 50: False, 51: False, 52: False, 53: False, 54: True, 55: False, 56: False, 57: False, 58: False, 59: True, 60: False, 61: False, 62: False, 63: False, 64: True}
+#. 4 3 2 1
+#. 2 1 4 3
+#. 3 4 1 2
+#. 1 2 3 4
+#. 
+## sudoku(3)
+#. 9 8 7 6 5 4 3 2 1
+#. 6 5 4 3 2 1 9 8 7
+#. 3 2 1 9 8 7 6 5 4
+#. 8 9 6 7 4 5 2 1 3
+#. 7 4 5 2 1 3 8 9 6
+#. 2 1 3 8 9 6 7 4 5
+#. 5 7 9 4 6 8 1 3 2
+#. 4 6 8 1 3 2 5 7 9
+#. 1 3 2 5 7 9 4 6 8
 #. 
 
 def sudoku(n):
@@ -35,7 +52,13 @@ def sudoku(n):
     for column in transpose(rows):
         add_permutation(column)
 
-    print solver.solve(problem)
+    model = solver.solve(problem)
+    for row in rows:
+        for slot in row:
+            for i, v in enumerate(slot):
+                if model[v]:
+                    print i+1,
+        print
 
 def transpose(grid):
     return zip(*grid)
