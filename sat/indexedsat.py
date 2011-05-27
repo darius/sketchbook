@@ -55,7 +55,7 @@ def assume(index, env, variables, unit_literals, v, value):
                              env, unit_literals))
 
 def on_update(clauses, env, unit_literals):
-    new_unit_literals = []
+    unit_literals = unit_literals[:]
     for clause in clauses:
         unknown_literals = []
         for literal in clause:
@@ -69,8 +69,8 @@ def on_update(clauses, env, unit_literals):
                 return 'contradiction' # Clause is false
             if (len(unknown_literals) == 1
                 and unknown_literals[0] not in unit_literals):
-                new_unit_literals.extend(unknown_literals)
-    return unit_literals + new_unit_literals
+                unit_literals.extend(unknown_literals)
+    return unit_literals
 
 def removed(xs, x):
     xs = list(xs)
