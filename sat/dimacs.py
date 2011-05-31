@@ -1,6 +1,18 @@
 """
-Parse the DIMACS CNF file format.
+Read or write the DIMACS CNF file format.
 """
+
+def save(filename, problem):
+    save_file(open(filename, 'w'), problem)
+
+def save_file(f, problem):
+    nvariables = max(abs(literal) for clause in problem for literal in clause)
+    nclauses = len(problem)
+    print >>f, 'p cnf', nvariables, nclauses
+    for clause in problem:
+        for literal in clause:
+            print >>f, literal,
+        print >>f, 0
 
 def load(filename):
     return load_file(open(filename))
