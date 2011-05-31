@@ -10,14 +10,14 @@ sys.setrecursionlimit(5000)
 import indexedsat as solver
 from sat import flatten, exactly_one, at_most_one
 
-## sudoku(2)
+## unconstrained_sudoku(2)
 #. 4 3 | 2 1
 #. 2 1 | 4 3
 #. ---------
 #. 3 4 | 1 2
 #. 1 2 | 3 4
 #. 
-## sudoku(3)
+## unconstrained_sudoku(3)
 #. 9 8 7 | 6 5 4 | 3 2 1
 #. 6 5 4 | 3 2 1 | 9 8 7
 #. 3 2 1 | 9 8 7 | 6 5 4
@@ -48,16 +48,20 @@ hard1 = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2....
 #. 6 9 5 | 4 1 7 | 3 8 2
 #. 
 
-def sudoku(n):
+def unconstrained_sudoku(n):
     rows, problem = make_sudoku_grid(n)
     model = solver.solve(problem)
     print_sudoku_solution(rows, model)
 
 def solve(form):
-    rows, problem = make_sudoku_grid(3)
-    constrain_to_form(problem, rows, form)
+    rows, problem = read_sudoku_problem(form)
     model = solver.solve(problem)
     print_sudoku_solution(rows, model)
+
+def read_sudoku_problem(form):
+    rows, problem = make_sudoku_grid(int(len(form) ** (1./4)))
+    constrain_to_form(problem, rows, form)
+    return rows, problem
 
 def constrain_to_form(problem, rows, form):
     form_chars = iter(form)
