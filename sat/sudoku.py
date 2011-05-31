@@ -2,13 +2,13 @@
 Generalized Sudoku as a SAT problem.
 """
 
+from itertools import count
 import math
 import sys
 sys.setrecursionlimit(5000)
 
 import indexedsat as solver
-from sat import conjoin, flatten, exactly_one, at_most_one
-from itertools import count
+from sat import flatten, exactly_one, at_most_one
 
 ## sudoku(2)
 #. 4 3 | 2 1
