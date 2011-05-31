@@ -79,10 +79,12 @@ def print_sudoku_solution(rows, model):
         for c, slot in enumerate(row):
             if 0 < c and c % divider == 0:
                 print '|',
-            for i, v in enumerate(slot):
-                if model[v]:
-                    print i+1,
+            print slot_value(slot, model),
         print
+
+def slot_value(slot, model):
+    for i, v in enumerate(slot):
+        if model[v]: return i+1
 
 def make_sudoku_grid(n):
     problem = []
