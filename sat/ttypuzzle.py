@@ -4,13 +4,15 @@ make a fun puzzle game.
 
 To play, run this file, and it shows a board with rows denoting
 variables and columns denoting clauses. Unsatisfied clauses appear in
-red. Each row is labeled at the left edge. To move, type a label and
-hit enter, which flips the chosen variable.
+red. Each row is labeled at the left edge. To move, type a label,
+which flips the chosen variable.
 
-Exit with control-C if you get sick of it.
+Hit any other key to exit.
 """
 
+import os
 import string
+import sys
 
 import ansi
 import dimacs
@@ -46,7 +48,7 @@ def which(c):
     except ValueError:
         return None
 
-normal     = ansi.set_foreground(ansi.black)
+normal     = ansi.set_foreground(ansi.black) # Assuming a white background
 look_at_me = ansi.set_foreground(ansi.red)
 
 def show(coloring=False):
@@ -62,7 +64,7 @@ def show(coloring=False):
                 c = '*' if true else 'O'
             if coloring: print color + c,
             else: print c,
-        print
+        print chr(13)
 
 def clause_is_satisfied(clause):
     return any(env.get(abs(literal)) == (0 < literal)
@@ -71,17 +73,35 @@ def clause_is_satisfied(clause):
 ### show()
 ### flip(which('1')); show()
 
-def play():
-    print(ansi.clear_screen)
+def refresh():
+    sys.stdout.write(ansi.home)
     show(coloring=True)
-    while not is_solved():
-        c = raw_input()
-        v = which(c)
+
+def get_command():
+    c = sys.stdin.read(1)
+    return which(c)
+
+def play():
+    while True:
+        refresh()
+        if is_solved():
+            print 'You win!'
+            break
+        v = get_command()
         if v is not None:
             flip(v)
-        print(ansi.home)
-        show(coloring=True)
-    print 'You win!'
+        else:
+            print 'You quit!'
+            break
+
+def game():
+    os.system('stty raw')
+    try:
+        sys.stdout.write(ansi.clear_screen)
+        play()
+    finally:
+        os.system('stty sane')
+        print
 
 if __name__ == '__main__':
-    play()
+    game()
