@@ -53,18 +53,25 @@ look_at_me = ansi.set_foreground(ansi.red)
 
 def show(coloring=False):
     "Display the board."
+
+    def write(color, s):
+        if coloring: sys.stdout.write(color)
+        sys.stdout.write(s)
+
+    def present(v, clause):
+        if v in clause or -v in clause:
+            true = (env[v] if v in clause else not env[v])
+            return '*' if true else 'O'
+        else:
+            return '.'
+
     for v in sat.problem_variables(problem):
-        print labels[v-1] + ':',
-        x = env[v]
+        write(normal, labels[v-1] + ': ')
         for clause in problem:
-            color = (normal if clause_is_satisfied(clause) else look_at_me)
-            c = '.'
-            if v in clause or -v in clause:
-                true = (x if v in clause else not x)
-                c = '*' if true else 'O'
-            if coloring: print color + c,
-            else: print c,
-        print chr(13)
+            write(normal if clause_is_satisfied(clause) else look_at_me,
+                  present(v, clause) + ' ')
+        write(chr(13), '\n')
+    write(normal, '')
 
 def clause_is_satisfied(clause):
     return any(env.get(abs(literal)) == (0 < literal)
