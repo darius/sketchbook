@@ -66,10 +66,10 @@ def show(coloring=False):
             return '.'
 
     for v in sat.problem_variables(problem):
-        write(normal, labels[v-1] + ': ')
+        write(normal, labels[v-1] + ':')
         for clause in problem:
             write(normal if clause_is_satisfied(clause) else look_at_me,
-                  present(v, clause) + ' ')
+                  ' ' + present(v, clause))
         write(chr(13), '\n')
     write(normal, '')
 
