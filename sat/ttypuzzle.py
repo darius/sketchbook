@@ -19,7 +19,7 @@ import dimacs
 import sat
 
 # Problem from http://toughsat.appspot.com/
-nvariables, problem = dimacs.load('factoring.dimacs')
+nvariables, problem = dimacs.load('problems/factoring6.dimacs')
 
 # Make sure it's solvable, and visible in a terminal window:
 ## import indexedsat as solver
