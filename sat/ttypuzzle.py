@@ -18,6 +18,14 @@ import ansi
 import dimacs
 import sat
 
+def main():
+    os.system('stty raw')
+    try:
+        play()
+    finally:
+        os.system('stty sane')
+        print
+
 # Problem from http://toughsat.appspot.com/
 nvariables, problem = dimacs.load('problems/factoring6.dimacs')
 
@@ -32,24 +40,23 @@ nvariables, problem = dimacs.load('problems/factoring6.dimacs')
 
 env = dict((v, False) for v in sat.problem_variables(problem))
 
-def is_solved():
-    return sat.is_satisfied(problem, env)
+def play():
+    sys.stdout.write(ansi.clear_screen)
+    while True:
+        refresh()
+        if is_solved():
+            print 'You win!'
+            break
+        v = get_command()
+        if v is not None:
+            flip(v)
+        else:
+            print 'You quit!'
+            break
 
-def flip(v):
-    env[v] = not env[v]
-
-labels = ('1234567890' + string.ascii_uppercase)[:nvariables]
-
-def which(c):
-    "Return the variable labeled by c, or None."
-    c = c[0].upper()
-    try:
-        return labels.index(c) + 1
-    except ValueError:
-        return None
-
-normal     = ansi.set_foreground(ansi.black) # Assuming a white background
-look_at_me = ansi.set_foreground(ansi.red)
+def refresh():
+    sys.stdout.write(ansi.home)
+    show(coloring=True)
 
 def show(coloring=False):
     "Display the board."
@@ -73,42 +80,34 @@ def show(coloring=False):
         write(chr(13), '\n')
     write(normal, '')
 
+normal     = ansi.set_foreground(ansi.black) # Assuming a white background
+look_at_me = ansi.set_foreground(ansi.red)
+
+def get_command():
+    c = sys.stdin.read(1)
+    return variable_of_name(c)
+
+def name_of_variable(v):
+    return labels[v-1]
+
+def variable_of_name(label):
+    try:
+        return labels.index(label.upper()) + 1
+    except ValueError:
+        return None
+
+labels = ('1234567890' + string.ascii_uppercase)[:nvariables]
+
+def is_solved():
+    return sat.is_satisfied(problem, env)
+
 def clause_is_satisfied(clause):
     return any(env.get(abs(literal)) == (0 < literal)
                for literal in clause)
 
-### show()
-### flip(which('1')); show()
+def flip(v):
+    env[v] = not env[v]
 
-def refresh():
-    sys.stdout.write(ansi.home)
-    show(coloring=True)
-
-def get_command():
-    c = sys.stdin.read(1)
-    return which(c)
-
-def play():
-    while True:
-        refresh()
-        if is_solved():
-            print 'You win!'
-            break
-        v = get_command()
-        if v is not None:
-            flip(v)
-        else:
-            print 'You quit!'
-            break
-
-def game():
-    os.system('stty raw')
-    try:
-        sys.stdout.write(ansi.clear_screen)
-        play()
-    finally:
-        os.system('stty sane')
-        print
 
 if __name__ == '__main__':
-    game()
+    main()
