@@ -59,7 +59,7 @@ class Game(object):
     def refresh(self):
         sys.stdout.write(ansi.home)
         self.show(coloring=True)
-        sys.stdout.write(helping)
+        set_color(helping)
         print '\r'
         print ('You won!' if self.is_solved() else '        ') + '\r'
         print '\r'
@@ -71,7 +71,7 @@ class Game(object):
         "Display the board."
 
         def write(color, s):
-            if coloring: sys.stdout.write(color)
+            if coloring: set_color(color)
             sys.stdout.write(s)
 
         def present(v, clause):
@@ -80,6 +80,8 @@ class Game(object):
             pos, neg = v in clause, -v in clause
             if not pos and not neg:
                 write(color, '.')
+            elif v not in self.env:
+                write(color, 'O*'[pos])
             else:
                 write(color, 'O*'[self.env[v] == pos])
 
@@ -88,7 +90,7 @@ class Game(object):
             for clause in self.problem:
                 present(v, clause)
             write(other, ' ' + self.name_of_variable(v))
-            write('\r', '\n')
+            write(other, '\r\n')
         write(other, '')
 
     def name_of_variable(self, v):
@@ -111,14 +113,17 @@ class Game(object):
         self.env[v] = not self.env[v]
 
 
-bg = ansi.set_background(ansi.black)
+bg = ansi.black
 
-other       = (bg + ansi.set_foreground(ansi.white))
-satisfied   = (bg + ansi.set_foreground(ansi.blue))
-unsatisfied = (bg + ansi.set_foreground(ansi.bright(ansi.yellow)))
+other       = (bg, ansi.bright(ansi.white))
+satisfied   = (bg, ansi.blue)
+unsatisfied = (bg, ansi.bright(ansi.yellow))
 
-helping = (ansi.set_background(ansi.bright(ansi.white))
-           + ansi.set_foreground(ansi.black))
+def set_color((bg, fg)):
+    sys.stdout.write(ansi.set_background(bg))
+    sys.stdout.write(ansi.set_foreground(fg))
+
+helping = (ansi.bright(ansi.white), ansi.black)
 
 
 if __name__ == '__main__':
