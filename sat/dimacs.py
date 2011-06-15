@@ -6,7 +6,9 @@ def save(filename, problem):
     save_file(open(filename, 'w'), problem)
 
 def save_file(f, problem):
-    nvariables = max(abs(literal) for clause in problem for literal in clause)
+    nvariables = reduce(max,
+                        (abs(literal) for clause in problem for literal in clause),
+                        0)
     nclauses = len(problem)
     print >>f, 'p cnf', nvariables, nclauses
     for clause in problem:
