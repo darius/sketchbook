@@ -70,11 +70,11 @@ class Game(object):
                 return '.'
 
         for v in sat.problem_variables(self.problem):
-            write(other, self.name_of_variable(v))
+            write(other, self.name_of_variable(v) + ' ')
             for clause in self.problem:
                 color = (satisfied if self.clause_is_satisfied(clause)
                          else unsatisfied)
-                write(color, ' ' + present(v, clause))
+                write(color, present(v, clause))
             write(other, ' ' + self.name_of_variable(v))
             write(chr(13), '\n')
         write(other, '')
