@@ -18,30 +18,38 @@ import ansi
 import dimacs
 import sat
 
+filenames = ['problems/trivial.dimacs',
+             'problems/factoring6.dimacs']
+
 def main():
     # Problem from http://toughsat.appspot.com/
-    nvariables, problem = dimacs.load('problems/factoring6.dimacs')
+    games = [Game(problem) for nvariables, problem  in map(dimacs.load, filenames)]
     os.system('stty raw')
     try:
-        play(Game(problem))
+        play(games)
     finally:
         os.system('stty sane')
         print
 
-def play(game):
-    sys.stdout.write(ansi.clear_screen)
+def play(games):
+    game_num = 0
     while True:
-        game.refresh()
-        if game.is_solved():
-            print 'You win!'
-            break
-        cmd = sys.stdin.read(1)
-        v = game.variable_of_name(cmd)
-        if v is not None:
-            game.flip(v)
-        else:
-            print 'You quit!'
-            break
+        game = games[game_num]
+        sys.stdout.write(ansi.clear_screen)
+        while True:
+            game.refresh()
+            cmd = sys.stdin.read(1)
+            if cmd == ' ':
+                return
+            elif cmd == '\t':
+                game_num = (game_num + 1) % len(games)
+                break
+            else:
+                v = game.variable_of_name(cmd)
+                if v is not None:
+                    game.flip(v)
+                else:
+                    print 'Enter <space> to quit, <tab> to try the next game.'
 
 class Game(object):
 
@@ -54,6 +62,7 @@ class Game(object):
     def refresh(self):
         sys.stdout.write(ansi.home)
         self.show(coloring=True)
+        print ('You won!' if self.is_solved() else '        ') + chr(13)
 
     def show(self, coloring=False):
         "Display the board."
