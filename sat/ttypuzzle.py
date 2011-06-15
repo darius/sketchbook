@@ -11,6 +11,7 @@ import ansi
 import dimacs
 import sat
 
+# Some problems from http://toughsat.appspot.com/
 filenames = ['problems/trivial.dimacs',
              'problems/factoring6.dimacs',
              'problems/factoring2.dimacs',
@@ -18,7 +19,6 @@ filenames = ['problems/trivial.dimacs',
              ]
 
 def main():
-    # Some problems from http://toughsat.appspot.com/
     games = [Game(problem) for nvariables, problem  in map(dimacs.load, filenames)]
     os.system('stty raw')
     try:
@@ -34,6 +34,9 @@ def play(games):
         sys.stdout.write(ansi.clear_screen)
         while True:
             game.refresh()
+            print '\r'
+            print 'Hit <tab> to switch to the next game (cyclically).\r'
+            print 'Hit <space> to quit.\r'
             cmd = sys.stdin.read(1)
             if cmd == ' ':
                 return
@@ -44,8 +47,6 @@ def play(games):
                 v = game.variable_of_name(cmd)
                 if v is not None:
                     game.flip(v)
-                else:
-                    print 'Enter <space> to quit, <tab> to try the next game.'
 
 class Game(object):
 
@@ -59,15 +60,12 @@ class Game(object):
         sys.stdout.write(ansi.home)
         self.show(coloring=True)
         sys.stdout.write(helping)
-        print chr(13)
-        print ('You won!' if self.is_solved() else '        ') + chr(13)
-        print chr(13)
-        print 'To flip a row, type its label (given on the left and right edges).' + chr(13)
-        print 'Win by making every column have a * in it.' + chr(13)
-        print '(Columns with no *s appear in yellow.)' + chr(13)
-        print chr(13)
-        print 'Hit <tab> to switch to the next game (cyclically).' + chr(13)
-        print 'Hit <space> to quit.' + chr(13)
+        print '\r'
+        print ('You won!' if self.is_solved() else '        ') + '\r'
+        print '\r'
+        print 'To flip a row, type its label (given on the left and right edges).\r'
+        print 'Win by making every column have a * in it.\r'
+        print '(Columns with no *s appear in yellow.)\r'
 
     def show(self, coloring=False):
         "Display the board."
@@ -77,20 +75,20 @@ class Game(object):
             sys.stdout.write(s)
 
         def present(v, clause):
-            if v in clause or -v in clause:
-                true = (self.env[v] if v in clause else not self.env[v])
-                return '*' if true else 'O'
+            color = (satisfied if self.clause_is_satisfied(clause)
+                     else unsatisfied)
+            pos, neg = v in clause, -v in clause
+            if not pos and not neg:
+                write(color, '.')
             else:
-                return '.'
+                write(color, 'O*'[self.env[v] == pos])
 
         for v in sat.problem_variables(self.problem):
             write(other, self.name_of_variable(v) + ' ')
             for clause in self.problem:
-                color = (satisfied if self.clause_is_satisfied(clause)
-                         else unsatisfied)
-                write(color, present(v, clause))
+                present(v, clause)
             write(other, ' ' + self.name_of_variable(v))
-            write(chr(13), '\n')
+            write('\r', '\n')
         write(other, '')
 
     def name_of_variable(self, v):
