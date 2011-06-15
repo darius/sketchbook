@@ -1,13 +1,6 @@
 """
 A crude human interface for SAT solving -- I want to see if it can
 make a fun puzzle game.
-
-To play, run this file, and it shows a board with rows denoting
-variables and columns denoting clauses. Unsatisfied clauses appear in
-red. Each row is labeled at the left edge. To move, type a label,
-which flips the chosen variable.
-
-Hit any other key to exit.
 """
 
 import os
@@ -22,7 +15,7 @@ filenames = ['problems/trivial.dimacs',
              'problems/factoring6.dimacs']
 
 def main():
-    # Problem from http://toughsat.appspot.com/
+    # Some problems from http://toughsat.appspot.com/
     games = [Game(problem) for nvariables, problem  in map(dimacs.load, filenames)]
     os.system('stty raw')
     try:
@@ -62,7 +55,16 @@ class Game(object):
     def refresh(self):
         sys.stdout.write(ansi.home)
         self.show(coloring=True)
+        sys.stdout.write(helping)
+        print chr(13)
         print ('You won!' if self.is_solved() else '        ') + chr(13)
+        print chr(13)
+        print 'To flip a row, type its label (given on the left and right edges).' + chr(13)
+        print 'Win by making every column have a * in it.' + chr(13)
+        print '(Columns with no *s appear in yellow.)' + chr(13)
+        print chr(13)
+        print 'Hit <tab> to switch to the next game (cyclically).' + chr(13)
+        print 'Hit <space> to quit.' + chr(13)
 
     def show(self, coloring=False):
         "Display the board."
@@ -112,7 +114,10 @@ bg = ansi.set_background(ansi.black)
 
 other       = (bg + ansi.set_foreground(ansi.white))
 satisfied   = (bg + ansi.set_foreground(ansi.blue))
-unsatisfied = (bg + ansi.set_foreground(ansi.yellow))
+unsatisfied = (bg + ansi.set_foreground(ansi.bright(ansi.yellow)))
+
+helping = (ansi.set_background(ansi.bright(ansi.white))
+           + ansi.set_foreground(ansi.black))
 
 
 if __name__ == '__main__':
