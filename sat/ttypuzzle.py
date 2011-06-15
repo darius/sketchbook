@@ -12,7 +12,10 @@ import dimacs
 import sat
 
 filenames = ['problems/trivial.dimacs',
-             'problems/factoring6.dimacs']
+             'problems/factoring6.dimacs',
+             'problems/factoring2.dimacs',
+             'problems/subsetsum_random.dimacs',
+             ]
 
 def main():
     # Some problems from http://toughsat.appspot.com/
