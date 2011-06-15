@@ -70,13 +70,14 @@ class Game(object):
                 return '.'
 
         for v in sat.problem_variables(self.problem):
-            write(normal, self.name_of_variable(v) + ':')
+            write(other, self.name_of_variable(v))
             for clause in self.problem:
-                color = (normal if self.clause_is_satisfied(clause)
-                         else look_at_me)
+                color = (satisfied if self.clause_is_satisfied(clause)
+                         else unsatisfied)
                 write(color, ' ' + present(v, clause))
+            write(other, ' ' + self.name_of_variable(v))
             write(chr(13), '\n')
-        write(normal, '')
+        write(other, '')
 
     def name_of_variable(self, v):
         return self.labels[v-1]
@@ -98,8 +99,11 @@ class Game(object):
         self.env[v] = not self.env[v]
 
 
-normal     = ansi.set_foreground(ansi.black) # Assuming a white background
-look_at_me = ansi.set_foreground(ansi.red)
+bg = ansi.set_background(ansi.black)
+
+other       = (bg + ansi.set_foreground(ansi.white))
+satisfied   = (bg + ansi.set_foreground(ansi.blue))
+unsatisfied = (bg + ansi.set_foreground(ansi.yellow))
 
 
 if __name__ == '__main__':
