@@ -19,7 +19,8 @@ filenames = ['problems/trivial.dimacs',
              ]
 
 def main():
-    games = [Game(problem) for nvariables, problem  in map(dimacs.load, filenames)]
+    games = [Game(problem) for nvariables, problem in map(dimacs.load,
+                                                          filenames)]
     os.system('stty raw')
     try:
         play(games)
@@ -35,7 +36,7 @@ def play(games):
         while True:
             game.refresh()
             print '\r'
-            print 'Hit <tab> to switch to the next game (cyclically).\r'
+            print 'Hit <tab> to cycle to the next game.\r'
             print 'Hit <space> to quit.\r'
             cmd = sys.stdin.read(1)
             if cmd == ' ':
@@ -75,12 +76,11 @@ class Game(object):
             sys.stdout.write(s)
 
         def present(v, clause):
-            color = (satisfied if self.clause_is_satisfied(clause)
-                     else unsatisfied)
+            color = (satisfied if self.clause_is_satisfied(clause) else unsatisfied)
             pos, neg = v in clause, -v in clause
             if not pos and not neg:
                 write(color, '.')
-            elif v not in self.env:
+            elif self.env[v] is None:
                 write(color, 'O*'[pos])
             else:
                 write(color, 'O*'[self.env[v] == pos])
@@ -116,8 +116,10 @@ class Game(object):
 bg = ansi.black
 
 other       = (bg, ansi.bright(ansi.white))
+
 satisfied   = (bg, ansi.blue)
 unsatisfied = (bg, ansi.bright(ansi.yellow))
+#unsatisfied = (bg, ansi.yellow)
 
 def set_color((bg, fg)):
     sys.stdout.write(ansi.set_background(bg))
