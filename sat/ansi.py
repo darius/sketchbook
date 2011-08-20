@@ -10,7 +10,7 @@ clear_screen    = prefix + '2J' + home
 clear_to_eol    = prefix + 'K'
 
 def goto(x, y):
-    return prefix + ('%d;%dH' % (r, c))
+    return prefix + ('%d;%dH' % (y, x))
 
 black, red, green, yellow, blue, magenta, cyan, white = range(8)
 
