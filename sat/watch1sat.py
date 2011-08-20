@@ -1,6 +1,6 @@
 """
 Solve a SAT problem by pruned truth-table enumeration.
-Index clasuse by a single watched literal, to cheaply
+Index clauses by a single watched literal, to cheaply
 detect contradiction.
 """
 
