@@ -77,7 +77,8 @@ def transpose(grid):
 
 
 if __name__ == '__main__':
-    import sys
-    args = sys.argv
+    from sys import argv as args
+    if len(args) == 3:
+        solver = __import__(args.pop())
     if len(args) == 2:
         queens(int(args[1]))
