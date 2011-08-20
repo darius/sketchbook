@@ -19,16 +19,6 @@ def solve(problem):
     "Return a satisfying assignment for problem, or None if impossible."
     return solving(build_index(problem), {}, sat.problem_variables(problem))
 
-def build_index(problem):
-    index = {}
-    for clause in problem:
-        if not clause: return 'contradiction'
-        watch(index, clause, clause[0])
-    return index
-
-def watch(index, clause, literal):
-    index.setdefault(-literal, []).append(clause)
-
 def solving(index, env, variables):
     "Try to extend a consistent assignment for problem to a satisfying one."
     if index is 'contradiction':
@@ -44,6 +34,13 @@ def solving(index, env, variables):
             return result
     return None
 
+def build_index(problem):
+    index = {}
+    for clause in problem:
+        if not clause: return 'contradiction'
+        watch(index, clause, clause[0])
+    return index
+
 def on_update(index, env, new_literal):
     new_index = dict(index)
     for clause in index.get(new_literal, ()):
@@ -57,3 +54,6 @@ def on_update(index, env, new_literal):
         else:
             return 'contradiction'
     return new_index
+
+def watch(index, clause, literal):
+    index.setdefault(-literal, []).append(clause)

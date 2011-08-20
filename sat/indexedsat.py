@@ -23,13 +23,6 @@ def solve(problem):
                    sat.problem_variables(problem),
                    on_update(problem, env, []))
 
-def build_index(problem):
-    index = {}
-    for clause in problem:
-        for literal in clause:
-            index.setdefault(-literal, []).append(clause)
-    return index
-
 def solving(index, env, variables, unit_literals):
     "Try to extend a consistent assignment for problem to a satisfying one."
     if unit_literals is 'contradiction':
@@ -53,6 +46,13 @@ def assume(index, env, variables, unit_literals, v, value):
     return solving(index, env, variables,
                    on_update(index.get(v if value else -v, ()),
                              env, unit_literals))
+
+def build_index(problem):
+    index = {}
+    for clause in problem:
+        for literal in clause:
+            index.setdefault(-literal, []).append(clause)
+    return index
 
 def on_update(clauses, env, unit_literals):
     unit_literals = unit_literals[:]
