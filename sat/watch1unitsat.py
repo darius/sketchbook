@@ -66,6 +66,8 @@ def on_update(index, literal, env, unit_literals):
             if value is None:
                 unknown_literals.append(literal)
             elif value == (0 < literal):
+                clauses.remove(clause)
+                watch(index, clause, literal)
                 break                  # Clause is true
         else:
             if not unknown_literals:
