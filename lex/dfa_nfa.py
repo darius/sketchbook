@@ -33,9 +33,9 @@ def prepare((label, re)):
     return re(state_node(make_accepting_state(label)))(set())
 
 def make_dfa(scanner):
-    """A DFA is a list of pairs (accepting: bool, moves: dict(char->index)).
+    """A DFA is a list of pairs (label_or_None, moves: dict(char->index)).
     where an index is a state number -- a position in the list;
-    and 'accepting' means state #i is an accepting state;
+    and label_or_None can mark an accepting state;
     and moves[c] is omitted if c leads to the (implicit) failure state.
     (This keeps the tables much smaller for toy examples at least.)
     0 is the implicit start state."""
