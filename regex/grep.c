@@ -7,7 +7,7 @@ static void error(const char *plaint) {
     exit(1);
 }
 
-#define max_insns 9999
+enum { max_insns = 9999 };
 enum { op_expect, op_jump, op_split };
 static unsigned ninsns;
 static int ops[max_insns], args[max_insns];
