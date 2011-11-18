@@ -8,20 +8,20 @@ static void error(const char *plaint) {
 }
 
 enum { max_insns = 8192 };
-enum { op_expect, op_jump, op_split };
+enum { op_eat, op_jump, op_fork };
 static unsigned ninsns;
 static int ops[max_insns], args[max_insns];
 static char visited[max_insns];
 
 static void spread(unsigned pc, char *set) {
     for (;;) switch (ops[--pc]) {
-        case op_expect:
+        case op_eat:
             set[pc] = 1;
             return;
         case op_jump:
             pc = args[pc];
             break;
-        case op_split:
+        case op_fork:
             if (visited[pc]) return;
             visited[pc] = 1;
             spread(args[pc], set);
@@ -72,16 +72,16 @@ static unsigned parsing(int precedence, unsigned state) {
         if (!eat('(')) error("Mismatched ')'");
     }
     else if (eat('*')) {
-        rhs = emit(op_split, 0, state); // (The 0 is a placeholder...
+        rhs = emit(op_fork, 0, state); // (The 0 is a placeholder...
         args[rhs-1] = parsing(6, rhs); // ...filled in here.)
     }
     else
-        rhs = emit(op_expect, *--pp, state);
+        rhs = emit(op_eat, *--pp, state);
     while (pattern < pp && pp[-1] != '(') {
         int prec = pp[-1] == '|' ? 2 : 4;
         if (prec < precedence) break;
         if (eat('|'))
-            rhs = emit(op_split, rhs, parsing(prec+1, state));
+            rhs = emit(op_fork, rhs, parsing(prec+1, state));
         else
             rhs = parsing(prec+1, rhs);
     }
@@ -91,7 +91,7 @@ static unsigned parsing(int precedence, unsigned state) {
 static unsigned parse(const char *string) {
     pattern = string; pp = pattern + strlen(pattern);
     ninsns = 0;
-    unsigned state = parsing(0, emit(op_expect, '\0', 0));
+    unsigned state = parsing(0, emit(op_eat, '\0', 0));
     if (pattern != pp) error("Bad pattern");
     return state;
 }
