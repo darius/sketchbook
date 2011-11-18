@@ -93,7 +93,7 @@ static unsigned parsing(int precedence, unsigned k) {
 
 static unsigned parse(const char *string) {
     pattern = string; pp = pattern + strlen(pattern);
-    unsigned k = parsing(0, emit(op_expect, '\0', 0)); // no input char == '\0'
+    unsigned k = parsing(0, ninsns = 1); // Skip insn 0, the accepting state
     if (pattern != pp) error("Bad pattern");
     return k;
 }
