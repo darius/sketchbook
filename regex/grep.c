@@ -73,17 +73,17 @@ static int eat(char c) {
     return pattern < pp && pp[-1] == c ? (--pp, 1) : 0;
 }
 
-static int parse_expr(int precedence, unsigned k) {
+static int parsing(int precedence, unsigned k) {
     int rhs;
     if (pattern == pp || pp[-1] == '|' || pp[-1] == '(')
         rhs = k;
     else if (eat(')')) {
-        rhs = parse_expr(0, k);
+        rhs = parsing(0, k);
         if (!eat('(')) panic("Mismatched ')'");
     }
     else if (eat('*')) {
         rhs = emit(op_split, 0, k);
-        args[rhs] = parse_expr(6, rhs);
+        args[rhs] = parsing(6, rhs);
     }
     else
         rhs = emit(op_expect, *--pp, k);
@@ -91,16 +91,16 @@ static int parse_expr(int precedence, unsigned k) {
         int prec = pp[-1] == '|' ? 2 : 4;
         if (prec < precedence) break;
         if (eat('|'))
-            rhs = emit(op_split, rhs, parse_expr(prec+1, k));
+            rhs = emit(op_split, rhs, parsing(prec+1, k));
         else
-            rhs = parse_expr(prec+1, rhs);
+            rhs = parsing(prec+1, rhs);
     }
     return rhs;
 }
 
 static void parse(const char *string) {
     pattern = string; pp = pattern + strlen(pattern);
-    parse_expr(0, emit(op_expect, '\0', 0)); // (no char from fgets == '\0')
+    parsing(0, emit(op_expect, '\0', 0)); // (no char from fgets == '\0')
     if (pattern != pp) panic("Bad pattern");
 }
 
