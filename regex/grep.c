@@ -22,7 +22,7 @@ static char *next = set1;
 
 static void spread(unsigned pc, char *result) {
     for (;;) {
-        switch (ops[pc]) {
+        switch (ops[--pc]) {
         case op_expect:
             result[pc] = 1;
             return;
@@ -34,7 +34,6 @@ static void spread(unsigned pc, char *result) {
                 return;
             visited[pc] = 1;
             spread(args[pc], result);
-            --pc;
             break;
         }
     }
@@ -43,13 +42,13 @@ static void spread(unsigned pc, char *result) {
 static int match(const char *s) {
     memset(agenda, 0, cp);
     memset(visited, 0, cp);
-    spread(cp - 1, agenda);
+    spread(cp, agenda);
     for (; *s; ++s) {
         memset(next, 0, cp);
         memset(visited, 0, cp);
         for (unsigned pc = 1; pc < cp; ++pc)
             if (agenda[pc] && *s == args[pc])
-                spread(pc - 1, next);
+                spread(pc, next);
         char *tmp = agenda; agenda = next; next = tmp;
     }
     return agenda[0];  // (0 is the accepting state)
@@ -63,9 +62,9 @@ static void really_emit(Op op, int arg) {
 }
 
 static int emit(Op op, int arg, unsigned k) { // k for continuation
-    if (cp - 1 != k) really_emit(op_jump, k);
+    if (cp != k) really_emit(op_jump, k);
     really_emit(op, arg);
-    return cp - 1;
+    return cp;
 }
 
 static const char *pattern, *pp; // start, current parsing position
@@ -101,7 +100,7 @@ static int parse_expr(int precedence, unsigned k) {
 
 static void parse(const char *string) {
     pattern = string; pp = pattern + strlen(pattern);
-    parse_expr(0, emit(op_expect, '\0', -1)); // (no char from fgets == '\0')
+    parse_expr(0, emit(op_expect, '\0', 0)); // (no char from fgets == '\0')
     if (pattern != pp) panic("Bad pattern");
 }
 
