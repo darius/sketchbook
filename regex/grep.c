@@ -101,7 +101,7 @@ static int parse_expr(int precedence, unsigned k) {
 
 static void parse(const char *pattern) {
     re = pattern; ts = re + strlen(re);
-    parse_expr(0, emit(op_expect, 0, -1));
+    parse_expr(0, emit(op_expect, '\0', -1)); // (no char from fgets == '\0' )
     if (re != ts) panic("Syntax error");
 }
 
