@@ -9,7 +9,7 @@ static void error(const char *plaint) {
 
 #define max_insns 9999
 enum { op_expect, op_jump, op_split };
-static unsigned ninsns = 0;
+static unsigned ninsns;
 static int ops[max_insns], args[max_insns];
 static char visited[max_insns];
 
@@ -93,7 +93,8 @@ static unsigned parsing(int precedence, unsigned k) {
 
 static unsigned parse(const char *string) {
     pattern = string; pp = pattern + strlen(pattern);
-    unsigned k = parsing(0, ninsns = 1); // Skip insn 0, the accepting state
+    ninsns = 0;
+    unsigned k = parsing(0, emit(op_expect, '\0', 0));
     if (pattern != pp) error("Bad pattern");
     return k;
 }
