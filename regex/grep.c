@@ -99,7 +99,7 @@ static unsigned parse(const char *string) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2) error("usage");
+    if (argc != 2) error("Usage: grep pattern");
     unsigned start = parse(argv[1]);
     char line[9999];
     while (fgets(line, sizeof line, stdin)) {
