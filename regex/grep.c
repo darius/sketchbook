@@ -78,12 +78,12 @@ static unsigned parsing(int precedence, unsigned state) {
     else
         rhs = emit(op_eat, *--pp, state);
     while (pattern < pp && pp[-1] != '(') {
-        int prec = pp[-1] == '|' ? 2 : 4;
-        if (prec < precedence) break;
+        int prec = pp[-1] == '|' ? 3 : 5;
+        if (prec <= precedence) break;
         if (eat('|'))
-            rhs = emit(op_fork, rhs, parsing(prec+1, state));
+            rhs = emit(op_fork, rhs, parsing(prec, state));
         else
-            rhs = parsing(prec+1, rhs);
+            rhs = parsing(prec, rhs);
     }
     return rhs;
 }
