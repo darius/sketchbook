@@ -68,15 +68,15 @@ static int emit(Op op, int arg, unsigned k) { // k for continuation
     return cp - 1;
 }
 
-static const char *re, *ts;
+static const char *pattern, *pp; // start, current parsing position
 
 static int eat(char c) {
-    int r = re < ts && ts[-1] == c; ts -= r; return r;
+    int r = pattern < pp && pp[-1] == c; pp -= r; return r;
 }
 
 static int parse_expr(int precedence, unsigned k) {
     int rhs;
-    if (re == ts || ts[-1] == '|' || ts[-1] == '(')
+    if (pattern == pp || pp[-1] == '|' || pp[-1] == '(')
         rhs = k;
     else if (eat(')')) {
         rhs = parse_expr(0, k);
@@ -87,9 +87,9 @@ static int parse_expr(int precedence, unsigned k) {
         args[rhs] = parse_expr(6, rhs);
     }
     else
-        rhs = emit(op_expect, *--ts, k);
-    while (re < ts && ts[-1] != '(') {
-        int prec = ts[-1] == '|' ? 2 : 4;
+        rhs = emit(op_expect, *--pp, k);
+    while (pattern < pp && pp[-1] != '(') {
+        int prec = pp[-1] == '|' ? 2 : 4;
         if (prec < precedence) break;
         if (eat('|'))
             rhs = emit(op_split, rhs, parse_expr(prec+1, k));
@@ -99,10 +99,10 @@ static int parse_expr(int precedence, unsigned k) {
     return rhs;
 }
 
-static void parse(const char *pattern) {
-    re = pattern; ts = re + strlen(re);
+static void parse(const char *string) {
+    pattern = string; pp = pattern + strlen(pattern);
     parse_expr(0, emit(op_expect, '\0', -1)); // (no char from fgets == '\0')
-    if (re != ts) panic("Bad pattern");
+    if (pattern != pp) panic("Bad pattern");
 }
 
 int main(int argc, char **argv) {
