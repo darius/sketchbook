@@ -48,8 +48,7 @@ static int match(unsigned start, const char *input) {
 
 static void emit1(int op, int arg) {
     if (max_insns <= ninsns) error("Pattern too long");
-    ops[ninsns] = op, args[ninsns] = arg;
-    ++ninsns;
+    ops[ninsns] = op, args[ninsns] = arg, ++ninsns;
 }
 
 static unsigned emit(int op, int arg, unsigned state) {
