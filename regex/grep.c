@@ -7,14 +7,14 @@ static void error(const char *plaint) {
     exit(1);
 }
 
-enum { max_insns = 9999 };
+enum { max_insns = 8192 };
 enum { op_expect, op_jump, op_split };
 static unsigned ninsns;
 static int ops[max_insns], args[max_insns];
 static char visited[max_insns];
 
 static void spread(unsigned pc, char *set) {
-    for (;;) { switch (ops[--pc]) {
+    for (;;) switch (ops[--pc]) {
         case op_expect:
             set[pc] = 1;
             return;
@@ -27,20 +27,19 @@ static void spread(unsigned pc, char *set) {
             spread(args[pc], set);
             break;
         }
-    }
 }
 
-static int match(unsigned start, const char *s) {
+static int match(unsigned start, const char *input) {
     static char set0[max_insns], set1[max_insns];
     char *agenda = set0, *next = set1;
     memset(agenda, 0, ninsns);
     memset(visited, 0, ninsns);
     spread(start, agenda);
-    for (; *s; ++s) {
+    for (; *input; ++input) {
         memset(next, 0, ninsns);
         memset(visited, 0, ninsns);
         for (unsigned pc = 1; pc < ninsns; ++pc)
-            if (agenda[pc] && *s == args[pc])
+            if (agenda[pc] && *input == args[pc])
                 spread(pc, next);
         char *tmp = agenda; agenda = next; next = tmp;
     }
