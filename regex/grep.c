@@ -80,7 +80,7 @@ static int parse_expr(int precedence, unsigned k) {
         rhs = k;
     else if (eat(')')) {
         rhs = parse_expr(0, k);
-        if (!eat('(')) panic("Expected '('");
+        if (!eat('(')) panic("Mismatched ')'");
     }
     else if (eat('*')) {
         rhs = emit(op_split, 0, k);
@@ -102,7 +102,7 @@ static int parse_expr(int precedence, unsigned k) {
 static void parse(const char *pattern) {
     re = pattern; ts = re + strlen(re);
     parse_expr(0, emit(op_expect, '\0', -1)); // (no char from fgets == '\0')
-    if (re != ts) panic("Syntax error");
+    if (re != ts) panic("Bad pattern");
 }
 
 int main(int argc, char **argv) {
