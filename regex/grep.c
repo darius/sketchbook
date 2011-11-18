@@ -71,7 +71,7 @@ static int emit(Op op, int arg, unsigned k) { // k for continuation
 static const char *pattern, *pp; // start, current parsing position
 
 static int eat(char c) {
-    int r = pattern < pp && pp[-1] == c; pp -= r; return r;
+    return pattern < pp && pp[-1] == c ? (--pp, 1) : 0;
 }
 
 static int parse_expr(int precedence, unsigned k) {
