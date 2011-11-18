@@ -55,8 +55,6 @@ static int match(const char *s) {
     return agenda[0];  // (0 is the accepting state)
 }
 
-static const char *re, *ts;
-
 static void really_emit(Op op, int arg) {
     if (max_insns <= cp) panic("Pattern too long");
     ops[cp] = op;
@@ -69,6 +67,8 @@ static int emit(Op op, int arg, unsigned k) { // k for continuation
     really_emit(op, arg);
     return cp - 1;
 }
+
+static const char *re, *ts;
 
 static int eat(char c) {
     int r = re < ts && ts[-1] == c; ts -= r; return r;
