@@ -4,25 +4,21 @@
 
 #define max_insns 9999
 
-static void panic(const char *plaint) {
+static void error(const char *plaint) {
     fprintf(stderr, "%s\n", plaint);
     exit(1);
 }
 
-typedef enum { op_expect, op_jump, op_split } Op;
-static Op ops[max_insns];
-static int args[max_insns];
+enum { op_expect, op_jump, op_split };
+static int ops[max_insns], args[max_insns];
 static unsigned cp = 0;  // compile pointer
 
-static char set0[max_insns];
-static char set1[max_insns];
 static char visited[max_insns];
-static char *agenda = set0;
-static char *next = set1;
+static char set0[max_insns], set1[max_insns];
+static char *agenda = set0, *next = set1;
 
 static void spread(unsigned pc, char *result) {
-    for (;;) {
-        switch (ops[--pc]) {
+    for (;;) { switch (ops[--pc]) {
         case op_expect:
             result[pc] = 1;
             return;
@@ -30,8 +26,7 @@ static void spread(unsigned pc, char *result) {
             pc = args[pc];
             break;
         case op_split:
-            if (visited[pc])
-                return;
+            if (visited[pc]) return;
             visited[pc] = 1;
             spread(args[pc], result);
             break;
@@ -39,10 +34,10 @@ static void spread(unsigned pc, char *result) {
     }
 }
 
-static int match(const char *s) {
+static int match(unsigned start, const char *s) {
     memset(agenda, 0, cp);
     memset(visited, 0, cp);
-    spread(cp, agenda);
+    spread(start, agenda);
     for (; *s; ++s) {
         memset(next, 0, cp);
         memset(visited, 0, cp);
@@ -54,14 +49,14 @@ static int match(const char *s) {
     return agenda[0];  // (0 is the accepting state)
 }
 
-static void really_emit(Op op, int arg) {
-    if (max_insns <= cp) panic("Pattern too long");
+static void really_emit(int op, int arg) {
+    if (max_insns <= cp) error("Pattern too long");
     ops[cp] = op;
     args[cp] = arg;
     ++cp;
 }
 
-static int emit(Op op, int arg, unsigned k) { // k for continuation
+static unsigned emit(int op, int arg, unsigned k) { // k for continuation
     if (cp != k) really_emit(op_jump, k);
     really_emit(op, arg);
     return cp;
@@ -73,17 +68,17 @@ static int eat(char c) {
     return pattern < pp && pp[-1] == c ? (--pp, 1) : 0;
 }
 
-static int parsing(int precedence, unsigned k) {
-    int rhs;
-    if (pattern == pp || pp[-1] == '|' || pp[-1] == '(')
+static unsigned parsing(int precedence, unsigned k) {
+    unsigned rhs;
+    if (pattern == pp || pp[-1] == '(' || pp[-1] == '|')
         rhs = k;
     else if (eat(')')) {
         rhs = parsing(0, k);
-        if (!eat('(')) panic("Mismatched ')'");
+        if (!eat('(')) error("Mismatched ')'");
     }
     else if (eat('*')) {
-        rhs = emit(op_split, 0, k);
-        args[rhs] = parsing(6, rhs);
+        rhs = emit(op_split, 0, k); // (The 0 is a placeholder...
+        args[rhs-1] = parsing(6, rhs); // ... filled in here.)
     }
     else
         rhs = emit(op_expect, *--pp, k);
@@ -98,19 +93,20 @@ static int parsing(int precedence, unsigned k) {
     return rhs;
 }
 
-static void parse(const char *string) {
+static unsigned parse(const char *string) {
     pattern = string; pp = pattern + strlen(pattern);
-    parsing(0, emit(op_expect, '\0', 0)); // (no char from fgets == '\0')
-    if (pattern != pp) panic("Bad pattern");
+    unsigned k = parsing(0, emit(op_expect, '\0', 0)); // no input char == '\0'
+    if (pattern != pp) error("Bad pattern");
+    return k;
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2) panic("usage");
-    parse(argv[1]);
+    if (argc != 2) error("usage");
+    unsigned start = parse(argv[1]);
     char line[9999];
     while (fgets(line, sizeof line, stdin)) {
         line[strlen(line) - 1] = '\0';
-        if (match(line))
+        if (match(start, line))
             puts(line);
     }
     return 0;
