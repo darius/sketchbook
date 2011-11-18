@@ -47,16 +47,15 @@ static int match(unsigned start, const char *s) {
     return agenda[0];  // (0 is the accepting state)
 }
 
-static void really_emit(int op, int arg) {
+static void emit1(int op, int arg) {
     if (max_insns <= ninsns) error("Pattern too long");
-    ops[ninsns] = op;
-    args[ninsns] = arg;
+    ops[ninsns] = op, args[ninsns] = arg;
     ++ninsns;
 }
 
-static unsigned emit(int op, int arg, unsigned k) { // k for continuation
-    if (ninsns != k) really_emit(op_jump, k);
-    really_emit(op, arg);
+static unsigned emit(int op, int arg, unsigned state) {
+    if (ninsns != state) emit1(op_jump, state);
+    emit1(op, arg);
     return ninsns;
 }
 
@@ -66,25 +65,25 @@ static int eat(char c) {
     return pattern < pp && pp[-1] == c ? (--pp, 1) : 0;
 }
 
-static unsigned parsing(int precedence, unsigned k) {
+static unsigned parsing(int precedence, unsigned state) {
     unsigned rhs;
     if (pattern == pp || pp[-1] == '(' || pp[-1] == '|')
-        rhs = k;
+        rhs = state;
     else if (eat(')')) {
-        rhs = parsing(0, k);
+        rhs = parsing(0, state);
         if (!eat('(')) error("Mismatched ')'");
     }
     else if (eat('*')) {
-        rhs = emit(op_split, 0, k); // (The 0 is a placeholder...
-        args[rhs-1] = parsing(6, rhs); // ... filled in here.)
+        rhs = emit(op_split, 0, state); // (The 0 is a placeholder...
+        args[rhs-1] = parsing(6, rhs); // ...filled in here.)
     }
     else
-        rhs = emit(op_expect, *--pp, k);
+        rhs = emit(op_expect, *--pp, state);
     while (pattern < pp && pp[-1] != '(') {
         int prec = pp[-1] == '|' ? 2 : 4;
         if (prec < precedence) break;
         if (eat('|'))
-            rhs = emit(op_split, rhs, parsing(prec+1, k));
+            rhs = emit(op_split, rhs, parsing(prec+1, state));
         else
             rhs = parsing(prec+1, rhs);
     }
@@ -94,18 +93,18 @@ static unsigned parsing(int precedence, unsigned k) {
 static unsigned parse(const char *string) {
     pattern = string; pp = pattern + strlen(pattern);
     ninsns = 0;
-    unsigned k = parsing(0, emit(op_expect, '\0', 0));
+    unsigned state = parsing(0, emit(op_expect, '\0', 0));
     if (pattern != pp) error("Bad pattern");
-    return k;
+    return state;
 }
 
 int main(int argc, char **argv) {
     if (argc != 2) error("Usage: grep pattern");
-    unsigned start = parse(argv[1]);
+    unsigned start_state = parse(argv[1]);
     char line[9999];
     while (fgets(line, sizeof line, stdin)) {
         line[strlen(line) - 1] = '\0';
-        if (match(start, line))
+        if (match(start_state, line))
             puts(line);
     }
     return 0;
