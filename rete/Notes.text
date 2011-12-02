@@ -1,0 +1,139 @@
+Implement Rete. Nice explanation in Robert Doorenbos, Production
+Matching for Large Learning Systems, CMU-CS-95-113.pdf
+
+A minimal version, minus the jargon:
+
+  * Facts are 3-tuples of atoms.
+  * Patterns are 3-tuples of atoms with variables.
+  * Guards are conjunctions of patterns. (Variables scope over the
+    whole rule.)
+  * Rules pair a guard with an action.
+  * An action can add facts or do other stuff Rete is not concerned
+    with (beyond supplying the variable bindings from the guard).
+
+The implementation:
+
+We want to absorb each new fact with only a small amount of work. So
+we maintain memories of the results of queries implied by the guards
+and incrementally update them with each new fact. Facts get filtered
+by a dataflow network steering them into the right memories.
+
+If you look at a single rule in isolation, you can compile it into a
+'match memory' for each pattern and a 'join memory' for each prefix of
+the guard, with a fairly obvious network to tie them all together. But
+note that we can share structure: e.g. two patterns (block color ?x)
+and (block color ?y) share just one match memory, since the variable
+names don't matter.
+
+The whole set of rules compiles the same way, one at a time, but with
+the same sort of sharing globally. (So two equivalent guard-prefixes
+turn into just one node in the network.)
+
+Details:
+
+  * A token is a list of facts, all together satisfying a prefix of
+    some guard: the kth fact matches the kth pattern, for all k, and
+    any variables shared across the patterns match consistently.
+    [I'd like a better name for this than 'token'...]
+
+There are two kinds of memory:
+
+  * A match memory holds a set of matches for a single pattern.
+
+  * A join memory holds a set of tokens all satisfying the same
+    guard-prefix.
+
+And a few kinds of node: 
+
+  * A match node tests a property of the incoming fact (does slot 2
+    hold literal atom 'foo'? Does slot 1 equal slot 3?). It passes on
+    each fact that satisfies the test. The match nodes collectively
+    match patterns.
+
+  * A join node tries to make new tokens for a particular
+    guard-prefix. It has two input ports: one from a join memory (for
+    the guard-prefix minus its last element) and one from a match
+    memory (for the prefix's last element). It tries to extend any
+    incoming token with matches to any remembered facts, and likewise
+    extend any incoming fact with matches to any remembered tokens. A
+    token joins with a fact if particular fields of the fact match
+    particular fields of particular elements of the token. The node
+    passes on 0 or more extended tokens for each incoming token or
+    fact.
+
+    (The join node for the *first* pattern in a guard inputs from a
+    special join memory that's pre-filled with a single empty token.)
+
+  * An action node takes a token (for a complete guard) and runs an
+    action using the bindings. (This action might be to queue up the
+    real action for later, or whatever.)
+
+Each memory gets fed from a single node of the appropriate type.
+
+There's a tree of match nodes feeding ultimately into a collection of
+match memories: one per distinct pattern from the rules. The match
+memories feed into the join network: facts flow through join nodes and
+join memories down to action nodes. (Each join node outputs to an
+optional join memory and 0 or more action nodes; each join memory
+outputs to 1 or more join nodes.) 
+
+There's a subtlety to the order of evaluation. When a fact is added to
+a match memory, duplicate tokens could be created unless the dependent
+join nodes get notified in a particular order. (Because the 'same'
+pattern can appear multiple times in a guard. See the thesis ref
+above. But I wonder: could you see the same kind of problem when you
+have two different-but-unifying patterns in the same rule, such that
+one fact, on being added, activates two match memories affecting the
+same rule? Presumably the full explanation shows why this isn't an
+additional problem.)
+
+To avoid this, when you add a fact to a match memory:
+
+  1. First add the fact.
+  2. Then notify the dependent join nodes, descendants before
+     ancestors. (That is, if J1 transitively outputs to J2, then J1
+     should *follow* J2 in the dependents list.)
+
+When we compile rules into a network, to respect this required order
+of dependents, "build the net *top-down*, and when we build a new join
+node, insert it at the *head* of its match memory's list of
+dependents." [translated]
+
+How naturally could we derive this whole scheme by refactoring a naive
+production-system interpreter? Is it the 'most natural' scheme? The
+straightforward nature of the compiling suggests a partial evaluator
+almost could do it. (Where the shared network structure comes from the
+usual peval codegen memoization.) (OTOH, *removing* facts and rules
+would not so obviously fit that. I wonder if Rete tricks could
+generalize to a kind of incremental partial evaluator that updates its
+output residual program to reflect a mutable 'static' input.) Here's
+one optimization that does not appear to fall out of peval: a join
+node gets a join memory only if it feeds into another join node.
+
+This sketch can be extended variously:
+
+  * removing facts, not just adding them
+  * adding/removing rules at runtime
+  * non-equality tests
+  * disjunction, negation
+  * n-tuples, s-expressions
+
+and optimized:
+
+  * hashing in the match network
+  * or replace it with 8 hash-lookups, one per set of variable positions
+    (Plus extra checks in the case of shared variables. I think except
+    for those checks it'd actually be simpler than the simplest match
+    network. The thesis suggests moving these checks into the join
+    network which already needs some similar code for joins.)
+  * hashing in the memories
+  * "right-unlinking", left-unlinking
+  * etc etc...
+
+A small optimization I didn't see mentioned: when adding a fact, you
+typically know some of its atoms at compile time. This could tell you,
+at compile time, some of the match memories it'll end up in, without
+going through the match network at runtime.
+
+What applications might all this have besides production systems?
+Stream databases?
