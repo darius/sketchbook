@@ -95,11 +95,11 @@ def matching(patterns, facts, envs):
 
 def matches(pattern, facts, envs):
     "Yield all ways of extending an env to match pattern."
-    for env in envs:
-        for fact in facts:
-            env1 = match(pattern, fact, env)
-            if env1 is not None:
-                yield env1
+    return successful(match(pattern, fact, env)
+                      for env in envs for fact in facts)
+
+def successful(xs):
+    return (x for x in xs if x is not None)
 
 def match(pattern, fact, env):
     "Return an extended env matching pattern to fact, or None if impossible."
