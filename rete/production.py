@@ -59,6 +59,7 @@ def parse_patterns(text):
 def run(rules, initial_facts):
     """Yield consequences of rules and initial_facts as long as new
     facts can be deduced."""
+    assert all(map(is_fact, initial_facts))
 
     facts = list(initial_facts)
 
@@ -105,12 +106,12 @@ def match(pattern, fact, env):
     "Return an extended env matching pattern to fact, or None if impossible."
     assert len(pattern) == len(fact)
     for x, y in zip(pattern, fact):
-        if is_variable(x) and x in env:
-            x = env[x]
-            assert not is_variable(x)
         if is_variable(x):
-            env = extend(env, x, y)
-        elif x != y:
+            if x not in env:
+                env = extend(env, x, y)
+                continue
+            x = env[x]
+        if x != y:
             return None
     return env
 
@@ -126,3 +127,6 @@ def fill_out(template, env):
 
 def is_variable(x):
     return isinstance(x, str) and x[:1].isupper()
+
+def is_fact(clause):
+    return not any(is_variable(x) for x in clause)
