@@ -3,17 +3,17 @@ Really basic production-system interpreter.
 
 A fact is a 3-tuple with no variables.
 A pattern is a 3-tuple possibly including variables.
-(Actually n-tuples but the n's must all be the same.)
 A template is like a pattern.
+
+(Actually n-tuples but the n's must all be the same.)
 
 A rule is a pair (patterns, templates). A rule fires when the patterns
 match some facts; the effect is to add new facts by filling out the
 templates with variable bindings from the matched patterns.
 
 There's a crude concrete syntax: rules are separated by a blank line;
-within a rule, the patterns are separated from the templates sby a
-'---' line. A variable starts with an uppercase letter, a constant
-with lowercase or non-alphabetic.
+within a rule, '---' separates the patterns from the templates. A
+variable starts with uppercase, a constant with anything else.
 """
 
 sample_rules = """\
