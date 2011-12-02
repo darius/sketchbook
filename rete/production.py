@@ -24,6 +24,11 @@ parent Parent Child
 dad Parent Child
 ---
 parent Parent Child
+
+parent G P
+parent P C
+---
+grandparent G C
 """
 
 sample_facts = """\
@@ -34,6 +39,7 @@ mom cersei myrcella
 ## main(sample_rules, sample_facts)
 #. parent cersei myrcella
 #. parent tywin cersei
+#. grandparent tywin myrcella
 #. 
 
 def main(rules_text, facts_text):
