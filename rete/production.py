@@ -87,20 +87,19 @@ def flatmap(f, xs):
 
 def matching(patterns, facts, envs):
     "Yield all ways of extending an env to match all patterns conjointly."
-    for env in envs:
-        if not patterns:
-            yield env
-        else:
-            for env1 in matching(patterns[1:], facts,
-                                 matches(patterns[0], facts, env)):
-                yield env1
+    if not patterns:
+        return envs
+    else:
+        return matching(patterns[1:], facts,
+                        matches(patterns[0], facts, envs))
 
-def matches(pattern, facts, env):
-    "Yield all ways of extending env to match pattern."
-    for fact in facts:
-        env1 = match(pattern, fact, env)
-        if env1 is not None:
-            yield env1
+def matches(pattern, facts, envs):
+    "Yield all ways of extending an env to match pattern."
+    for env in envs:
+        for fact in facts:
+            env1 = match(pattern, fact, env)
+            if env1 is not None:
+                yield env1
 
 def match(pattern, fact, env):
     "Return an extended env matching pattern to fact, or None if impossible."
