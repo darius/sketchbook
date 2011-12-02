@@ -62,13 +62,16 @@ def run(rules, initial_facts):
 
     facts = list(initial_facts)
 
-    def new_consequences((guard, action)):
+    def consequences((guard, action)):
         for env in matching(guard, facts, [{}]):
             for template in action:
-                fact = fill_out(template, env)
-                if fact not in facts:
-                    facts.append(fact)
-                    yield fact
+                yield fill_out(template, env)
+
+    def new_consequences(rule):
+        for fact in consequences(rule):
+            if fact not in facts:
+                facts.append(fact)
+                yield fact
 
     while True:
         for fact in flatmap(new_consequences, rules):
