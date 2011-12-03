@@ -9,6 +9,10 @@ A rule is a pair (patterns, templates). A rule fires when the patterns
 match some facts; the effect is to add new facts by filling out the
 templates with variable bindings from the matched patterns.
 
+A free variable in a rule -- one that appears in a template but not in
+any of the rule's patterns -- gets automatically filled with a unique ID.
+(Atoms starting with ':' should be considered reserved for these IDs.)
+
 There's a crude concrete syntax: rules are separated by a blank line;
 within a rule, '-->' separates the patterns from the templates. A
 variable starts with uppercase, a constant with anything else.
@@ -37,6 +41,7 @@ mom cersei myrcella
 #. grandparent tywin myrcella
 #. 
 
+# An example using free variables and recursion:
 append_rules = """\
 append Xs Ys Zs
 Xs nil
