@@ -84,6 +84,7 @@ append a0 b0 z0
 #. 
 
 def main(rules_text, facts_text):
+    "Infer and print all consequences."
     for fact in run(parse_rules(rules_text), parse_factoids(facts_text)):
         print ' '.join(fact)
 
