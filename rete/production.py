@@ -59,7 +59,7 @@ def run(rules, initial_facts):
     facts = list(initial_facts)
 
     def consequences((guard, action)):
-        for env in matching(guard, facts, [{}]):
+        for env in match_all(guard, facts, [{}]):
             for template in action:
                 yield fill(template, env)
 
@@ -75,7 +75,7 @@ def run(rules, initial_facts):
         else:
             break
 
-def matching(patterns, facts, envs):
+def match_all(patterns, facts, envs):
     "Yield all ways of extending an env to match all patterns conjointly."
     def matches(pattern, envs):
         return successful(match(pattern, fact, env)
