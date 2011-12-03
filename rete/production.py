@@ -10,7 +10,7 @@ match some facts; the effect is to add new facts by filling out the
 templates with variable bindings from the matched patterns.
 
 There's a crude concrete syntax: rules are separated by a blank line;
-within a rule, '---' separates the patterns from the templates. A
+within a rule, '-->' separates the patterns from the templates. A
 variable starts with uppercase, a constant with anything else.
 """
 
