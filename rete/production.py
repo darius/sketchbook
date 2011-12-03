@@ -87,6 +87,10 @@ def main(rules_text, facts_text):
     for fact in run(parse_rules(rules_text), parse_factoids(facts_text)):
         print ' '.join(fact)
 
+def parse_factoids(text):
+    "Parse a list of facts, patterns, or templates."
+    return [line.split() for line in text.splitlines() if line.strip()]
+
 def parse_rules(text):
     return map(parse_rule, text.split('\n\n'))
 
@@ -95,10 +99,6 @@ def parse_rule(text):
 
 def make_rule((patterns, templates)):
     return patterns, templates, free_vars(templates) - free_vars(patterns)
-
-def parse_factoids(text):
-    "Parse a list of facts, patterns, or templates."
-    return [line.split() for line in text.splitlines() if line.strip()]
 
 def free_vars(factoids):
     "Return a set of all variables in factoids."
