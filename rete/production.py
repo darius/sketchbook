@@ -18,17 +18,14 @@ variable starts with uppercase, a constant with anything else.
 
 sample_rules = """\
 mom Parent Child
----
-parent Parent Child
+--> parent Parent Child
 
 dad Parent Child
----
-parent Parent Child
+--> parent Parent Child
 
 parent G P
 parent P C
----
-grandparent G C
+--> grandparent G C
 """
 
 sample_facts = """\
@@ -43,17 +40,17 @@ mom cersei myrcella
 #. 
 
 def main(rules_text, facts_text):
-    for fact in run(parse_rules(rules_text), parse_patterns(facts_text)):
+    for fact in run(parse_rules(rules_text), parse_factoids(facts_text)):
         print ' '.join(fact)
 
 def parse_rules(text):
     return map(parse_rule, text.split('\n\n'))
 
 def parse_rule(text):
-    patterns, templates = text.split('\n---\n')
-    return parse_patterns(patterns), parse_patterns(templates)
+    return map(parse_factoids, text.split('-->', 1))
 
-def parse_patterns(text):
+def parse_factoids(text):
+    "Parse a list of facts, patterns, or templates."
     return [line.split() for line in text.splitlines()]
 
 def run(rules, initial_facts):
