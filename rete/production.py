@@ -70,18 +70,17 @@ append a0 b0 z0
 """
 
 ## main(append_rules, append_facts)
-#. 
 #. z0 cons hello :Zs'.2.0.7
 #. append a1 b0 :Zs'.2.0.7
-#. :Zs'.2.0.7 cons world :Zs'.2.1.10
-#. append a2 b0 :Zs'.2.1.10
-#. :Zs'.2.1.10 cons goodbye :Zs'.1.3.2.12
-#. append a2 b1 :Zs'.1.3.2.12
-#. :Zs'.1.3.2.12 cons cruel :Zs'.1.4.2.14
-#. append a2 b2 :Zs'.1.4.2.14
-#. :Zs'.1.4.2.14 cons world :Zs'.1.5.2.16
-#. append a2 b3 :Zs'.1.5.2.16
-#. :Zs'.1.5.2.16 nil
+#. :Zs'.2.0.7 cons world :Zs'.2.1.9
+#. append a2 b0 :Zs'.2.1.9
+#. :Zs'.2.1.9 cons goodbye :Zs'.1.3.2.11
+#. append a2 b1 :Zs'.1.3.2.11
+#. :Zs'.1.3.2.11 cons cruel :Zs'.1.4.2.13
+#. append a2 b2 :Zs'.1.4.2.13
+#. :Zs'.1.4.2.13 cons world :Zs'.1.5.2.15
+#. append a2 b3 :Zs'.1.5.2.15
+#. :Zs'.1.5.2.15 nil
 #. 
 
 def main(rules_text, facts_text):
@@ -97,12 +96,13 @@ def parse_rule(text):
 def make_rule((patterns, templates)):
     return patterns, templates, free_vars(templates) - free_vars(patterns)
 
-def free_vars(factoids):
-    return set(x for f in factoids for x in f if is_variable(x))
-
 def parse_factoids(text):
     "Parse a list of facts, patterns, or templates."
-    return [line.split() for line in text.splitlines()]
+    return [line.split() for line in text.splitlines() if line.strip()]
+
+def free_vars(factoids):
+    "Return a set of all variables in factoids."
+    return set(x for f in factoids for x in f if is_variable(x))
 
 def run(rules, initial_facts):
     """Yield consequences of rules and initial_facts as long as new
