@@ -104,9 +104,9 @@ def parse_rule(text):
     return make_rule(map(parse_factoids, text.split('-->', 1)))
 
 def make_rule((patterns, templates)):
-    return patterns, templates, free_vars(templates) - free_vars(patterns)
+    return patterns, templates, collect_vars(templates) - collect_vars(patterns)
 
-def free_vars(factoids):
+def collect_vars(factoids):
     "Return a set of all variables in factoids."
     return set(x for f in factoids for x in f if is_variable(x))
 
@@ -117,9 +117,9 @@ def run(rules, initial_facts):
 
     facts = list(initial_facts)
 
-    def consequences((rule_num, (guard, action, fresh_vars))):
+    def consequences((rule_num, (guard, action, free_vars))):
         for env in match_all(guard, facts, [{'#': str(rule_num)}]):
-            for v in fresh_vars:
+            for v in free_vars:
                 env = extend(env, v, make_fresh_id(v, env['#']))
             for template in action:
                 yield fill(template, env)
