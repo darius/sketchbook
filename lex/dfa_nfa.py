@@ -5,6 +5,34 @@ reduce the state count on the example from "Regular-expression
 derivatives reexamined". It probably won't do as well as DFAs via
 derivatives, since we don't use all the simplification rules; but it
 did improve on naive Thompson NFA->DFA here.
+
+TODO:
+Memoization coalesces states that act like equivalent suffixes of a
+regex, but it doesn't help with common prefixes. We could catch those
+too with a second pass that takes the NFA and builds a reversed NFA,
+memoizing in the same way. (Right?) If we take this approach, it'd
+make sense for the first pass to go left to right (instead of the
+current right-to-left) so that after the second pass the arrows point
+forwards.
+
+Simple example input this should help with:
+
+    hello|hellward|awkward|jello
+
+What's a good more-complex example including loops?
+
+(Would it be just as good, and easier, to do this bidirectional
+memoizing at the regex level and then just NFAify in one pass as
+before?)
+
+So, like this? (but memoized) --
+
+reverse rk AcceptingNode       = rk
+reverse rk (ExpectingNode n k) = reverse k (ExpectingNode n rk)
+reverse rk (ForkNode k1 k2)    = reverse rk k1 `fork` reverse rk k2
+reverse rk (LoopNode k makeK) = loop where
+                                loop = LoopNode (reverse rk k)
+                                                (reverse loop (makeK AcceptingNode))
 """
 
 
