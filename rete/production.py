@@ -145,7 +145,7 @@ def match_all(patterns, facts, envs):
     def matches(pattern, envs):
         return successful(match(pattern, f, fact, env)
                           for env in envs for f, fact in enumerate(facts))
-    return foldr(matches, patterns, envs)
+    return foldr(matches, envs, patterns)
 
 def match(pattern, f, fact, env):
     """Return an extended env matching pattern to fact, or None if
@@ -184,7 +184,7 @@ def flatmap(f, xs):
         for result in f(x):
             yield result
 
-def foldr(f, xs, z):
+def foldr(f, z, xs):
     for x in reversed(xs):
         z = f(x, z)
     return z
