@@ -42,15 +42,14 @@ reverse rk (LoopNode k makeK) = loop where
 ## re = alt(seq(lit('A'), lit('C')), seq(lit('B'), lit('C')))
 ## dfa = make_dfa(prepare((1, re)))
 ## dump(dfa)
-#. 0     {'A': 1, 'B': 1}
-#. 1     {'C': 2}
-#. 2 <1> {}
+#. 0     'A':1 'B':1
+#. 1     'C':2
+#. 2 <1> 
 #. 
 
 def dump(dfa):
     for i, (label, moves) in enumerate(dfa):
-        if label is None: label = '   '
-        else: label = '<%s>' % label
+        label = '   ' if label is None else '<%s>' % label
         print i, label, ' '.join('%r:%d' % pair for pair in sorted(moves.items()))
 
 def make_scanner(whitespace, res):
