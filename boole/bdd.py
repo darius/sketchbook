@@ -55,10 +55,9 @@ class Choice:
         if self not in memos:
             left  = self.on_L.satisfy(target, memos)
             right = self.on_R.satisfy(target, memos)
-            to_L, to_R = ((self.test, L),), ((self.test, R),)
             memos[self] = (left & right
-                           | set(to_L + s for s in left - right)
-                           | set(to_R + s for s in right - left))
+                           | set(((self.test, L),) + s for s in left - right)
+                           | set(((self.test, R),) + s for s in right - left))
         return memos[self]
 
 def satisfy(e, target):
