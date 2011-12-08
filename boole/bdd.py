@@ -17,7 +17,7 @@ class Constant:
         return z if self.value else a
     def subst(self, maker, var, value):
         return self
-    def satisfy(self, target):
+    def satisfy(self, target, memos):
         return set([()]) if self is target else set()
 
 L = Constant(False)
@@ -50,15 +50,20 @@ class Choice:
         else:
             assert maker.ranker(var) < maker.rank(self)
             return self
-    def satisfy(self, target):
+    def satisfy(self, target, memos):
         "Return a set of the substitutions that make self reduce to target."
-        # TODO: memoize
-        assert isinstance(target, Constant)
-        left, right = self.on_L.satisfy(target), self.on_R.satisfy(target)
-        to_L, to_R = ((self.test, L),), ((self.test, R),)
-        return (left & right
-                | set(to_L + s for s in left - right)
-                | set(to_R + s for s in right - left))
+        if self not in memos:
+            left  = self.on_L.satisfy(target, memos)
+            right = self.on_R.satisfy(target, memos)
+            to_L, to_R = ((self.test, L),), ((self.test, R),)
+            memos[self] = (left & right
+                           | set(to_L + s for s in left - right)
+                           | set(to_R + s for s in right - left))
+        return memos[self]
+
+def satisfy(e, target):
+    assert isinstance(target, Constant)
+    return sorted(e.satisfy(target, {}))
 
 class Maker:
     def __init__(self, ranker):
@@ -116,15 +121,15 @@ class Maker:
 ## m.choice(a, b, c)
 #. <<L b c> a <R b c>>
 
-## a.satisfy(L)
-#. set([(('a', L),)])
+## satisfy(a, L)
+#. [(('a', L),)]
 
-## sorted(m.choice(b, a, c).satisfy(L))
+## satisfy(m.choice(b, a, c), L)
 #. [(('a', L), ('b', L)), (('a', R), ('c', L))]
 
-## sorted(m.choice(a, b, c).satisfy(L))
+## satisfy(m.choice(a, b, c), L)
 #. [(('a', L), ('b', L)), (('b', R), ('c', L))]
-## sorted(m.choice(a, b, c).satisfy(R))
+## satisfy(m.choice(a, b, c), R)
 #. [(('a', R), ('b', L)), (('b', R), ('c', R))]
 
 ## m.neg(a)
@@ -145,8 +150,8 @@ class Maker:
 #. L
 ## m.neq(a, m.neg(a))
 #. R
-## m.imp(a, m.neg(a)).satisfy(R)
-#. set([(('a', L),)])
+## satisfy(m.imp(a, m.neg(a)), R)
+#. [(('a', L),)]
 
 ## m.imp(a, b)
 #. <R a b>
