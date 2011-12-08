@@ -47,9 +47,12 @@ class Choice:
     def subst(self, maker, var, value):
         if var is self.test:
             return value.choose(maker, self.on_L, self.on_R)
-        else:
-            assert maker.ranker(var) < maker.rank(self)
+        elif maker.ranker(var) < maker.rank(self):
             return self
+        else:
+            return self.choose(maker,
+                               self.on_L.subst(maker, var, value),
+                               self.on_R.subst(maker, var, value))
     def satisfy(self, target, memos):
         "Return a set of the substitutions that make self reduce to target."
         if self not in memos:
