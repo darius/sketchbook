@@ -13,10 +13,10 @@ class Constant:
         return 'LR'[self.value]
     def rank(self, ranker):
         return infinite_rank
-    def choice(self, maker, a, m, z):
-        return m.choose(maker, a, z)
     def choose(self, maker, a, z):
         return z if self.value else a
+    def choice(self, maker, a, m, z):
+        return m.choose(maker, a, z)
     def subst(self, maker, var, value):
         return self
     def satisfy(self, target):
@@ -36,25 +36,25 @@ class Choice:
         return '<%r %s %r>' % (self.on_L, self.test, self.on_R)
     def rank(self, ranker):
         return ranker(self.test)
+    def choose(self, maker, a, z):
+        return min(a, self, z, key=maker.rank).choice(maker, a, self, z)
     def choice(self, maker, a, m, z):
         assert self.rank(maker.ranker) <= maker.rank(a)
         assert self.rank(maker.ranker) <= maker.rank(m)
         assert self.rank(maker.ranker) <= maker.rank(z)
-        subst, test = maker.subst, self.test
-        return maker.cons(maker.choice(subst(a, test, L),
-                                       subst(m, test, L),
-                                       subst(z, test, L)),
+        test = self.test
+        return maker.cons(maker.choice(a.subst(maker, test, L),
+                                       m.subst(maker, test, L),
+                                       z.subst(maker, test, L)),
                           test,
-                          maker.choice(subst(a, test, R),
-                                       subst(m, test, R),
-                                       subst(z, test, R)))
-    def choose(self, maker, a, z):
-        return min(a, self, z, key=maker.rank).choice(maker, a, self, z)
+                          maker.choice(a.subst(maker, test, R),
+                                       m.subst(maker, test, R),
+                                       z.subst(maker, test, R)))
     def subst(self, maker, var, value):
         if var is self.test:
             return value.choose(maker, self.on_L, self.on_R)
         else:
-            assert maker.rank(var) < maker.rank(self.test)
+            assert maker.ranker(var) < maker.rank(self)
             return self
     def satisfy(self, target):
         "Return a set of the substitutions that make self reduce to target."
@@ -84,10 +84,6 @@ class Maker:
         if key not in self.choices:
             self.choices[key] = Choice(a, v, z)
         return self.choices[key]
-    def subst(self, e, v, c):
-        assert self.ranker(v) <= self.rank(e)
-        assert c in (L, R)
-        return e if self.ranker(v) < self.rank(e) else e.subst(self, v, c)
 
     def neg(self, a):    return self.choice(R, a, L)
     def imp(self, a, b): return self.choice(R, a, b)
