@@ -49,7 +49,7 @@ class Choice:
                                        subst(m, test, R),
                                        subst(z, test, R)))
     def choose(self, maker, a, z):
-        return maker.choice(a, self, z)
+        return min(a, self, z, key=maker.rank).choice(maker, a, self, z)
     def subst(self, maker, var, value):
         if var is self.test:
             return value.choose(maker, self.on_L, self.on_R)
@@ -75,7 +75,7 @@ class Maker:
     def rank(self, e):
         return e.rank(self.ranker)
     def choice(self, a, m, z):
-        return min(a, m, z, key=self.rank).choice(self, a, m, z)
+        return m.choose(self, a, z)
     def cons(self, a, v, z):
         assert self.ranker(v) <= self.rank(a)
         assert self.ranker(v) <= self.rank(z)
@@ -132,10 +132,10 @@ class Maker:
 ## m.choice(b, a, c).satisfy(L)
 #. set([(('a', L), ('b', L)), (('a', R), ('c', L))])
 
-## m.choice(a, b, c).satisfy(L)
-#. set([(('b', R), ('c', L)), (('a', L), ('b', L))])
-## m.choice(a, b, c).satisfy(R)
-#. set([(('a', R), ('b', L)), (('b', R), ('c', R))])
+## sorted(m.choice(a, b, c).satisfy(L))
+#. [(('a', L), ('b', L)), (('b', R), ('c', L))]
+## sorted(m.choice(a, b, c).satisfy(R))
+#. [(('a', R), ('b', L)), (('b', R), ('c', R))]
 
 ## m.neg(a)
 #. <R a L>
