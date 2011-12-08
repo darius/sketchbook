@@ -15,8 +15,6 @@ class Constant:
         return infinite_rank
     def choose(self, maker, a, z):
         return z if self.value else a
-    def choice(self, maker, a, m, z):
-        return m.choose(maker, a, z)
     def subst(self, maker, var, value):
         return self
     def satisfy(self, target):
@@ -37,19 +35,15 @@ class Choice:
     def rank(self, ranker):
         return ranker(self.test)
     def choose(self, maker, a, z):
-        return min(a, self, z, key=maker.rank).choice(maker, a, self, z)
-    def choice(self, maker, a, m, z):
-        assert self.rank(maker.ranker) <= maker.rank(a)
-        assert self.rank(maker.ranker) <= maker.rank(m)
-        assert self.rank(maker.ranker) <= maker.rank(z)
-        test = self.test
-        return maker.cons(maker.choice(a.subst(maker, test, L),
-                                       m.subst(maker, test, L),
-                                       z.subst(maker, test, L)),
-                          test,
-                          maker.choice(a.subst(maker, test, R),
-                                       m.subst(maker, test, R),
-                                       z.subst(maker, test, R)))
+        mk = maker
+        t = min(a, self, z, key=maker.rank).test
+        return mk.cons(self.subst(mk, t, L).choose(mk,
+                                                   a.subst(mk, t, L),
+                                                   z.subst(mk, t, L)),
+                       t,
+                       self.subst(mk, t, R).choose(mk,
+                                                   a.subst(mk, t, R),
+                                                   z.subst(mk, t, R)))
     def subst(self, maker, var, value):
         if var is self.test:
             return value.choose(maker, self.on_L, self.on_R)
@@ -125,8 +119,8 @@ class Maker:
 ## a.satisfy(L)
 #. set([(('a', L),)])
 
-## m.choice(b, a, c).satisfy(L)
-#. set([(('a', L), ('b', L)), (('a', R), ('c', L))])
+## sorted(m.choice(b, a, c).satisfy(L))
+#. [(('a', L), ('b', L)), (('a', R), ('c', L))]
 
 ## sorted(m.choice(a, b, c).satisfy(L))
 #. [(('a', L), ('b', L)), (('b', R), ('c', L))]
