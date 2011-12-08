@@ -3,9 +3,53 @@ BDDs. We assume everywhere that Choices in the same expression come
 from the same Maker.
 """
 
-infinite_rank = float('Inf')
+def satisfy(e, target):
+    "Return a list of the substitutions that make e reduce to target."
+    assert isinstance(target, Constant)
+    return sorted(e.satisfy(target, {}))
+
+class Maker:
+    """A memo-table of expressions all respecting the same ordering of
+    variables."""
+    def __init__(self, ranker):
+        self.ranker = ranker
+        self.choices = {}
+    def make_variable(self, name):
+        "Convert a variable name to an expression."
+        return self.cons(L, intern(name), R)
+    def rank(self, e):
+        "Return the least rank of any variable in e."
+        return e.rank(self.ranker)
+    def choice(self, a, m, z):
+        """Return an expressions whose meaning equals a's where m's is
+        L, else z's (where m's is R). In other words, an if-then-else
+        expression with m as the test."""
+        return m.choose(self, a, z)
+    def cons(self, a, v, z):
+        """Like self.choice(a, v, z), except v is a variable name
+        instead of an expression.."""
+        assert self.ranker(v) <= self.rank(a)
+        assert self.ranker(v) <= self.rank(z)
+        if a is z: return a
+        key = (a, v, z)
+        if key not in self.choices:
+            self.choices[key] = Choice(a, v, z)
+        return self.choices[key]
+
+    # 'neg' for negate
+    def neg(self, a):    return self.choice(R, a, L)
+    # 'imp' for implication
+    def imp(self, a, b): return self.choice(R, a, b) 
+    # TODO: first sort a, b by rank in the following?
+    # N.B. min and max could have been named 'and' and 'or'
+    # (taking L  to represent False, and R for True).
+    def min(self, a, b): return self.choice(L, a, b)
+    def max(self, a, b): return self.choice(b, a, R)
+    def eqv(self, a, b): return self.choice(self.neg(b), a, b)
+    def neq(self, a, b): return self.choice(b, a, self.neg(b))
 
 class Constant:
+    "A constant expression."
     def __init__(self, value):
         self.test = self
         self.value = value
@@ -20,10 +64,16 @@ class Constant:
     def satisfy(self, target, memos):
         return set([()]) if self is target else set()
 
+infinite_rank = float('Inf')
+
 L = Constant(False)
 R = Constant(True)
 
 class Choice:
+    """An if-then-else expression where the if-part is a variable, and
+    the right- and left-parts (or then- and else-parts if you'd rather
+    think of them that way) must have no variables ranking before this
+    if-part variable."""
     def __init__(self, on_L, variable, on_R):
         self.on_L = on_L
         self.test = variable
@@ -54,7 +104,6 @@ class Choice:
                                self.on_L.subst(maker, var, value),
                                self.on_R.subst(maker, var, value))
     def satisfy(self, target, memos):
-        "Return a set of the substitutions that make self reduce to target."
         if self not in memos:
             left  = self.on_L.satisfy(target, memos)
             right = self.on_R.satisfy(target, memos)
@@ -62,37 +111,6 @@ class Choice:
                            | set(((self.test, L),) + s for s in left - right)
                            | set(((self.test, R),) + s for s in right - left))
         return memos[self]
-
-def satisfy(e, target):
-    assert isinstance(target, Constant)
-    return sorted(e.satisfy(target, {}))
-
-class Maker:
-    def __init__(self, ranker):
-        self.ranker = ranker
-        self.choices = {}
-    def make_variable(self, name):
-        return self.cons(L, intern(name), R)
-    def rank(self, e):
-        return e.rank(self.ranker)
-    def choice(self, a, m, z):
-        return m.choose(self, a, z)
-    def cons(self, a, v, z):
-        assert self.ranker(v) <= self.rank(a)
-        assert self.ranker(v) <= self.rank(z)
-        if a is z: return a
-        key = (a, v, z)
-        if key not in self.choices:
-            self.choices[key] = Choice(a, v, z)
-        return self.choices[key]
-
-    def neg(self, a):    return self.choice(R, a, L)
-    def imp(self, a, b): return self.choice(R, a, b)
-    # TODO: first sort a, b by rank in the following?
-    def min(self, a, b): return self.choice(L, a, b)
-    def max(self, a, b): return self.choice(b, a, R)
-    def eqv(self, a, b): return self.choice(self.neg(b), a, b)
-    def neq(self, a, b): return self.choice(b, a, self.neg(b))
 
 ## m = Maker(ord)
 ## a, b, c = map(m.make_variable, 'abc')
