@@ -1,0 +1,3 @@
+Let's see if we can make an extensible editor in a couple of pages.
+The core should load your config file in Python on startup, your code
+defining keybindings, etc. So it's kind of a one-buffer Emacs.
