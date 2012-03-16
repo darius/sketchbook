@@ -55,10 +55,10 @@ def hand_eval(hand):
 
 
 # Hands
-# XXX incomplete tie-breaking
 
 def n_of_a_kind(n, hand):
-    return find(groups(n, hand))
+    g = find(groups(n, hand))
+    return g and g + descending(k for k in map(card_kind, hand) if k != g)
 
 def full_house(hand):
     return n_of_a_kind(2, hand) and n_of_a_kind(3, hand)
