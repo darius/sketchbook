@@ -38,86 +38,75 @@ def best_hand(hands):
     return max(hands, key=hand_rank)
 
 def hand_rank(hand):
+    kinds = descending(map(card_kind, hand))
+    suits = map(card_suit, hand)
     def rank(r, opt_subrank):
         return opt_subrank and tuple(map(kind_rank, r + opt_subrank))
-    return (   rank('0', flush(hand) and straight(hand))
-            or rank('9', n_of_a_kind(4, hand))
-            or rank('8', full_house(hand))
-            or rank('7', flush(hand))
-            or rank('6', straight(hand))
-            or rank('5', n_of_a_kind(3, hand))
-            or rank('4', n_pairs(2, hand))
-            or rank('3', n_pairs(1, hand))
-            or rank('2', high_card(hand)))
+    return (   rank('0', flush(kinds, suits) and straight(kinds))
+            or rank('9', n_of_a_kind(4, kinds))
+            or rank('8', full_house(kinds))
+            or rank('7', flush(kinds, suits))
+            or rank('6', straight(kinds))
+            or rank('5', n_of_a_kind(3, kinds))
+            or rank('4', n_pairs(2, kinds))
+            or rank('3', n_pairs(1, kinds))
+            or rank('2', kinds))
 
 
-# Hands
+# Hands. In all cases kinds must be sorted descending by rank.
 
-def n_of_a_kind(n, hand):
-    g = find(groups(n, hand))
-    return g and g + descending(k for k in map(card_kind, hand) if k != g)
+def n_of_a_kind(n, kinds):
+    g = find(groups(n, kinds))
+    return g and g + descending(k for k in kinds if k != g)
 
-def full_house(hand):
-    return n_of_a_kind(2, hand) and n_of_a_kind(3, hand)
+def full_house(kinds):
+    return n_of_a_kind(2, kinds) and n_of_a_kind(3, kinds)
 
-def flush(hand):
-    return 1 == len(set(map(card_suit, hand))) and high_card(hand)
+def flush(kinds, suits):
+    return 1 == len(set(suits)) and kinds
 
-def straight(hand):
-    kinds = ''.join(map(card_kind, hand))
+def straight(kinds):
     return (consecutive(kinds)                       # Try aces high
             or consecutive(kinds.replace('A', '1'))) # and aces low
 
-def n_pairs(n, hand):
-    paired = groups(2, hand)
+def n_pairs(n, kinds):
+    paired = groups(2, kinds)
     return (n == len(paired)
-            and descending(paired) + descending(groups(1, hand)))
+            and descending(paired) + descending(groups(1, kinds)))
 
-def high_card(hand):
-    return descending(map(card_kind, hand))
+def consecutive(kinds):
+    "Return the high rank if a straight, else None."
+    return (len(kinds) == len(set(kinds))
+                       == kind_rank(kinds[0]) - kind_rank(kinds[-1]) + 1
+            and kinds[0])
+
+def descending(kinds):
+    return ''.join(sorted(kinds, key=kind_rank, reverse=True))
+
+def groups(n, kinds):
+    "Return those kinds that appear in groups of n."
+    d = collections.defaultdict(int)
+    for kind in kinds:
+        d[kind] += 1
+    return [kind for kind, count in d.items() if count == n]
 
 
 # Cards:
-
 # kind + suit
 # 'As' ace of spades
 # '0c' ten of clubs
+# Kinds: A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 (1 for a low ace)
+# Suits: h s c d: heart spade club diamond
 
 def card_kind(card): return card[0]
 def card_suit(card): return card[1]
-
-
-# Kinds:
-# A, K, Q, J, 10, 9, 8, 7, 6, 5, 4, 3, 2 (, A)
 
 def kind_rank(kind):
     "Return a numeric rank, aces high."
     return 1 + '1234567890JQKA'.index(kind)
 
 
-# Suits:
-
-# h s c d
-# heart spade club diamond
-
-
 # Helpers
-
-def consecutive(kinds):
-    "Return the high rank if a straight, else None."
-    kinds = sorted(kinds, key=kind_rank)
-    return (kind_rank(kinds[-1]) - kind_rank(kinds[0]) == len(kinds) - 1
-            and kinds[-1])
-
-def descending(kinds):
-    return ''.join(sorted(kinds, key=kind_rank, reverse=True))
-
-def groups(n, hand):
-    "Return those kinds in hand that appear in groups of n."
-    d = collections.defaultdict(int)
-    for card in hand:
-        d[card_kind(card)] += 1
-    return [kind for kind, count in d.items() if count == n]
 
 def find(it):
     "Return the first non-None value, else None."
