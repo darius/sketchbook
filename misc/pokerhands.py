@@ -7,19 +7,19 @@
 import collections
 
 ## go()
-#. (2, 14, 10, 9, 5, 4) ['Ad', '0d', '9s', '5c', '4c']
-#. (2, 14, 10, 9, 5, 4) ['9s', '5c', 'Ad', '4c', '0d']
-#. (2, 13, 12, 11, 8, 7) ['Jc', 'Qd', '8h', '7h', 'Kc']
+#. (2, 14, 10, 9, 5, 4) Ad 0d 9s 5c 4c
+#. (2, 14, 10, 9, 5, 4) 9s 5c Ad 4c 0d
+#. (2, 13, 12, 11, 8, 7) Jc Qd 8h 7h Kc
 #. 
 
-## hand_eval('Ad 0d 9s 5c 4c'.split())
-#. '2A0954'
-## hand_eval('9s 5c Ad 4c 0d'.split())
-#. '2A0954'
-## hand_eval('Jc Qd 8h 7h Kc'.split())
-#. '2KQJ87'
-## hand_eval('Jc 0d 8h 7h 9c'.split())
-#. '6J'
+## hand_rank('Ad 0d 9s 5c 4c'.split())
+#. (2, 14, 10, 9, 5, 4)
+## hand_rank('9s 5c Ad 4c 0d'.split())
+#. (2, 14, 10, 9, 5, 4)
+## hand_rank('Jc Qd 8h 7h Kc'.split())
+#. (2, 13, 12, 11, 8, 7)
+## hand_rank('Jc 0d 8h 7h 9c'.split())
+#. (6, 11)
 
 def go():
     check('Ad 0d 9s 5c 4c')
@@ -32,17 +32,14 @@ def go():
 
 def check(s):
     hand = s.split()
-    print hand_rank(hand), hand
+    print hand_rank(hand), s
 
 def best_hand(hands):
     return max(hands, key=hand_rank)
 
 def hand_rank(hand):
-    return tuple(map(kind_rank, hand_eval(hand)))
-
-def hand_eval(hand):
     def rank(r, opt_subrank):
-        return opt_subrank and (r + opt_subrank)
+        return opt_subrank and tuple(map(kind_rank, r + opt_subrank))
     return (   rank('0', flush(hand) and straight(hand))
             or rank('9', n_of_a_kind(4, hand))
             or rank('8', full_house(hand))
