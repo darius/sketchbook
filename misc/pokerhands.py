@@ -43,7 +43,7 @@ def hand_rank(hand):
 def hand_eval(hand):
     def rank(r, opt_subrank):
         return opt_subrank and (r + opt_subrank)
-    return (   rank('0', flush(hand) and straight(hand)) # XXX settle ties by suit somehow?
+    return (   rank('0', flush(hand) and straight(hand))
             or rank('9', n_of_a_kind(4, hand))
             or rank('8', full_house(hand))
             or rank('7', flush(hand))
