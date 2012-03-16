@@ -14,24 +14,24 @@ def match(re, s):
     states = set([re(accepting)])
     for c in s:
         states = set.union(*[state(c) for state in states])
-    return any(BING in state(EOF) for state in states)
+    return any('ACCEPT' in state(None) for state in states)
 
-def lit(char): return lambda k: lambda c: set([k]) if char == c else set()
-EOF, BING = object(), object()
-accepting = lit(EOF)(BING)
+def lit(char):
+    return lambda state: lambda c: set([state]) if char == c else set()
+accepting = lit(None)('ACCEPT')
 
-def empty(k):      return k
-def seq(re1, re2): return lambda k: re1(re2(k))
+empty = lambda state: state
+def seq(re1, re2): return lambda state: re1(re2(state))
 
 def alt(re1, re2):
-    def either(k):
-        k1, k2 = re1(k), re2(k)
-        return lambda c: k1(c) | k2(c)
+    def either(state):
+        state1, state2 = re1(state), re2(state)
+        return lambda c: state1(c) | state2(c)
     return either
 
 def many(re):
-    def re_star(k):
-        def loop(c): return k(c) | re_plus(c)
+    def re_star(state):
+        def loop(c): return state(c) | re_plus(c)
         re_plus = re(loop)
         return loop
     return re_star
