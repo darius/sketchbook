@@ -1,0 +1,50 @@
+http://cap-lore.com/code/Streams/Pushy.html
+
+Date: Mon, 28 Jun 2004 02:22:54 -0700
+From: Darius Bacon <darius@accesscom.com>
+To: norm@cap-lore.com
+Subject: Streams
+
+Hi again -- I thought the 'Pushy' design up on your website was
+interesting, so I coded it up in Scheme to understand it better, in
+three versions: a fairly direct translation of the assembly-level
+pseudocode, a higher-level version using closures, and a version
+compiling out the closures and the indirect jumps using partial
+evaluation.
+
+The low-level version could be compiled into the same kind of machine
+code pretty easily -- I think the main inefficiency you'd see with a
+decent Scheme compiler would be in checking for the right number of
+arguments and one extra indirection from using closures instead of
+code pointers.  (So we should actually get faster code in the
+higher-level version, at least if we static-allocate the continuation
+closures.)  I changed the logic slightly in getting it working.
+
+The higher-level version is like your C code, which I didn't see until
+afterwards.  It allocates closures at runtime sometimes -- this could
+be avoided by using assignments on the free variables of preallocated
+closures, as in your code, but I thought it'd be more interesting to
+eliminate them by partial evaluation instead.  This takes a network
+like
+
+  (make-literal-feeder "Hello" (duplicate (upperize echo) echo)))
+
+and generates 
+
+  (let ()
+    (define (looping v0)
+      (if (< v0 5)
+	  (begin (write-char (char-upcase (string-ref "Hello" v0)))
+		 (begin (write-char (string-ref "Hello" v0))
+			(looping (+ v0 1))))))
+    (looping 0))
+
+which could be improved by factoring out the string-ref call, though I
+haven't bothered.  (I wrote more about this technique at
+http://www.lisp-p.org/htdocs/peval/peval.cgi )
+
+Thanks for posting up some neat ideas to play with!  BTW I updated the
+capability-based Scheme system a while ago with some bug fixes:
+http://www.accesscom.com/~darius/software/consp.html
+
+Darius
