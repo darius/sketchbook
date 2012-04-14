@@ -1,6 +1,11 @@
 """
 Peter Norvig's lis.py hacked with lower-level data representations.
 Plus a few other tweaks like support for the 'quote' read macro.
+To do: add a garbage collector and clean up the added code.
+This will be more work than I thought because the recursive eval
+needs to make its local variables known to the garbage collector --
+silly of me to have forgotten that. (The issue didn't come up in 
+awklisp because it was already using a stack.)
 """
 
 from __future__ import division
