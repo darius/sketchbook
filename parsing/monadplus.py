@@ -1,9 +1,9 @@
 """
 Monadic parser combinators, overloading Python's built-in operators.
 Now the value must be a tuple -- I guess this makes it a MonadPlus.
-TODO: change cons to deal in tuples instead of lists, now that it's working
+TODO: change append to deal in tuples instead of lists, now that it's working
 TODO: error localization, stream input, memoizing
-TODO: for the results use a 'tuple' type with constant-time append
+TODO: for the results use a tuple-like type with constant-time append
 TODO: read http://gbracha.blogspot.com/2007/01/parser-combinators.html
            http://en.wikibooks.org/wiki/Haskell/Understanding_arrows
            http://www.haskell.org/haskellwiki/Arrow#Parser
@@ -34,7 +34,7 @@ def as_peg(x):
     if isinstance(x, Peg):            return x
     if isinstance(x, (str, unicode)): return match(x)
     if callable(x):                   return Peg(x)
-    raise ValueError("Not a peg", x)
+    raise ValueError("Not a Peg", x)
 
 def match(regex):
     return Peg(lambda s: [(m.groups(), s[m.end():])
@@ -53,9 +53,9 @@ class Peg:
     def __add__(self, peg) : return seq(self, as_peg(peg))
     def __radd__(self, peg): return seq(as_peg(peg), self)
 
-    def star(self):  return recur(lambda starred: cons(self, starred) | nil)
-    def plus(self):  return cons(self, self.star())
-    def maybe(self): return cons(self, nil) | nil
+    def star(self):  return recur(lambda starred: append(self, starred) | nil)
+    def plus(self):  return append(self, self.star())
+    def maybe(self): return append(self, nil) | nil
 
 def alt(p, q): return Peg(lambda s: p(s) or q(s))
 
@@ -67,10 +67,10 @@ def recur(f):
     return peg
 
 def delay(thunk):
-    def initial_parse_fn(s):
-        peg.__call__ = as_peg(thunk())
+    def memo_thunk(s):
+        peg.__call__ = as_peg(thunk()).__call__
         return peg(s)
-    peg = Peg(initial_parse_fn)
+    peg = Peg(memo_thunk)
     return peg
 
 # 'give' and 'take' are the monad operators usually named 'return' and 'bind'.
@@ -82,11 +82,11 @@ def take(peg, f):
 
 def singleton(x): return (x,)
 
-def cons(peg, rest_peg):
+nil = give(singleton([]))
+
+def append(peg, rest_peg):
     return take(peg, lambda vals: take(rest_peg, lambda (rest,):
              give(singleton(list(the(tuple, vals)) + the(list, rest)))))
-
-nil = give(singleton([]))
 
 
 # Smoke test
