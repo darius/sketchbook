@@ -48,7 +48,7 @@ class Peg:
     def __invert__(self):
         return Peg(lambda s: [] if self(s) else [((), s)])
     def __rshift__(self, f):
-        return Peg(lambda s: [[(f(*vals),), s1] for vals, s1 in self(s)])
+        return Peg(lambda s: [(singleton(f(*vals)), s1) for vals,s1 in self(s)])
 
     def __or__(self, peg):   return alt(self, as_peg(peg))
     def __ror__(self, peg):  return alt(as_peg(peg), self)
