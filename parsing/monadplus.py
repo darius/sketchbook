@@ -112,22 +112,91 @@ def make_var(v):      return v
 def make_lam(v, e):   return '(lambda (%s) %s)' % (v, e)
 def make_app(e1, e2): return '(%s %s)' % (e1, e2)
 
-def test(string):
+def test1(string):
     _ = match(r'\s*')  # TODO add comments
     identifier = match(r'([A-Za-z_]\w*)\b\s*')
 
-    V     =   identifier +_
+    V     = identifier
     E     = delay(lambda: 
-              V                            >> make_var
-            | r'\\' +_+ V + '[.]' +_+ E    >> make_lam
-            | '[(]' +_+ E + E + '[)]' +_   >> make_app)
-    start =   _+ E
+            V                            >> make_var
+          | r'\\' +_+ V + '[.]' +_+ E    >> make_lam
+          | '[(]' +_+ E + E + '[)]' +_   >> make_app)
+    start = _+ E
 
     return parse(start, string)
 
-## test('x y')
+## test1('x y')
 #. 'x'
-## test('\\x.x')
+## test1(r'\x.x')
 #. '(lambda (x) x)'
-## test('(x   x)')
+## test1('(x   x)')
 #. '(x x)'
+
+def test2(string):
+
+    _ = match(r'\s*')  # TODO add comments
+    identifier = match(r'([A-Za-z_]\w*)\b\s*')
+
+    V     = identifier
+    F     = delay(lambda: 
+            V                                  >> make_var
+          | r'\\' +_+ V.plus() + '[.]' +_+ E   >> fold_lam
+          | '[(]' +_+ E + '[)]' +_)
+    E     = F + F.star()                       >> fold_app
+    start = _+ E
+
+    return parse(start, string)
+
+def fold_app(f, fs): return reduce(make_app, fs, f)
+def fold_lam(vp, e): return foldr(make_lam, e, vp)
+
+def foldr(f, z, xs):
+    for x in reversed(xs):
+        z = f(x, z)
+    return z
+
+## test2('x')
+#. 'x'
+## test2('\\x.x')
+#. '(lambda (x) x)'
+## test2('(x x)')
+#. '(x x)'
+
+## test2('hello')
+#. 'hello'
+## test2(' x')
+#. 'x'
+## test2('\\x . y  ')
+#. '(lambda (x) y)'
+## test2('((hello world))')
+#. '(hello world)'
+
+## test2('  hello ')
+#. 'hello'
+## test2('hello     there hi')
+#. '((hello there) hi)'
+## test2('a b c d e')
+#. '((((a b) c) d) e)'
+
+## test2('')
+## test2('x x . y')
+#. '(x x)'
+## test2('\\.x')
+## test2('(when (in the)')
+## test2('((when (in the)))')
+#. '(when (in the))'
+
+## test2('\\a.a')
+#. '(lambda (a) a)'
+
+## test2('  \\hello . (hello)x \t')
+#. '(lambda (hello) (hello x))'
+
+## test2('\\M . (\\f . M (f f)) (\\f . M (f f))')
+#. '(lambda (M) ((lambda (f) (M (f f))) (lambda (f) (M (f f)))))'
+
+## test2('\\a b.a')
+#. '(lambda (a) (lambda (b) a))'
+
+## test2('\\a b c . a b')
+#. '(lambda (a) (lambda (b) (lambda (c) (a b))))'
