@@ -20,7 +20,7 @@ Glossary:
  f: function
 """
 
-import re
+import operator, re
 
 def parse(peg, s):
     """Return the value from peg parsing (a prefix of) s, or None on failure.
@@ -64,11 +64,12 @@ def singleton(x): return (x,)
 def epsilon(vals): return Peg(lambda s: [(the(tuple, vals), s)])
 
 def alt(p, q): return Peg(lambda s: p(s) or q(s))
-def seq(p, q): return combine(p, q, lambda p_vals, q_vals: p_vals + q_vals)
+def seq(p, q): return combine(p, q, operator.add)
 
-def combine(p, q, f): return Peg(lambda s: [(f(p_vals, q_vals), s2)
-                                            for p_vals, s1 in p(s)
-                                            for q_vals, s2 in q(s1)])
+def combine(p, q, f):
+    return Peg(lambda s: [(f(p_vals, q_vals), s2)
+                          for p_vals, s1 in p(s)
+                          for q_vals, s2 in q(s1)])
 
 def append(peg, rest_peg):
     return combine(peg, rest_peg, lambda vals, (rest,):
