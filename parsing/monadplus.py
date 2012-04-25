@@ -15,6 +15,9 @@ Available operators:
 
 Glossary:
  s: input string
+ vals: tuple of result values
+ p, q: peg
+ f: function
 """
 
 import re
