@@ -1,5 +1,5 @@
 grammar         = whitespace rule+.
-rule            = name '=' peg '.'.
+rule            = name name? '=' peg '.'.
 
 peg             = term ('/' term)*.
 term            = factor+.
