@@ -52,6 +52,7 @@ class Peg:
     def __invert__(self):
         return Peg(lambda s: [] if self(s) else [((), s)])
     def __rshift__(self, f):
+        assert callable(f), f
         return Peg(lambda s: [(singleton(f(*vals)), s1) for vals,s1 in self(s)])
     def drop(self):
         return Peg(lambda s: [((), s1) for vals, s1 in self(s)])

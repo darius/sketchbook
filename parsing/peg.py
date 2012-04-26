@@ -12,7 +12,7 @@ def make_char_class(c_lo, c_hi): return '-'.join([c_lo] + c_hi)
 
 def fold_seq(factors, action):
     seq = sum(factors, epsilon(()))
-    return seq >> action[0] if action else seq
+    return seq >> eval(action[0]) if action else seq
 
 def fold_alt(term, terms):
     terms = [term] + terms
@@ -21,6 +21,10 @@ def fold_alt(term, terms):
 def postfixed(peg, suffix, minus):
     peg = suffixes[suffix](peg)
     return peg.drop() if minus else peg
+
+def meta_postfixed(peg, suffix, minus):
+    return postfixed(peg, ''.join(suffix), ''.join(minus))
+
 
 make_grammar = lambda rules: rules
 rule_def     = lambda name, peg: (name, peg)
@@ -57,7 +61,7 @@ primary        = ('[(]' +_+ peg + '[)]' + _
 
 factor         = delay(lambda:
                  '!' +_+ factor                          >> not_
-               | primary + r'([*+?]?)' +_+ r'([-]?)' + _  >> postfixed)
+               | primary + r'([*+?]?)' +_+ r'([-]?)' + _ >> postfixed)
 
 term           = factor.plus() + (':' +_+ name).maybe()  >> fold_seq
 
@@ -72,7 +76,7 @@ rule            = name '='_ peg '.'_             :rule_def.
 peg             = term ('|'_ term)*              :fold_alt.
 term            = factor+ (':'_ name)?           :fold_seq.
 factor          = '!'_ factor                    :not_
-                | primary [*+?]?_ [-]?_          :postfixed.
+                | primary [*+?]?_ [-]?_          :meta_postfixed.
 primary         = '('_ peg ')'_
                 | '\'' quoted_char* '\''_        :literal
                 | '[' char_class* ']'_           :oneof
@@ -87,7 +91,7 @@ bracketed_char  = '\\' char                      :escaped_char
 quoted_char     = '\\' char                      :escaped_char
                 | !'\'' char                     :literal_char.
 
-name            = alpha alphanum* !alphanum _    :make_name.
+name            = alpha alphanum* _              :make_name.
 alpha           = [A-Za-z_].
 alphanum        = [A-Za-z_0-9].
 
@@ -103,5 +107,19 @@ comment         = '#' (!'\n' char)* '\n'.
 
 ## parse(nonterminals['alphanum'].star(), 'hello')
 #. ['h', 'e', 'l', 'l', 'o']
+
+## n_alphanum = nonterminals['alphanum']
+## (n_alphanum + n_alphanum.star() + ~n_alphanum + _ >> make_name)('hello')
+#. [(('hello',), '')]
+
+## parse(nonterminals['name'], 'hello')
+#. 'hello'
+
+## parse(nonterminals['peg'], 'hello') is not None
+#. True
+
+# XXX
+## parse(nonterminals['grammar'], meta_grammar)
+
 
 # for x in parse(grammar, meta_grammar): print x
