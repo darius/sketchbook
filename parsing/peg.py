@@ -98,11 +98,8 @@ comment         = '#' (!'\n' char)* '\n'.
 
 ## nonterminals = dict(parse(grammar, meta_grammar))
 
-## parse(nonterminals['_'], 'hello')
-#. Traceback (most recent call last):
-#.   File "/home/darius/git/sketchbook/parsing/monoidal.py", line 32, in parse
-#.     for (value,), rest in as_peg(peg)(s):
-#. ValueError: need more than 0 values to unpack
+## nonterminals['_']('hello')
+#. [((), 'hello')]
 
 ## parse(nonterminals['alphanum'].star(), 'hello')
 #. ['h', 'e', 'l', 'l', 'o']
