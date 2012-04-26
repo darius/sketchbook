@@ -53,12 +53,12 @@ grammar        = _ + rule.plus() + '$'                   >> make_grammar
 
 
 meta_grammar = r"""
-grammar         = _ rule+ $                      :grammar.
+grammar         = _ rule+ $                      :make_grammar.
 rule            = name '='_ peg '.'_             :rule_def.
 
 peg             = term ('|'_ term)*              :fold_alt.
 term            = factor+ (':'_ name)?           :fold_seq.
-factor          = '!'_ factor                    :not
+factor          = '!'_ factor                    :not_
                 | primary [*+?]?_                :postfixed.
 primary         = '('_ peg ')'_
                 | '[' char_class* ']'_           :oneof
@@ -66,7 +66,7 @@ primary         = '('_ peg ')'_
                 | name                           :rule_ref
                 | '$'_                           :eof.
 
-char_class      = lit_char_class ('-' lit_char_class)? :char_class.
+char_class      = lit_char_class ('-' lit_char_class)? :make_char_class.
 
 lit_char_class  = '\\' char                      :escaped_char
                 | !']' char.
@@ -74,29 +74,29 @@ lit_char_class  = '\\' char                      :escaped_char
 quoted_char     = '\\' char                      :escaped_char
                 | !'\'' char.
 
-name            = alpha alphanum* !alphanum _    :name.
+name            = alpha alphanum* !alphanum _    :make_name.
 alpha           = [A-Za-z_].
 alphanum        = [A-Za-z_0-9].
 
-_               = (white_char | comment)*        :noise.
+_               = (white_char | comment)*.
 white_char      = [ \t\r\n\f].
 comment         = '#' (!'\n' char)* '\n'.
 """
 
 ## print parse(grammar, meta_grammar)
-#. grammar ::= <_> (<rule>)+ $	:grammar.
+#. grammar ::= <_> (<rule>)+ $	:make_grammar.
 #. rule ::= <name> '=' <_> <peg> '.' <_>	:rule_def.
 #. peg ::= <term> ('|' <_> <term>)*	:fold_alt.
 #. term ::= (<factor>)+ (':' <_> <name>)?	:fold_seq.
-#. factor ::= '!' <_> <factor>	:not / <primary> ({*+?})? <_>	:postfixed.
+#. factor ::= '!' <_> <factor>	:not_ / <primary> ({*+?})? <_>	:postfixed.
 #. primary ::= '(' <_> <peg> ')' <_> / '[' (<char_class>)* ']' <_>	:oneof / "'" (<quoted_char>)* "'" <_>	:literal / <name>	:rule_ref / '$' <_>	:eof.
-#. char_class ::= <lit_char_class> ('-' <lit_char_class>)?	:char_class.
+#. char_class ::= <lit_char_class> ('-' <lit_char_class>)?	:make_char_class.
 #. lit_char_class ::= '\\' <char>	:escaped_char / !(']') <char>.
 #. quoted_char ::= '\\' <char>	:escaped_char / !("'") <char>.
-#. name ::= <alpha> (<alphanum>)* !(<alphanum>) <_>	:name.
+#. name ::= <alpha> (<alphanum>)* !(<alphanum>) <_>	:make_name.
 #. alpha ::= {A-Za-z_}.
 #. alphanum ::= {A-Za-z_0-9}.
-#. _ ::= (<white_char> / <comment>)*	:noise.
+#. _ ::= (<white_char> / <comment>)*.
 #. white_char ::= { trnf}.
 #. comment ::= '#' (!('n') <char>)* 'n'.
 #. 
