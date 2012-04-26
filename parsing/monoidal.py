@@ -1,12 +1,16 @@
 """
 Parser combinators, overloading Python's built-in operators.
 PEG, always producing a tuple of values (or failure).
+
 TODO: change append to deal in tuples instead of lists, now that it's working
 TODO: error localization, stream input, memoizing
 TODO: for the results use a tuple-like type with constant-time append
 TODO: read http://gbracha.blogspot.com/2007/01/parser-combinators.html
            http://en.wikibooks.org/wiki/Haskell/Understanding_arrows
            http://www.haskell.org/haskellwiki/Arrow#Parser
+           Lua lpeg, Parsec, pyparsing, ...
+           Kragen's peg-bootstrap
+           META, OMeta
 
 Available operators:
 # ~p +p -p p.foo repr(p)
@@ -49,6 +53,8 @@ class Peg:
         return Peg(lambda s: [] if self(s) else [((), s)])
     def __rshift__(self, f):
         return Peg(lambda s: [(singleton(f(*vals)), s1) for vals,s1 in self(s)])
+    def drop(self):
+        return Peg(lambda s: [((), s1) for vals, s1 in self(s)])
 
     def __or__(self, peg):   return alt(self, as_peg(peg))
     def __ror__(self, peg):  return alt(as_peg(peg), self)
