@@ -1,4 +1,4 @@
-from monoidic import delay, match, parse, recur
+from monoidic import delay, match, parse, recur, nil
 
 def make_char_class(c_lo, c_hi):
     return '%s-%s' % (c_lo, c_hi[0]) if c_hi else c_lo
@@ -8,9 +8,8 @@ rule_def     = lambda name, peg: '%s ::= %s.' % (name, peg)
 fold_alt     = lambda term, terms: ' / '.join([term] + terms)
 identity     = lambda x: x
 epsilon      = lambda: '<epsilon>'
-def fold_seq(factors, action):
-    return (' '.join(factors)
-            + ('\t:' + action[0] if action else ''))
+fold_seq     = lambda factors, action: (' '.join(factors)
+                                        + ('\t:' + action[0] if action else ''))
 not_         = lambda p: '!(%s)' % p
 postfixed    = lambda peg, suffix: '(%s)%s' % (peg, suffix) if suffix else peg
 oneof        = lambda ccs: '{%s}' % ''.join(ccs)
@@ -27,10 +26,10 @@ _              = match(r'\s*')  # TODO add comments
 name           = match(r'([A-Za-z_]\w*)\b\s*')
 
 quoted_char    = (r'\\' + dot
-               | match(r'([^\\])'))
+               | match(r"([^'\\])"))
 
 lit_char_class = (r'\\' + dot
-               | match(r"([^'])"))
+               | match(r"([^\]\\])"))
 
 char_class     = lit_char_class + ('-' + lit_char_class).maybe()  >> make_char_class
 
@@ -52,11 +51,8 @@ term           = factor.plus() + (':' +_+ name).maybe()  >> fold_seq
 rule           = name + '=' +_+ peg + r'\.' + _          >> rule_def
 grammar        = _ + rule.plus() + '$'                   >> make_grammar
 
-## parse(name, 'hello')
-#. 'hello'
 
-
-meta_grammar = """
+meta_grammar = r"""
 grammar         = _ rule+ $                      :grammar.
 rule            = name '='_ peg '.'_             :rule_def.
 
@@ -86,6 +82,21 @@ _               = (white_char | comment)*        :noise.
 white_char      = [ \t\r\n\f].
 comment         = '#' (!'\n' char)* '\n'.
 """
-# TODO: more char-class syntax, e.g. [^abc]
 
-# parse(grammar, meta_grammar)
+## print parse(grammar, meta_grammar)
+#. grammar ::= <_> (<rule>)+ $	:grammar.
+#. rule ::= <name> '=' <_> <peg> '.' <_>	:rule_def.
+#. peg ::= <term> ('|' <_> <term>)*	:fold_alt.
+#. term ::= (<factor>)+ (':' <_> <name>)?	:fold_seq.
+#. factor ::= '!' <_> <factor>	:not / <primary> ({*+?})? <_>	:postfixed.
+#. primary ::= '(' <_> <peg> ')' <_> / '[' (<char_class>)* ']' <_>	:oneof / "'" (<quoted_char>)* "'" <_>	:literal / <name>	:rule_ref / '$' <_>	:eof.
+#. char_class ::= <lit_char_class> ('-' <lit_char_class>)?	:char_class.
+#. lit_char_class ::= '\\' <char>	:escaped_char / !(']') <char>.
+#. quoted_char ::= '\\' <char>	:escaped_char / !("'") <char>.
+#. name ::= <alpha> (<alphanum>)* !(<alphanum>) <_>	:name.
+#. alpha ::= {A-Za-z_}.
+#. alphanum ::= {A-Za-z_0-9}.
+#. _ ::= (<white_char> / <comment>)*	:noise.
+#. white_char ::= { trnf}.
+#. comment ::= '#' (!('n') <char>)* 'n'.
+#. 
