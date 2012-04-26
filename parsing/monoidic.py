@@ -83,6 +83,7 @@ def recur(f):
 
 def delay(thunk):
     def memo_thunk(s):
+        peg.__call__ = None     # XXX not sure I want this generally
         peg.__call__ = as_peg(thunk()).__call__
         return peg(s)
     peg = Peg(memo_thunk)
