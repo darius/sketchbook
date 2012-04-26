@@ -36,8 +36,7 @@
   `(begin ,x ,(y)))
 
 (define (_loop f . inits)
-  (define vars (map (lambda (x y) y) inits '(v0 v1 v2 v3))) ;FIXME
-  hygiene
+  (define vars (map (lambda (x y) y) inits '(v0 v1 v2 v3))) ;FIXME hygiene
   `(let ()
      (define (looping ,@vars)
        ,(apply f (lambda args `(looping ,@args)) vars))
