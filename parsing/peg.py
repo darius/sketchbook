@@ -1,4 +1,4 @@
-from monoidic import delay, match, parse, recur, nil
+from monoidal import delay, match, parse, recur, nil
 
 def make_char_class(c_lo, c_hi):
     return '%s-%s' % (c_lo, c_hi[0]) if c_hi else c_lo
