@@ -95,9 +95,9 @@ name            = alpha alphanum* _              :make_name.
 alpha           = [A-Za-z_].
 alphanum        = [A-Za-z_0-9].
 
-_               = (white_char | comment)* -.
+_               = (white_char | comment)*-.
 white_char      = [ \t\r\n\f] -.
-comment         = '#' (!'\n' char)* '\n'.
+comment         = '#' (!'\n' char)*- '\n'.
 """
 
 ## nonterminals = dict(parse(grammar, meta_grammar))
