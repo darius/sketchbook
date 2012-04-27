@@ -1,5 +1,5 @@
 from re import escape
-from monoidal import alt, as_peg, delay, epsilon, match, parse
+from monoidal import alt, as_peg, Peg, delay, epsilon, match, parse
 
 nonterminals = {}
 
@@ -28,10 +28,10 @@ def meta_postfixed(peg, suffix, minus):
 
 make_grammar = lambda rules: rules
 rule_def     = lambda name, peg: (name, peg)
-not_         = lambda p: '!(%s)' % p
+not_         = lambda p: ~p
 oneof        = lambda ccs: match('([%s])' % ''.join(ccs))
 literal      = lambda cs: match(''.join(cs))
-rule_ref     = lambda name: as_peg(lambda s: nonterminals[name](s))
+rule_ref     = lambda name: Peg(lambda s: nonterminals[name](s), '<%s>' % name)
 eof          = lambda: match('$')
 escaped_char = lambda c: '\\' + c
 literal_char = escape
@@ -51,7 +51,8 @@ bracketed_char = (r'\\' + dot                            >> escaped_char
 char_class     = bracketed_char + ('-' + bracketed_char).maybe()  >> make_char_class
 
 peg            = delay(lambda: 
-                 term + ('[|]' +_+ term).star()          >> fold_alt)
+                 term + ('[|]' +_+ term).star()          >> fold_alt,
+                       face='{peg}')
 
 primary        = ('[(]' +_+ peg + '[)]' + _
                | "'" + quoted_char.star() + "'" + _      >> literal
@@ -61,7 +62,8 @@ primary        = ('[(]' +_+ peg + '[)]' + _
 
 factor         = delay(lambda:
                  '!' +_+ factor                          >> not_
-               | primary + r'([*+?]?)' +_+ r'([-]?)' + _ >> postfixed)
+               | primary + r'([*+?]?)' +_+ r'([-]?)' + _ >> postfixed,
+                       face='{factor}')
 
 term           = factor.plus() + (':' +_+ name).maybe()  >> fold_seq
 
@@ -101,6 +103,7 @@ comment         = '#' (!'\n' char)*- '\n'.
 """
 
 ## nonterminals = dict(parse(grammar, meta_grammar))
+## nonterminals['char'] = dot
 
 ## nonterminals['_']('hello')
 #. [((), 'hello')]
@@ -118,8 +121,4 @@ comment         = '#' (!'\n' char)*- '\n'.
 ## parse(nonterminals['peg'], 'hello') is not None
 #. True
 
-# XXX
-## parse(nonterminals['grammar'], meta_grammar)
-
-
-# for x in parse(grammar, meta_grammar): print x
+# parse(nonterminals['grammar'], meta_grammar)

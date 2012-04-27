@@ -44,56 +44,70 @@ def as_peg(x):
 
 def match(regex):
     return Peg(lambda s: [(m.groups(), s[m.end():])
-                          for m in [re.match(regex, s)] if m])
+                          for m in [re.match(regex, s)] if m],
+               repr(regex))
+
+## match(r'hello').star()
+#. ('hello')*
 
 class Peg:
-    def __init__(self, parse_fn):
+    def __init__(self, parse_fn, face='<Peg>'):
         self.__call__ = parse_fn
+        self.face = face
+    def __repr__(self):
+        return self.face
     def __invert__(self):
-        return Peg(lambda s: [] if self(s) else [((), s)])
+        return Peg(lambda s: [] if self(s) else [((), s)],
+                   '~(%r)' % self)
     def __rshift__(self, f):
         assert callable(f), f
-        return Peg(lambda s: [(singleton(f(*vals)), s1) for vals,s1 in self(s)])
+        return Peg(lambda s: [(singleton(f(*vals)), s1) for vals,s1 in self(s)],
+                   '(%r) >> %s' % (self, f.__name__))
     def drop(self):
-        return Peg(lambda s: [((), s1) for vals, s1 in self(s)])
+        return Peg(lambda s: [((), s1) for vals, s1 in self(s)],
+                   '(%r).drop()' % self)
 
     def __or__(self, peg):   return alt(self, as_peg(peg))
     def __ror__(self, peg):  return alt(as_peg(peg), self)
     def __add__(self, peg) : return seq(self, as_peg(peg))
     def __radd__(self, peg): return seq(as_peg(peg), self)
 
-    def star(self):  return recur(lambda starred: append(self, starred) | nil)
+    def star(self):  return recur(lambda starred: append(self, starred) | nil, '(%r)*' % self)
     def plus(self):  return append(self, self.star())
     def maybe(self): return append(self, nil) | nil
 
 def singleton(x): return (x,)
 
-def epsilon(vals): return Peg(lambda s: [(the(tuple, vals), s)])
+def epsilon(vals): return Peg(lambda s: [(the(tuple, vals), s)],
+                              'epsilon(%r)' % (vals,))
 
-def alt(p, q): return Peg(lambda s: p(s) or q(s))
-def seq(p, q): return combine(p, q, operator.add)
+def alt(p, q): return Peg(lambda s: p(s) or q(s),
+                          '(%r) | (%r)' % (p, q))
+def seq(p, q): return combine(p, q, operator.add, '(%r) + (%r)' % (p, q))
 
-def combine(p, q, f):
+def combine(p, q, f, face='<combine>'):
     return Peg(lambda s: [(f(p_vals, q_vals), s2)
                           for p_vals, s1 in p(s)
-                          for q_vals, s2 in q(s1)])
+                          for q_vals, s2 in q(s1)],
+               face)
 
 def append(peg, rest_peg):
-    return combine(peg, rest_peg, lambda vals, (rest,):
-             singleton(list(the(tuple, vals)) + the(list, rest)))
+    return combine(peg, rest_peg, (lambda vals, (rest,):
+                                       singleton(list(the(tuple, vals)) + the(list, rest))),
+                   '(%r) ++ (%r)' % (peg, rest_peg))
 
 nil = epsilon(singleton([]))
 
-def recur(f):
-    peg = delay(lambda: f(peg))
+def recur(f, face='<recur>'):
+    peg = delay(lambda: f(peg), face)
     return peg
 
-def delay(thunk):
+def delay(thunk, face='<delay>'):
     def memo_thunk(s):
         peg.__call__ = None     # XXX not sure I want this generally
         peg.__call__ = as_peg(thunk()).__call__
         return peg(s)
-    peg = Peg(memo_thunk)
+    peg = Peg(memo_thunk, face)
     return peg
 
 
