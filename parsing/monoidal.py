@@ -135,7 +135,7 @@ def make_lam(v, e):      return '(lambda (%s) %s)' % (v, e)
 def make_app(e1, e2):    return '(%s %s)' % (e1, e2)
 def make_let(v, e1, e2): return '(let ((%s %s)) %s)' % (v, e1, e2)
 
-_ = match(r'\s*')  # TODO add comments
+_          = match(r'\s*')  # TODO add comments
 identifier = match(r'([A-Za-z_]\w*)\b\s*')
 
 def test1(string):

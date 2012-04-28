@@ -48,7 +48,8 @@ quoted_char    = (r'\\' + dot                            >> escaped_char
 bracketed_char = (r'\\' + dot                            >> escaped_char
                | match(r"([^\]\\])")                     >> literal_char)
 
-char_class     = bracketed_char + ('-' + bracketed_char).maybe()  >> make_char_class
+char_class     = (bracketed_char + ('-' + bracketed_char).maybe()
+                                                         >> make_char_class)
 
 peg            = delay(lambda: 
                  term + ('[|]' +_+ term).star()          >> fold_alt,
@@ -99,7 +100,7 @@ alphanum        = [A-Za-z_0-9].
 
 _               = (white_char | comment)*-.
 white_char      = [ \t\r\n\f] -.
-comment         = '#' (!'\n' char)*- '\n'.
+comment         = '#' (!'\n' char)*- '\n'?.
 """
 
 ## nonterminals = dict(parse(grammar, meta_grammar))
