@@ -150,3 +150,57 @@ def foldr(f, z, xs):
 
 ## test3('\\a b c . a b')
 #. '(lambda (a) (lambda (b) (lambda (c) (a b))))'
+
+
+# Regular expressions test
+
+regex_grammar = r"""
+regex      expr $                  identity
+
+expr       term alt_term*          cons_alt
+alt_term*  \| term alt_term*       cons
+alt_term*                          nil
+
+term       factor factors          cons_seq
+factors    ![)|] term              identity
+factors                            epsilon
+
+factor     prim [*]?               maybe_star
+
+prim       \( expr \)              identity
+prim       \\ (.)                  escaped_lit
+prim       ![*+?|()\\] (.)         lit
+"""
+
+def regex_test(string):
+
+    def regex():     return [[expr, '',                          identity]]
+
+    def expr():      return [[term, r'\|', expr,                 alt],
+                             [term,                              identity]]
+
+    def term():      return [[factor, complement(r'[)|]'), term,   seq],
+                             [factor,                              identity]]
+
+    def factor():    return [[prim, '[*]',                       star],
+                             [prim,                              identity]]
+
+    def prim():      return [[r'\(', expr, r'\)',                identity],
+                             [r'\\', '(.)',                      escaped_lit],
+                             [complement(r'[*+?|()\\]'), '(.)',  lit]]
+
+    res = parse(regex, string)[0]
+    return res[0] if res else None
+
+def alt(p, q): return '(%s)|(%s)' % (p, q)
+def seq(p, q): return '(%s)%s' % (p, q)
+def star(p):   return p + '*'
+def lit(c):    return c
+def escaped_lit(c): return r'\%s' % c
+
+## regex_test('a')
+#. 'a'
+## regex_test('a|bc*')
+#. '(a)|((b)c*)'
+## regex_test('a(bc)*d')
+#. '(a)((b)c*)d'
