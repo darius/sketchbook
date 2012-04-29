@@ -65,23 +65,21 @@ def test3(string):
     def fold_app(f, fs): return reduce(make_app, fs, f)
     def fold_lam(vp, e): return foldr(make_lam, e, vp)
 
-    def start(): return [[_,E,                     identity]]
+    def start(): return [[_,E,                              identity]]
 
-    def E():     return [[F,Fs,                    fold_app]]
-    def Fs():    return [[F,Fs,                    cons],
-                         [                         lambda: []]]
+    def E():     return [[F,Fs,                             fold_app]]
+    def Fs():    return [[F,Fs,                             cons],
+                         [                                  nil]]
 
-    def F():     return [[r'let\b',_,V,'=',_,E,';',_,E,
-                                                   make_let],
-                         [V,                       make_var],
-                         [r'\\',_,Vp,'[.]',_,E,    fold_lam],
-                         ['[(]',_,E,'[)]',_,       identity]]
+    def F():     return [[r'let\b',_,V,'=',_,E,';',_,E,     make_let],
+                         [V,                                make_var],
+                         [r'\\',_,Vp,'[.]',_,E,             fold_lam],
+                         ['[(]',_,E,'[)]',_,                identity]]
 
-    def Vp():    return [[V,Vp,                    cons],
-                         [V,                       singleton]]
+    def Vp():    return [[V,Vp,                             cons],
+                         [V,                                singleton]]
 
-    def V():     return [[identifier,              identity]]
-    # XXX plus complement('let\b')
+    def V():     return [[complement(r'let\b'), identifier, identity]]
 
     res = parse(start, string)[0]
     return res[0] if res else None
@@ -94,8 +92,9 @@ def make_let(v, e1, e2): return '(let ((%s %s)) %s)' % (v, e1, e2)
 _          = r'\s*'  # TODO add comments
 identifier = r'([A-Za-z_]\w*)\b\s*'
 
-def cons(x, xs): return [x] + xs
+def cons(x, xs):  return [x] + xs
 def singleton(x): return [x]
+def nil():        return []
 
 def foldr(f, z, xs):
     for x in reversed(xs):
@@ -110,6 +109,8 @@ def foldr(f, z, xs):
 #. '(x x)'
 ## test3('let x=y; x')
 #. '(let ((x y)) x)'
+
+## test3('let let=y; x')
 
 ## test3('hello')
 #. 'hello'
