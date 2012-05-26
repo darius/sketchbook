@@ -1,6 +1,27 @@
 """
 Boolean logic built on if-then-else as the basic operator (instead of
 AND/OR/NOT).
+
+Here I was trying to be very concrete -- to dispel the homunculus you
+naturally think in terms of when dealing with expressions in logic,
+which "knows what they mean" and does the right thing according to the
+interpretation -- and so here instead of True and False or 1 and 0,
+variables take the values 'left' and 'right' (written '<' and
+'>'). The choice-expression (A M Z) is like if-then-else, equal to A
+when M equals '<', or to Z when M equals '>'. (M can be an expression,
+not just a variable.)
+
+~A means '<' if A is '>', etc.
+
+I don't remember why I wrote this using a worklist instead of a
+continuation function. I think it's equivalent. In the logic
+literature what this is doing is called searching for a tableau proof
+(but they explain it in terms of rules for each of AND, OR, etc.,
+where here there's just one type of compound expression).
+
+Of course another angle on if-then-else logic is BDDs. There's some
+BDD-ish code here mostly under Maker, but see bdd.py for a more
+dedicated codebase.
 """
 
 class Choice:
