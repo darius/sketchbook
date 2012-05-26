@@ -27,6 +27,8 @@ def rationalizations(x):
 ## import itertools, math
 ## def show(x, n): return list(itertools.islice(rationalizations(x), n))
 
+## show(2**(1./12), 5)
+#. [(1, 1), (17, 16), (18, 17), (89, 84), (196, 185)]
 ## show(math.e, 8)
 #. [(2, 1), (3, 1), (8, 3), (11, 4), (19, 7), (87, 32), (106, 39), (193, 71)]
 ## show(math.pi, 6)
