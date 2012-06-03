@@ -108,10 +108,16 @@ def show(insns, pc=0, regs=()):
              for r, reg in enumerate(regs)]
     print '\n'.join(abut(left, right))
 
+## print '|\n'.join(abut('abc de ghi'.split(), 'XY TUV'.split())) + '|',
+#. abcXY |
+#. de TUV|
+#. ghi   |
+
 def abut(lines1, lines2):
-    "Ex: abut(['abc', 'def'], ['uv', 'xy']) ==> ['abcuv', 'defxy']"
     return flip(flip(lines1) + flip(lines2))
 
+## flip(['abc', 'xy'])
+#. ['ax', 'by', 'c ']
+
 def flip(strings):
-    "Ex: flip(['abc', 'xyz']) ==> ['ax', 'by', 'cz']"
     return map(''.join, izip_longest(*strings, fillvalue=' '))
