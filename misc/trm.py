@@ -100,7 +100,7 @@ insn_table = {1: do_add_one, 2: do_add_hash,
               5: do_case}
 
 def show(insns, pc=0, regs=()):
-    left = ['%3s %s %d' % (('' if addr == pc else str(abs(pc - addr))),
+    left = ['%3s %s %d' % (('' if addr == pc else abs(pc - addr)),
                            fn.__name__[3:],
                            n)
             for addr, (fn, n) in enumerate(insns)]
