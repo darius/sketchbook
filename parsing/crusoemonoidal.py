@@ -5,7 +5,6 @@ Newer variant on crusoeparse, with an infusion of monoidal.py.
 import re
 
 def parse(x, s):
-#    print 'parse', x, s
     p = x() if callable(x) else x
     if isinstance(p, (str, unicode)): return parse_regex(p, s)
     if isinstance(p, list):           return parse_rules(p, s)
@@ -65,21 +64,21 @@ def test3(string):
     def fold_app(f, fs): return reduce(make_app, fs, f)
     def fold_lam(vp, e): return foldr(make_lam, e, vp)
 
-    def start(): return [[_,E,                              identity]]
+    start = lambda: [[_,E,                              identity]]
 
-    def E():     return [[F,Fs,                             fold_app]]
-    def Fs():    return [[F,Fs,                             cons],
-                         [                                  nil]]
+    E     = lambda: [[F,Fs,                             fold_app]]
+    Fs    = lambda: [[F,Fs,                             cons],
+                     [                                  nil]]
 
-    def F():     return [[r'let\b',_,V,'=',_,E,';',_,E,     make_let],
-                         [V,                                make_var],
-                         [r'\\',_,Vp,'[.]',_,E,             fold_lam],
-                         ['[(]',_,E,'[)]',_,                identity]]
+    F     = lambda: [[r'let\b',_,V,'=',_,E,';',_,E,     make_let],
+                     [V,                                make_var],
+                     [r'\\',_,Vp,'[.]',_,E,             fold_lam],
+                     ['[(]',_,E,'[)]',_,                identity]]
 
-    def Vp():    return [[V,Vp,                             cons],
-                         [V,                                singleton]]
+    Vp    = lambda: [[V,Vp,                             cons],
+                     [V,                                singleton]]
 
-    def V():     return [[complement(r'let\b'), identifier, identity]]
+    V     = lambda: [[complement(r'let\b'), identifier, identity]]
 
     res = parse(start, string)[0]
     return res[0] if res else None
@@ -174,20 +173,20 @@ prim       ![*+?|()\\] (.)         lit
 
 def regex_test(string):
 
-    def regex():     return [[expr, '',                          identity]]
+    regex  = lambda: [[expr, '',                          identity]]
 
-    def expr():      return [[term, r'\|', expr,                 alt],
-                             [term,                              identity]]
+    expr   = lambda: [[term, r'\|', expr,                 alt],
+                      [term,                              identity]]
 
-    def term():      return [[factor, complement(r'[)|]'), term,   seq],
-                             [factor,                              identity]]
+    term   = lambda: [[factor, complement(r'[)|]'), term, seq],
+                      [factor,                            identity]]
 
-    def factor():    return [[prim, '[*]',                       star],
-                             [prim,                              identity]]
+    factor = lambda: [[prim, '[*]',                       star],
+                      [prim,                              identity]]
 
-    def prim():      return [[r'\(', expr, r'\)',                identity],
-                             [r'\\', '(.)',                      escaped_lit],
-                             [complement(r'[*+?|()\\]'), '(.)',  lit]]
+    prim   = lambda: [[r'\(', expr, r'\)',                identity],
+                      [r'\\', '(.)',                      escaped_lit],
+                      [complement(r'[*+?|()\\]'), '(.)',  lit]]
 
     res = parse(regex, string)[0]
     return res[0] if res else None
