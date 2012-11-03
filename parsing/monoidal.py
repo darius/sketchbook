@@ -72,7 +72,8 @@ class Peg:
     def __add__(self, peg) : return seq(self, as_peg(peg))
     def __radd__(self, peg): return seq(as_peg(peg), self)
 
-    def star(self):  return recur(lambda starred: append(self, starred) | nil, '(%r)*' % self)
+    def star(self):  return recur(lambda starred: append(self, starred) | nil,
+                                  '(%r)*' % self)
     def plus(self):  return append(self, self.star())
     def maybe(self): return append(self, nil) | nil
 
@@ -93,7 +94,8 @@ def combine(p, q, f, face='<combine>'):
 
 def append(peg, rest_peg):
     return combine(peg, rest_peg, (lambda vals, (rest,):
-                                       singleton(list(the(tuple, vals)) + the(list, rest))),
+                                    singleton(list(the(tuple, vals))
+                                              + the(list, rest))),
                    '(%r) ++ (%r)' % (peg, rest_peg))
 
 nil = epsilon(singleton([]))
