@@ -83,9 +83,10 @@ period = sequence(abut, literal("."), capitalize)
 def desugar(x):
     if isinstance(x, (unicode, str)):
         return literal(x)
-    if isinstance(x, (list, tuple)):
+    elif isinstance(x, (list, tuple)):
         return sequence(*x)
-    return x
+    else:
+        return x
 
 
 # Formatting
@@ -93,24 +94,20 @@ def desugar(x):
 def render(insns):
     return insns[0](insns[1:]) if insns else ''
 
+abut_insn = render
+
 def capitalize_insn(insns):
     return render(insns).capitalize()
 
 def lit_insn(s):
-    def insn(insns):
-        rest = render(insns)
-        sep = '' if insns[0:1] == [abut_insn] else space(rest)
-        return s + sep + rest
-    return insn
-
-abut_insn = render
+    return lambda insns: s + pad(insns, render(insns))
 
 def a_an_insn(insns):
-    s = render(insns)
-    return ("an" if s[0:1] in 'aeiouy' else "a") + space(s) + s
+    rest = render(insns)
+    return ("an" if rest[0:1] in 'aeiouy' else "a") + pad(insns, rest)
 
-def space(s):
-    return ' ' if s else ''
+def pad(insns, rendered):
+    return ' '+rendered if rendered and insns[0] != abut_insn else rendered
 
 
 # Tests
