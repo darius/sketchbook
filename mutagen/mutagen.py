@@ -12,8 +12,8 @@ TODO:
   - compare to original and learn from the difference
 """
 
-from itertools import count, izip
-import random
+from itertools import count
+import bisect, random
 
 def mutagen(gen, seed=None):
     return render(RNG(seed).call(gen))
@@ -31,8 +31,8 @@ class RNG:
         return desugar(gen)(self)
     def choice(self, values):
         return self.random.choice(values)
-    def weighted_choice(self, weights):
-        return weighted_choose(self.random.randint, weights)
+    def index_choice(self, n):
+        return self.random.randint(0, n-1)
     def fixed(self, tag, chooser, values):
         if tag not in self.fixed_table:
             eep = chooser(*map(lambda i: lambda rng: i,
@@ -41,13 +41,12 @@ class RNG:
             self.fixed_table[tag] = index
         return values[self.fixed_table[tag]]
 
-def weighted_choose(randint, weights):
-    k = randint(0, sum(weights) - 1)
-    for i, weight in enumerate(weights):
-        if k < weight:
-            return i
-        k -= weight
-    assert False, "Unreachable"
+def weighted_sampler(weights):
+    "Return a random-sample function that picks an index weighted by weights."
+    totals = []
+    for w in weights:
+        totals.append(w + totals[-1] if totals else w)
+    return lambda rng: bisect.bisect(totals, rng.index_choice(totals[-1]))
 
 
 # Generators
@@ -60,8 +59,8 @@ def flatmap(f, xs):
     return sum(map(f, xs), [])
 
 def weighted_choice(*weights):
-    return lambda *gens: lambda rng: \
-        rng.call(gens[rng.weighted_choice(weights)])
+    sampler = weighted_sampler(weights)
+    return lambda *gens: lambda rng: rng.call(gens[sampler(rng)])
 
 def fixed(chooser):
     tag = next(counter)
