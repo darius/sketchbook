@@ -15,7 +15,7 @@ from itertools import count, izip
 import random
 
 def mutagen(gen, seed=None):
-    return format(RNG(seed).call(gen))
+    return render(RNG(seed).call(gen))
 
 
 # Generator state
@@ -93,32 +93,27 @@ def desugar(x):
 
 # Formatting
 
-def format(insns):
+def render(insns):
     return insns[0](insns[1:]) if insns else ''
 
+def capitalize_insn(insns):
+    return render(insns).capitalize()
+
 def lit_insn(s):
-    def insn(rest):
-        if not rest:
-            return s
-        elif rest[0] is abut_insn:
-            return s + format(rest)
-        else:
-            return spaced(s, format(rest))
+    def insn(insns):
+        rest = render(insns)
+        sep = '' if insns[0:1] == [abut_insn] else space(rest)
+        return s + sep + rest
     return insn
 
-def spaced(s1, s2):
-    return s1 + ' ' + s2 if s2 else s1
+abut_insn = render
 
-def abut_insn(rest):
-    return format(rest)
+def a_an_insn(insns):
+    s = render(insns)
+    return ("an" if s[0:1] in 'aeiouy' else "a") + space(s) + s
 
-def a_an_insn(rest):
-    s = format(rest)
-    prefix = "an" if s[0:1] in 'aeiouy' else "a"
-    return spaced(prefix, s)
-
-def capitalize_insn(rest):
-    return format(rest).capitalize()
+def space(s):
+    return ' ' if s else ''
 
 
 # Tests
