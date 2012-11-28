@@ -9,7 +9,7 @@ def parse(x, s):
     if isinstance(p, (str, unicode)): return parse_regex(p, s)
     if isinstance(p, list):           return parse_rules(p, s)
     if callable(p):                   return p(s)
-    raise ValueError("Not coerceable to a peg", x)
+    raise ValueError("Not coercible to a peg", x)
 
 def parse_rules(rules, s):
 

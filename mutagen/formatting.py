@@ -1,41 +1,24 @@
+def concat(insns):
+    return insns[0](insns[1:]) if insns else ''
+
+def capitalize(insns):
+    return concat(insns).capitalize()
+
 def lit(s):
-    def insn(rest):
-        if not rest:
-            return s
-        elif rest[0] == concat:
-            return s + format(rest)
-        else:
-            return s + ' ' + format(rest)
+    def insn(insns):
+        rest = concat(insns)
+        sep = '' if insns[0:1] == [concat] else space(rest)
+        return s + sep + rest
     return insn
 
-def concat(rest):
-    return format(rest)
+def a_an(insns):
+    s = concat(insns)
+    return ("an" if s[0:1] in 'aeiouy' else "a") + space(s) + s
 
-def a_an(rest):
-    s = format(rest)
-    if is_vowel(first_letter(s)):
-        return "an " + s
-    else:
-        return "a " + s
+def space(s): return ' ' if s else ''
 
-def first_letter(s):
-    return s[0]                 # XXX
-
-def is_vowel(c):
-    return c in 'aeiouy'
-
-def capitalize(rest):
-    return format(rest).capitalize()
-
-comma = (concat, lit(","))
-
-def format(insns):
-    if not insns:
-        return ''
-    return insns[0](insns[1:])
-
-## format([capitalize, a_an, lit('hell'), concat, lit(','), lit('world')])
+## concat([capitalize, a_an, lit('hell'), concat, lit(','), lit('world')])
 #. 'A hell, world'
 
-## format([a_an, lit('ohell'), concat, lit(','), lit('world')])
+## concat([a_an, lit('ohell'), concat, lit(','), lit('world')])
 #. 'an ohell, world'
