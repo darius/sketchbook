@@ -104,7 +104,7 @@ def lit_insn(s):
 
 def a_an_insn(insns):
     rest = render(insns)
-    return ("an" if rest[0:1] in 'aeiouy' else "a") + pad(insns, rest)
+    return ("an" if rest[0:1].lower() in 'aeiouy' else "a") + pad(insns, rest)
 
 def pad(insns, rendered):
     return ' '+rendered if rendered and insns[0] != abut_insn else rendered
@@ -113,6 +113,9 @@ def pad(insns, rendered):
 # Tests
 
 def eg(gen): return mutagen(gen, 142)
+
+## render([a_an_insn, capitalize_insn, lit_insn('i')])
+#. 'an I'
 
 ## eg("hello")
 #. 'hello'
