@@ -56,10 +56,7 @@ def choice(*gens):   return lambda rng: rng.call(rng.choice(gens))
 def sequence(*gens): return lambda rng: flatmap(rng.call, gens)
 
 def flatmap(f, xs):
-    result = []
-    for x in xs:
-        result.extend(f(x))
-    return result
+    return sum(map(f, xs), [])
 
 def weighted_choice(*weights):
     return lambda *gens: lambda rng: \
