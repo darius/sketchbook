@@ -5,6 +5,7 @@ The C version of Elite would be another thing-of-this-sort to study.
 
 TODO:
   - clean up 'fixed' mess
+  - add 'shuffle'
   - better naming
   - documentation
   - fix quadratic-time formatting
@@ -42,7 +43,7 @@ class RNG:
 
 def weighted_choose(randint, weights):
     k = randint(0, sum(weights) - 1)
-    for weight, i in izip(weights, count()):
+    for i, weight in enumerate(weights):
         if k < weight:
             return i
         k -= weight
