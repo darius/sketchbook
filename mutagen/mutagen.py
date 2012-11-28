@@ -63,7 +63,7 @@ def weighted_choice(*weights):
         rng.call(gens[rng.weighted_choice(weights)])
 
 def fixed(chooser):
-    tag = counter.next()
+    tag = next(counter)
     return lambda *gens: lambda rng: \
         rng.call(rng.fixed(tag, chooser, gens))
 
