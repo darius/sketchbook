@@ -8,7 +8,7 @@ and https://gist.github.com/2789099
 def is_valid(expr): return satisfy(expr, 0) == False
 
 def satisfy(expr, value):
-    return expr(value, Env(), lambda env: env)
+    return expr(value, Env({None:None}), lambda env: env)
 
 class Env(dict):
     def extend(self, var, value):
@@ -40,17 +40,21 @@ def impl(x, y): return Choice(x, one, y)
 ## is_valid(zero), is_valid(one), is_valid(x)
 #. (False, True, False)
 
+# This had a bug before we added the ugly {None:None}:
+## satisfy(not_(zero), 1)
+#. {None: None}
+
 ## satisfy(zero, 0)
-#. {}
+#. {None: None}
 ## satisfy(zero, 1)
 #. False
 
 ## satisfy(x, 1)
-#. {'x': 1}
+#. {None: None, 'x': 1}
 ## satisfy(not_(x), 1)
-#. {'x': 0}
+#. {None: None, 'x': 0}
 ## satisfy(and_(x, x), 1)
-#. {'x': 1}
+#. {None: None, 'x': 1}
 ## satisfy(and_(x, not_(x)), 1)
 #. False
 
