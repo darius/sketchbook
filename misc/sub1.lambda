@@ -1,0 +1,40 @@
+sub1 = \n f x. unwrap (n wrapped initial)
+where
+        initial = (true, x)
+        unwrap (initial?, value) = value
+        wrapped (initial?, value) = (false,
+                                     if initial? then value else (f value))
+
+
+sub1 = \n f x. unwrap (n wrapped initial)
+where
+        initial = (identity, x)
+        unwrap (u, v) = v
+        wrapped (u, v) = (f, u v)
+
+
+sub1 = \n f x. unwrap (n wrapped initial)
+where
+        initial = pair (\s.s) x
+        unwrap = snd
+        wrapped = \p. pair f ((fst p) (snd p))
+        pair = \a b k. k a b
+        fst  = \p. p (\a b. a)
+        snd  = \p. p (\a b. b)
+
+
+sub1 = \n f x. snd (n (\p. pair f ((fst p) (snd p))) (pair (\s.s) x))
+where
+        pair = \a b k. k a b
+        fst  = \q. q (\a b. a)
+        snd  = \q. q (\a b. b)
+
+
+sub1 = \n f x. (n (\p k. k f ((p (\a b. a)) (p (\a b. b))))
+                  (\k. k (\s.s) x))
+               (\a b. b)
+
+# Alt. notation:
+sub1 = n > f > x > (n (p > k > k f ((p (a > b > a)) (p (a > b > b))))
+                      (k . k (s > s) x))
+                   (a > b > b)
