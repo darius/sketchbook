@@ -6,15 +6,15 @@
 
 import Data.Set (elems, empty, singleton, union, unions)
 
-match re = any isAccepting . elems . foldl step (singleton $ re Accept)
+match re = any accepts . elems . foldl step (singleton $ re Accept)
   where step states c = unions $ map (after c) (elems states)
 
 data State = Accept | Expect Char State | Fork State State
    deriving (Eq, Ord)
 
-isAccepting Accept       = True
-isAccepting (Expect _ _) = False
-isAccepting (Fork s1 s2) = isAccepting s1 || isAccepting s2
+accepts Accept       = True
+accepts (Expect _ _) = False
+accepts (Fork s1 s2) = accepts s1 || accepts s2
 
 after c Accept            = empty
 after c (Expect c' state) = if c' == c then singleton state else empty
