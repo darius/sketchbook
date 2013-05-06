@@ -1,8 +1,7 @@
 -- Like nfa.py
 -- Uses an algebraic datatype instead of functions for the states,
 -- since we can't compare functions in Haskell.
--- Example:
---   match (lit 'a' . many (lit 'b' `alt` lit 'c') . lit 'd') "abbcd"
+-- Example: (lit 'a' . many (lit 'b' `alt` lit 'c') . lit 'd') `match` "abbcd"
 
 import Data.Set (elems, empty, singleton, union, unions)
 
