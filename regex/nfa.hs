@@ -5,8 +5,8 @@
 
 import Data.Set (elems, empty, singleton, union, unions)
 
-match re = any accepts . elems . foldl step (singleton $ re Accept)
-  where step states c = unions $ map (after c) (elems states)
+match re = any accepts . foldl step [re Accept]
+  where step states c = elems $ unions $ map (after c) states
 
 data State = Accept | Expect Char State | Fork State State
    deriving (Eq, Ord)
