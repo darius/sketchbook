@@ -9,7 +9,7 @@ match re = any accepts . foldl step [re Accept]
   where step states c = elems $ unions $ map (after c) states
 
 data State = Accept | Expect Char State | Fork State State
-   deriving (Eq, Ord)
+  deriving (Eq, Ord)
 
 accepts Accept       = True
 accepts (Expect _ _) = False
