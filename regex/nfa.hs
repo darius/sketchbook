@@ -1,11 +1,11 @@
 -- Like nfa.py
 -- Uses an algebraic datatype instead of functions for the states,
 -- since we can't compare functions in Haskell.
--- Example: (lit 'a' . many (lit 'b' `alt` lit 'c') . lit 'd') `match` "abbcd"
+-- E.g.: (lit 'a' . many (lit 'b' `alt` lit 'c') . lit 'd') `matches` "abbcd"
 
 import Data.Set (elems, empty, singleton, union, unions)
 
-match re = any accepts . foldl step [re Accept]
+matches re = any accepts . foldl step [re Accept]
   where step states c = elems $ unions $ map (after c) states
 
 data State = Accept | Expect Char State | Fork State State
