@@ -15,7 +15,7 @@ accepts Accept       = True
 accepts (Expect _ _) = False
 accepts (Fork s1 s2) = accepts s1 || accepts s2
 
-after c Accept            = empty
+after _ Accept            = empty
 after c (Expect c' state) = if c' == c then singleton state else empty
 after c (Fork s1 s2)      = after c s1 `union` after c s2
 
