@@ -2,6 +2,7 @@
 -- Uses an algebraic datatype instead of functions for the states,
 -- since we can't compare functions in Haskell.
 -- E.g.: (lit 'a' . many (lit 'b' `alt` lit 'c') . lit 'd') `matches` "abbcd"
+-- Thanks to Mike Vanier for some Haskelly tips.
 
 import Data.List (nub)
 
