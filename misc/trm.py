@@ -6,7 +6,6 @@ Glossary:
   insn  instruction
   n     argument part of instruction
   reg   register
-(regs is 0-indexed in Python, 1-indexed in the TRM model)
 """
 
 
@@ -17,7 +16,7 @@ Glossary:
 #.   1 add_hash 3
 #. 
 
-## run(parse('1#111##'), ('', '', ''), verbose=True)
+## run(parse('1#111##'), make_regs('', '', ''), verbose=True)
 #.     add_one 1 	r1: 
 #.   1 add_hash 3	r2: 
 #.               	r3: 
@@ -30,13 +29,13 @@ Glossary:
 #.   1 add_hash 3	r2:  
 #.               	r3: #
 #. 
-#. ['1', '', '#']
+#. {1: '1', 2: '', 3: '#'}
 
 
 # 4.1 Program to move register contents
 
 ## move_r2_r1 = parse('11#####111111###111###1##1111####1#111111####')
-## show(move_r2_r1, 0, ('', '1#1#11##'))
+## show(move_r2_r1, 0, make_regs('', '1#1#11##'))
 #.     case 2    	r1:         
 #.   1 forward 6 	r2: 1#1#11##
 #.   2 forward 3              
@@ -45,8 +44,8 @@ Glossary:
 #.   5 add_one 1              
 #.   6 backward 6             
 #. 
-## run(move_r2_r1, ('', '1#1#11##'))
-#. ['1#1#11##', '']
+## run(move_r2_r1, make_regs('', '1#1#11##'))
+#. {1: '1#1#11##', 2: ''}
 
 
 from itertools import izip_longest
@@ -59,10 +58,12 @@ def parse(program):
 
 def parse_insn(token):
     return insn_table[token.count('#')], token.count('1')
-            
+
+def make_regs(*strings):
+    return dict((i+1, s) for i, s in enumerate(strings))
+
 def run(insns, regs, verbose=False):
     pc = 0
-    regs = list(regs)
     while pc < len(insns):
         if verbose:
             show(insns, pc, regs)
@@ -74,11 +75,11 @@ def run(insns, regs, verbose=False):
     return regs
 
 def do_add_one(n, pc, regs):
-    regs[n-1] += '1'
+    regs[n] += '1'
     return pc + 1
 
 def do_add_hash(n, pc, regs):
-    regs[n-1] += '#'
+    regs[n] += '#'
     return pc + 1
 
 def do_forward(n, pc, regs):
@@ -88,9 +89,9 @@ def do_backward(n, pc, regs):
     return pc - n
 
 def do_case(n, pc, regs):
-    reg = regs[n-1]
+    reg = regs[n]
     if not reg:   return pc + 1
-    ch, regs[n-1] = reg[0], reg[1:]
+    ch, regs[n] = reg[0], reg[1:]
     if ch == '1': return pc + 2
     if ch == '#': return pc + 3
     assert False
@@ -99,13 +100,12 @@ insn_table = {1: do_add_one, 2: do_add_hash,
               3: do_forward, 4: do_backward,
               5: do_case}
 
-def show(insns, pc=0, regs=()):
-    left = ['%3s %s %d' % (('' if addr == pc else abs(pc - addr)),
+def show(insns, pc=0, regs={}):
+    left = ['%3s %s %d' % (abs(pc - addr) or '',
                            fn.__name__[3:],
                            n)
             for addr, (fn, n) in enumerate(insns)]
-    right = ['\tr%d: %s' % (r+1, reg)
-             for r, reg in enumerate(regs)]
+    right = ['\tr%d: %s' % item for item in sorted(regs.items())]
     print '\n'.join(abut(left, right))
 
 ## print '|\n'.join(abut('abc de ghi'.split(), 'XY TUV'.split())) + '|',
