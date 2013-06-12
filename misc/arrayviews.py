@@ -26,6 +26,17 @@ the idea of them.
 ## len(s)
 #. 2
 
+## s[0], s[1]
+#. (1, 3)
+## s[2]
+#. Traceback (most recent call last):
+#.   File "arrayviews.py", line 80, in __getitem__
+#.     if not (self.start <= i < self.end): raise IndexError("list index out of range")
+#. IndexError: list index out of range
+
+## dir([])
+#. ['__add__', '__class__', '__contains__', '__delattr__', '__delitem__', '__delslice__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getslice__', '__gt__', '__hash__', '__iadd__', '__imul__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__rmul__', '__setattr__', '__setitem__', '__setslice__', '__sizeof__', '__str__', '__subclasshook__', 'append', 'count', 'extend', 'index', 'insert', 'pop', 'remove', 'reverse', 'sort']
+
 class Array1d:
     """A view into a possibly-shared underlying mutable 1d array,
     with a start, end, and stride."""
@@ -63,3 +74,9 @@ class Array1d:
         result = (self.end + self.stride - 1 - self.start) // self.stride
         assert result == len(self.contents())
         return result
+
+    def __getitem__(self, key):
+        if not isinstance(key, int): raise TypeError("list indices must be integers")
+        i = self.start + self.stride * key
+        if not (self.start <= i < self.end): raise IndexError("list index out of range")
+        return self.elements[i]
