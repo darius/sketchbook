@@ -20,12 +20,19 @@ class LazyList:
         # if False:    forcing produced a StopIteration.
 
     def __iter__(self):
-        lazylist = self
         while True:
-            lazylist._force()
-            if lazylist._state is False: break
-            yield lazylist._head
-            lazylist = lazylist._tail
+            self._force()
+            if self._state is False: break
+            yield self._head
+            self = self._tail
+            # N.B. we assign to self in the hope that this will leave
+            # no references to it, in the case we care about (i.e. we
+            # create a lazy list, then some iterators on it via this
+            # method, then walk through the iterators; once they've
+            # all walked past the head, the original lazy list should
+            # be unreferenced). But I'm not totally sure Python has no
+            # implicit reference on the stack -- assigning to 'self' is
+            # very unusual.
 
     def _force(self):
         if self._state:
