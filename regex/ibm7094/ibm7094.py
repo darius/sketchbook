@@ -67,6 +67,7 @@ class CPU:
     def step(self):
         insn = self.M[self.IC]
         self.IC += 1
+        assert 0 < self.IC <= 2**15
 
         op    = word_get(insn, 0, 11)
         hi_op = word_get(insn, 0, 2)
