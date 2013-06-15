@@ -68,11 +68,11 @@ class CPU:
         insn = self.M[self.IC]
         self.IC += 1
 
-        op    = word_bits(insn, 0, 11)
-        hi_op = word_bits(insn, 0, 2)
-        D     = word_bits(insn, 3, 17)
-        T     = word_bits(insn, 18, 20)
-        Y     = word_bits(insn, 21, 35)
+        op    = word_get(insn, 0, 11)
+        hi_op = word_get(insn, 0, 2)
+        D     = word_get(insn, 3, 17)
+        T     = word_get(insn, 18, 20)
+        Y     = word_get(insn, 21, 35)
 
         if hi_op == 1:          # TXI Transfer with index incremented
             self.XR[T] += D
@@ -96,16 +96,24 @@ class CPU:
 
 
 def word_cmp(u, v):
-    u_s = -1 if word_bits(u, 0, 0) else 1
-    v_s = -1 if word_bits(v, 0, 0) else 1
+    u_s = -1 if word_get(u, 0, 0) else 1
+    v_s = -1 if word_get(v, 0, 0) else 1
     if cmp(u_s, v_s): return cmp(u_s, v_s)
-    return cmp(word_bits(u, 1, 35),
-               word_bits(v, 1, 35))
+    return cmp(word_get(u, 1, 35),
+               word_get(v, 1, 35))
 
-def word_bits(word, left, right):
-    lo = 35 - right
-    width = right+1 - left
-    return (word >> lo) & ~(~0 << width)
-
-## word_bits(0x1235, 33, 34)
+## word_get(0x1235, 33, 34)
 #. 2
+
+def word_set(word, left, right, value):
+    shift, mask = word_field(left, right)
+    return (word & ~mask) | ((value << shift) & mask)
+
+def word_get(word, left, right):
+    shift, mask = word_field(left, right)
+    return (word & mask) >> shift
+
+def word_field(left, right):
+    shift = 35 - right
+    width = right+1 - left
+    return shift, (~(~0 << width)) << shift
