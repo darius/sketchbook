@@ -16,7 +16,6 @@ ACs    ACs<S, 1:35> := AC<S, 1:35>
 D      D<3:17> := insn<3:17>   decrement part of insn
 IC     IC<3:17>   instruction counter 
 M[e]   M[0:32767]<S, 1:35>
-M[Y]   memory?
 XR[T]  XR[1:7]<3:17>
 
 indirect := insn<12:13> = 11
@@ -24,8 +23,13 @@ e      e<21:35> := (not indirect -> e';
                     indirect -> insn<18:35> <- M[e']<18:35>; next e')
 e'     ...
 
-next foo
-foo<lo:hi>
+(foo; next bar) means that values from memory in 'bar' are evaluated
+*after* the assignments in 'foo'. Within 'foo' and 'bar', semicolons
+are not sequencing, they're simultaneous assignment innstead.
+http://research.microsoft.com/en-us/um/people/gbell/Computer_Structures__Readings_and_Examples/00000044.htm
+
+foo<lo:hi>   bits numbered from 0 on the left
+
 foo+bar, foo-bar, foo >= bar
 
 acl Add and Carry Logical word
@@ -63,9 +67,45 @@ class CPU:
     def step(self):
         insn = self.M[self.IC]
         self.IC += 1
-        prefix = (insn >> 0) & ~(~0 << 3)
-        decr   = (insn >> 3) & ~(~0 << 15)
-        tag    = (insn >> 18) & ~(~0 << 3)
-        addr   = (insn >> 21) & ~(~0 << 15)
-        effective_addr = addr - self.XR[tag]
-        
+
+        op    = word_bits(insn, 0, 11)
+        hi_op = word_bits(insn, 0, 2)
+        D     = word_bits(insn, 3, 17)
+        T     = word_bits(insn, 18, 20)
+        Y     = word_bits(insn, 21, 35)
+
+        if hi_op == 1:          # TXI Transfer with index incremented
+            self.XR[T] += D
+            self.XR[T] &= ~(~0 << 15)
+            self.IC = Y
+        elif hi_op == 3:        # TXI Transfer on index high
+            if word_cmp(D, self.XR[T]) < 0:
+                self.IC = Y
+        elif hi_op == 7:     # (-3) TXL Transfer on index low or equal
+            if word_cmp(D, self.XR[T]) >= 0:
+                self.IC = Y
+        else:
+
+            e = XXX
+
+            if op == 20:        # TRA Transfer
+                self.IC = e
+            elif op == 74:      # TSX Transfer and set index
+                self.XR[T] = 2**15 - self.IC
+                self.IC = Y
+
+
+def word_cmp(u, v):
+    u_s = -1 if word_bits(u, 0, 0) else 1
+    v_s = -1 if word_bits(v, 0, 0) else 1
+    if cmp(u_s, v_s): return cmp(u_s, v_s)
+    return cmp(word_bits(u, 1, 35),
+               word_bits(v, 1, 35))
+
+def word_bits(word, left, right):
+    lo = 35 - right
+    width = right+1 - left
+    return (word >> lo) & ~(~0 << width)
+
+## word_bits(0x1235, 33, 34)
+#. 2
