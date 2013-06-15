@@ -47,6 +47,7 @@ tra TRAnsfer               (:= op = 20) -> (IC <- e)
 tsx Transfer and Set indeX (:= op = 74) -> (XR[T] <- 2**15 - IC; IC <- Y)
 txi Transfer with indeX Incremented
                            (:= hi_op = 1) -> (XR[T] <- XR[T] + D; IC <- Y)
+txh Transfer on indeX High (:= hi_op = 3) -> ((D < XR[T]) -> IC <- Y)
 txl Transfer on indeX Low or equal
                            (:= hi_op = -3) -> ((D >= XR[T]) -> IC <- Y)
 """
