@@ -58,11 +58,11 @@ class CPU:
         self.M = [0] * 32768    # memory
         self.AC = 0             # accumulator
         self.XR = [0] * 8       # index registers
-        self.pc = 0
+        self.IC = 0             # instruction counter
         
     def step(self):
-        insn = self.M[self.pc]
-        self.pc += 1
+        insn = self.M[self.IC]
+        self.IC += 1
         prefix = (insn >> 0) & ~(~0 << 3)
         decr   = (insn >> 3) & ~(~0 << 15)
         tag    = (insn >> 18) & ~(~0 << 3)
