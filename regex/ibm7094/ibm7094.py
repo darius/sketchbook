@@ -78,7 +78,7 @@ class CPU:
             self.XR[T] += D
             self.XR[T] &= ~(~0 << 15)
             self.IC = Y
-        elif hi_op == 3:        # TXI Transfer on index high
+        elif hi_op == 3:        # TXH Transfer on index high
             if word_cmp(D, self.XR[T]) < 0:
                 self.IC = Y
         elif hi_op == 7:     # (-3) TXL Transfer on index low or equal
