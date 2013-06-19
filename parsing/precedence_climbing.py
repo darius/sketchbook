@@ -95,5 +95,5 @@ def demo(s): return parse_infix(s.replace(' ', ''))
 ## demo('5-(1-2)')
 #. 6
 
-## demo('1+-2*3+4')
-#. -1
+## demo('1 + -2^2 + 4')
+#. 1
