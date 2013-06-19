@@ -2,6 +2,10 @@
 Parse infix expressions by precedence climbing. N.B. Not quite identical to 
 http://en.wikipedia.org/wiki/Operator-precedence_parser#Precedence_climbing_method
 so maybe I should rename this. I learned this method from Dave Gillespie.
+
+It's coded with procedure parameters to make it possible (at least sometimes)
+to integrate it into a parser for your own grammar which will have different
+ideas about what kind of expressions there are, etc.
 """
 
 import operator
