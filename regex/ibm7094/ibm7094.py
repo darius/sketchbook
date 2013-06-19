@@ -79,23 +79,23 @@ class CPU:
         T     = word_get(insn, 18, 20)
         Y     = word_get(insn, 21, 35)
 
-        if hi_op == 1:          # TXI Transfer with index incremented
+        if hi_op == 01:          # TXI Transfer with index incremented
             self.XR[T] += D
             self.XR[T] &= ~(~0 << 15)
             self.IC = Y
-        elif hi_op == 3:        # TXH Transfer on index high
+        elif hi_op == 03:        # TXH Transfer on index high
             if word_cmp(D, self.XR[T]) < 0:
                 self.IC = Y
-        elif hi_op == 7:     # (-3) TXL Transfer on index low or equal
+        elif hi_op == 07:     # (-3) TXL Transfer on index low or equal
             if word_cmp(D, self.XR[T]) >= 0:
                 self.IC = Y
         else:
 
             e = Y  # XXX fill in
 
-            if op == 20:        # TRA Transfer
+            if op == 020:        # TRA Transfer
                 self.IC = e
-            elif op == 74:      # TSX Transfer and set index
+            elif op == 074:      # TSX Transfer and set index
                 self.XR[T] = 2**15 - self.IC
                 self.IC = Y
 
