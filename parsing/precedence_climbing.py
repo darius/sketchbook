@@ -5,7 +5,8 @@ so maybe I should rename this. I learned this method from Dave Gillespie.
 
 It's coded with procedure parameters to make it possible (at least sometimes)
 to integrate it into a parser for your own grammar which will have different
-ideas about what kind of expressions there are, etc.
+ideas about what kind of expressions there are, etc. But you don't need 
+higher-order procedures to use this method in general; just recursion.
 """
 
 import operator

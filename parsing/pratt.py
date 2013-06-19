@@ -1,6 +1,8 @@
 """
 Pratt parser for infix expressions
 http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/
+# TODO: see if any ideas from precedence_climbing.py can improve this
+#       or vice-versa
 """
 
 import re
