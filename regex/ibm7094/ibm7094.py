@@ -32,9 +32,13 @@ foo<lo:hi>   bits numbered from 0 on the left
 
 foo+bar, foo-bar, foo >= bar
 
+XXX I've been assuming the opcode numbers were decimal, oops.
+Apparently they're octal.
+
 acl Add and Carry Logical word
                            (:= op = 361) -> (ACl <- ACl + M[e])
 axc Address to indeX Complement
+                           XXX this must be wrong:
                            (:= op = -774) -> (XR[T] <- 2**15 - Y)
 cal Clear and Add Logical  op:-500: AC <- 0; next ACl <- ACl+M[e]
 cla Clear and Add          op:500:  AC <- 0; next ACs <- AC+M[e]
@@ -87,7 +91,7 @@ class CPU:
                 self.IC = Y
         else:
 
-            e = XXX
+            e = Y  # XXX fill in
 
             if op == 20:        # TRA Transfer
                 self.IC = e
