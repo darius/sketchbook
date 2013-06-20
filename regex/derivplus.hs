@@ -1,5 +1,5 @@
 -- Thompson said he derived his method from Brzozowski
--- derivatives. Here's an idea how one might start down tha road. To
+-- derivatives. Here's an idea how one might start down that road. To
 -- keep things easier while I figure this out, let's avoid epsilon.
 
 import Data.List (nub)
