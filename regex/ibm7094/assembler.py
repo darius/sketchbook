@@ -61,7 +61,7 @@ def assembler_pass(lines, env, origin):
     words, here = [], origin
     for line in lines:
         # TODO: strip comments
-        if line[:1].isalpha():
+        if line != line.lstrip():
             label, line = line.split(None, 1)
             if env.get(label, here) != here:
                 raise Exception("Multiply-defined")
@@ -69,6 +69,7 @@ def assembler_pass(lines, env, origin):
         if not line.strip(): continue
         env['__here__'] = here
         words.append(assemble1(line, env))
+        here += 1
     return words
 
 def assemble1(line, env={}):
