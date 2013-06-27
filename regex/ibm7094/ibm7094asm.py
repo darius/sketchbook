@@ -39,6 +39,9 @@ def assemble1(tokens, env):
 ## assemble(assemble1, [' acl 0,1', 'foo CLA '], {})
 #. [4043341824L, 5368709120L]
 
+## assemble(assemble1, [' acl hey', 'hey'], {})
+#. [4043309057L]
+
 branch_mnemonics = dict(TXI=1, TXH=3,
                         TXL=7) # -3 'really'
 mnemonics = dict(ACL=0361,
