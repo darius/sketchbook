@@ -60,21 +60,35 @@ class UnionDict(object):
 def assembler_pass(lines, env, origin):
     words, here = [], origin
     for line in lines:
-        # TODO: strip comments
-        if line != line.lstrip():
-            label, line = line.split(None, 1)
+        label, tokens = tokenize(line)
+        if label:
             if env.get(label, here) != here:
                 raise Exception("Multiply-defined")
             env[label] = here
-        if not line.strip(): continue
+        if not tokens: continue
         env['__here__'] = here
-        words.append(assemble1(line, env))
+        words.append(assemble1(tokens, env))
         here += 1
     return words
 
-def assemble1(line, env={}):
-    fields = [field.strip() for field in line.split(',')]
-    mnemonic = fields[0].upper()
+def starts_comment(string):
+    return string.startswith(';')
+
+def tokenize(line):
+    tokens = line.split()
+    if line[:1].isspace() or starts_comment(line):
+        label = ''
+    else:
+        label = tokens.pop(0)
+    for i, token in enumerate(tokens):
+        if starts_comment(token):
+            tokens = tokens[:i]
+            break
+    return label, tokens
+
+def assemble1(tokens, env={}):
+    mnemonic, rest = tokens[0].upper(), ' '.join(tokens[1:])
+    fields = [field.strip() for field in rest.split(',')]
     # TODO: resolve '*' as __here__
     # TODO: what is '**'? seems to mean just 0, weird.
     args = [eval(operand, {}, env) for operand in fields[1:]]
@@ -83,18 +97,22 @@ def assemble1(line, env={}):
     else:
         return encode(mnemonics[mnemonic], *args)
 
+
+## assemble([' acl 0,1', 'foo CLA '], {})
+#. ([4043309057L, 5368709120L], {'__here__': 1, 'foo': 1})
+
 branch_mnemonics = dict(TXI=1, TXH=3,
                         TXL=7) # -3 'really'
-menonics = dict(ACL=0361,
-                AXC=-0774,       # XXX
-                CAL=-0500,       # XXX
-                CLA=0500,
-                LAC=0535,
-                PAC=0737,
-                PCA=0756,
-                SCA=0636,
-                SLW=0602,
-                TRA=020)
+mnemonics = dict(ACL=0361,
+                 AXC=-0774,       # XXX
+                 CAL=-0500,       # XXX
+                 CLA=0500,
+                 LAC=0535,
+                 PAC=0737,
+                 PCA=0756,
+                 SCA=0636,
+                 SLW=0602,
+                 TRA=020)
 
 def encode(op, Y=0, T=0):
     word = 0
