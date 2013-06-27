@@ -28,12 +28,18 @@ from collections import defaultdict
 ## eval('hi', {}, UnionDict(d, defaultdict(int)))
 #. 0
 
+def toplevel(filename):
+    env = {}
+    words = assemble(list(open(filename)), env)
+    for word in words:
+        print '%012o' % word
+
 def assemble(lines, env, origin=0):
     forward_refs = defaultdict(int)
     assembler_pass(lines, UnionDict(env, forward_refs), origin)
     if any(key not in env for key in forward_refs):
         raise Exception("Unresolved ref")
-    return assembler_pass(lines, env, origin), env
+    return assembler_pass(lines, env, origin)
 
 ## ',4'.split(',')
 #. ['', '4']
@@ -65,7 +71,8 @@ def assembler_pass(lines, env, origin):
             if env.get(label, here) != here:
                 raise Exception("Multiply-defined")
             env[label] = here
-        if not tokens: continue
+        if not tokens:
+            continue
         env['__here__'] = here
         words.append(assemble1(tokens, env))
         here += 1
@@ -112,7 +119,8 @@ mnemonics = dict(ACL=0361,
                  PCA=0756,
                  SCA=0636,
                  SLW=0602,
-                 TRA=020)
+                 TRA=020,
+                 TSX=074)
 
 def encode(op, Y=0, T=0):
     word = 0
@@ -141,3 +149,7 @@ def word_field(left, right):
     shift = 35 - right
     width = right+1 - left
     return shift, (~(~0 << width)) << shift
+
+if __name__ == '__main__':
+    import sys
+    toplevel(sys.argv[1])
