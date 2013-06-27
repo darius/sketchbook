@@ -25,9 +25,9 @@ def toplevel(filename):
     for word in words:
         print '%012o' % word
 
-def assemble1(tokens, env={}):
+def assemble1(tokens, env):
     mnemonic, rest = tokens[0].upper(), ' '.join(tokens[1:])
-    fields = [field.strip() for field in rest.split(',')]
+    fields = [field.strip() or '0' for field in rest.split(',')]
     # TODO: resolve '*' as __here__
     # TODO: what is '**'? seems to mean just 0, weird.
     args = [eval(operand, {}, env) for operand in fields]
@@ -37,7 +37,7 @@ def assemble1(tokens, env={}):
         return encode(mnemonics[mnemonic], *args)
 
 ## assemble(assemble1, [' acl 0,1', 'foo CLA '], {})
-#. [4043309057L, 5368709120L]
+#. [4043341824L, 5368709120L]
 
 branch_mnemonics = dict(TXI=1, TXH=3,
                         TXL=7) # -3 'really'
