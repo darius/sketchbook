@@ -45,7 +45,8 @@ class VM(object):
         return self.R[int(r)]
 
     def set(self, r, value):
-        self.R[int(r)] = value
+        if int(r) != 0:
+            self.R[int(r)] = value
 
     def step(self):
         insn = self.fetch(self.pc)
