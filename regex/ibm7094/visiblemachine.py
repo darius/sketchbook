@@ -7,7 +7,7 @@ decimal numbers.
 """
 
 def put_number(vh, vn):
-    vl = '%02d' % vn
+    vl = '%2d' % vn
     assert len(vl) == 2
     return vh + vl
 
