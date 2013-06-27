@@ -30,12 +30,11 @@ def assemble1(tokens, env={}):
     fields = [field.strip() for field in rest.split(',')]
     # TODO: resolve '*' as __here__
     # TODO: what is '**'? seems to mean just 0, weird.
-    args = [eval(operand, {}, env) for operand in fields[1:]]
+    args = [eval(operand, {}, env) for operand in fields]
     if mnemonic in branch_mnemonics:
         return encode_branch(branch_mnemonics[mnemonic], *args)
     else:
         return encode(mnemonics[mnemonic], *args)
-
 
 ## assemble(assemble1, [' acl 0,1', 'foo CLA '], {})
 #. [4043309057L, 5368709120L]
