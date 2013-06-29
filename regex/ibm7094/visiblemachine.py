@@ -8,10 +8,34 @@ decimal numbers.
 
 from assembler import assemble
 
+## toplevel('thompson.vm.s')
+#.  0 set   7 0  0   20 fetch 7 0 11   40 ifne  1 A 19   60                80             
+#.  1 fetch 3 7 46   21 set   6 0  0   41 jump  4 0 11   61                81             
+#.  2 store 3 7 47   22 ifeq  7 0  0   42 noop  0 0  0   62                82             
+#.  3 set   3 4  0   23 jump  0 0 29   43 ifne  1 B 19   63                83             
+#.  4 fetch 5 0 10   24 add   7 7 -1   44 jump  4 0 11   64                84             
+#.  5 add   3 5  0   25 fetch 3 7 66   45 found 0 0  0   65                85             
+#.  6 store 3 7 46   26 store 3 6 46   46                66                86             
+#.  7 add   7 7  1   27 add   6 6  1   47                67                87             
+#.  8 smash 7 0  0   28 jump  0 0 22   48                68                88             
+#.  9 jump  0 4  2   29 fetch 3 0 36   49                69                89             
+#. 10 jump  2 0  0   30 store 3 6 46   50                70                90             
+#. 11 set   7 0  0   31 smash 7 0  0   51                71                91             
+#. 12 set   3 4  0   32 smash 0 0 11   52                72                92             
+#. 13 fetch 5 0 10   33 getch 0 0  0   53                73                93             
+#. 14 add   3 5  0   34 jump  2 0 39   54                74                94             
+#. 15 store 3 7 66   35 jump  0 0 46   55                75                95             
+#. 16 add   7 7  1   36 jump  0 0 20   56                76                96             
+#. 17 smash 7 0 11   37 smash 0 0 11   57                77                97             
+#. 18 jump  0 2  1   38 jump  0 0 20   58                78                98             
+#. 19 jump  0 2  1   39 noop  0 0  0   59                79                99             
+#. 
+
 def toplevel(filename):
     env = dict(('r%d'%i, i) for i in range(1, 10))
     words = assemble(assemble1, open(filename), env)
-    show(words)
+    vm = VM(words, '')
+    vm.show()
 
 def show(words):
     lines = ['%2d %s %s %s %s' % (addr, word[:5], word[5], word[6], word[7:])
@@ -75,13 +99,17 @@ class VM(object):
         self.input_chars = iter(input_chars)
         for addr, value in enumerate(program):
             assert len(value) == 9
-            self.store(addr, value)
+            self.store(put_number(' '*7, addr), value)
+
+    def show(self):
+        return show(self.M)
 
     def fetch(self, addr):
         return self.M[get_number(addr)]
 
     def store(self, addr, value):
-        self.M[get_number(addr)] = value
+        ah, an = get_number(addr)
+        self.M[an] = value
 
     def get(self, r):
         return self.R[int(r)]
@@ -126,8 +154,6 @@ class VM(object):
             assert False
         else:
             assert False
-
-vm = VM((), '')
 
 
 if __name__ == '__main__':
