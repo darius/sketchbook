@@ -11,8 +11,29 @@ from assembler import assemble
 def toplevel(filename):
     env = dict(('r%d'%i, i) for i in range(1, 10))
     words = assemble(assemble1, open(filename), env)
-    for addr, word in enumerate(words):
-        print '%2d %s %s %s %s' % (addr, word[:5], word[5], word[6], word[7:])
+    show(words)
+
+def show(words):
+    lines = ['%2d %s %s %s %s' % (addr, word[:5], word[5], word[6], word[7:])
+             for addr, word in enumerate(words)]
+    print '\n'.join(format_columns(lines, 5))
+
+def format_columns(lines, ncols, sep='   '):
+    assert lines 
+    assert all(len(line) == len(lines[0]) for line in lines)
+    nrows = (len(lines) + ncols-1) // ncols
+    lines = list(lines)
+    while len(lines) % nrows != 0:
+        lines.append('')
+    columns = [lines[i:i+nrows] for i in range(0, len(lines), nrows)]
+    return map(sep.join, zip(*columns))
+
+## for row in format_columns(map(str, range(10)), 3): print row
+#. 0   4   8
+#. 1   5   9
+#. 2   6   
+#. 3   7   
+#. 
 
 def assemble1(tokens, env):
     mnemonic, rest = tokens[0].lower(), ' '.join(tokens[1:])
