@@ -106,5 +106,5 @@ function throttle(func, refractoryPeriod) {
 // and it's a pain to reverse-engineer the details.
 
 // Mixing sync and async calls to the same function seems a recipe for
-// trouble and I wonder if it's a root cause of the complexity of this
-// function too.
+// trouble, but doesn't make the throttle function itself greatly
+// harder to follow.
