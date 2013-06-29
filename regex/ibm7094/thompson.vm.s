@@ -133,5 +133,5 @@ code
         jump    r4,,nnode
         found
 
-clist
-nlist
+clist   zeroes  20
+nlist   zeroes  20

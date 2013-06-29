@@ -18,10 +18,14 @@ def assemble1(tokens, env):
     mnemonic, rest = tokens[0].lower(), ' '.join(tokens[1:])
     fields = [field.strip() or '0' for field in rest.split(',')]
     args = [eval(operand, {}, env) for operand in fields]
-    while len(args) < 3:
-        args.append('0')
-    assert len(args) == 3
-    return '%-5s%s%s%02s' % (mnemonic, args[0], args[1], int(args[2]))
+    if mnemonic == 'zeroes':
+        assert len(args) == 1
+        return [' '*9] * args[0]
+    else:
+        while len(args) < 3:
+            args.append('0')
+        assert len(args) == 3
+        return ['%-5s%s%s%02s' % (mnemonic, args[0], args[1], int(args[2]))]
 
 def put_number(vh, vn):
     vl = '%2d' % vn

@@ -8,13 +8,11 @@ def assemble(assemble1, lines, env, origin=0):
     lines = list(lines)
     forward_refs = defaultdict(int)
     both = UnionDict(env, forward_refs)
-    for tokens in assembler_pass(lines, both, origin):
-        assemble1(tokens, both)
+    assembler_pass(assemble1, lines, both, origin)
     unresolved = set(forward_refs) - set(env)
     if unresolved:
         raise Exception("Unresolved refs", ' '.join(sorted(unresolved)))
-    return [assemble1(tokens, env) 
-            for tokens in assembler_pass(lines, env, origin)]
+    return assembler_pass(assemble1, lines, env, origin)
 
 class UnionDict(object):        # XXX rename
     def __init__(self, dict1, dict2):
@@ -29,9 +27,10 @@ class UnionDict(object):        # XXX rename
     def get(self, key, default=None):
         return self.dict1.get(key, default)
 
-def assembler_pass(lines, env, origin):
-    here = origin
+def assembler_pass(assemble1, lines, env, origin):
+    cells = []
     for line in lines:
+        here = origin + len(cells)
         label, tokens = tokenize(line)
         if label:
             if env.get(label, here) != here:
@@ -40,8 +39,8 @@ def assembler_pass(lines, env, origin):
         if not tokens:
             continue
         env['__here__'] = here
-        yield tokens
-        here += 1
+        cells.extend(assemble1(tokens, env))
+    return cells
 
 def starts_comment(string):
     return string.startswith(';')
