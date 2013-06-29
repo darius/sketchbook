@@ -6,6 +6,23 @@ fixed-length strings with fields holding instruction mnemonics and
 decimal numbers.
 """
 
+from assembler import assemble
+
+def toplevel(filename):
+    env = dict(('r%d'%i, i) for i in range(1, 10))
+    words = assemble(assemble1, open(filename), env)
+    for addr, word in enumerate(words):
+        print '%2d %s %s %s %s' % (addr, word[:5], word[5], word[6], word[7:])
+
+def assemble1(tokens, env):
+    mnemonic, rest = tokens[0].lower(), ' '.join(tokens[1:])
+    fields = [field.strip() or '0' for field in rest.split(',')]
+    args = [eval(operand, {}, env) for operand in fields]
+    while len(args) < 3:
+        args.append('0')
+    assert len(args) == 3
+    return '%-5s%s%s%02s' % (mnemonic, args[0], args[1], int(args[2]))
+
 def put_number(vh, vn):
     vl = '%2d' % vn
     assert len(vl) == 2
@@ -86,3 +103,8 @@ class VM(object):
             assert False
 
 vm = VM((), '')
+
+
+if __name__ == '__main__':
+    import sys
+    toplevel(sys.argv[1])
