@@ -78,15 +78,14 @@ function throttle(func, interval, value) {
 // `this` and `arguments` from the most recent request.
 function throttle(func, refractoryPeriod) {
     var lastResult, context, args;
-    var lastCallTime = -refractoryPeriod, timeoutId = null;
+    var wakeTime = 0, timeoutId = null;
     function ask() {
         context = this, args = arguments;
         var now = Date.now();
-        var refractory = lastCallTime + refractoryPeriod - now;
-        if (0 < refractory) {
+        if (now < wakeTime) {
             // We're in the refractory period after a call.
             if (timeoutId === null)
-                timeoutId = setTimeout(update, refractory);
+                timeoutId = setTimeout(update, wakeTime - now);
         } else {
             // We're good to go. First cancel any lagging async call.
             clearTimeout(timeoutId);
@@ -96,15 +95,15 @@ function throttle(func, refractoryPeriod) {
     }
     function update(now) {
         timeoutId = null;
-        lastCallTime = now || Date.now();
+        wakeTime = (now || Date.now()) + refractoryPeriod;
         lastResult = func.apply(context, args);
     }
     return ask;
 }
 
-// Editorial: Underscore's works out to be nearly the same code as I'd
-// write for the same spec, but as usual with Underscore it's scantily
-// documented and it's a pain to reverse-engineer the details.
+// Editorial: Underscore's works out to be similar to my code for the
+// same spec, but as usual with Underscore it's scantily documented
+// and it's a pain to reverse-engineer the details.
 
 // Mixing sync and async calls to the same function seems a recipe for
 // trouble and I wonder if it's a root cause of the complexity of this
