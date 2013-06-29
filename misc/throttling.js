@@ -77,29 +77,29 @@ function throttle(func, interval, value) {
 // result. Other requests call func immediately. The async call uses
 // `this` and `arguments` from the most recent request.
 function throttle(func, refractoryPeriod) {
-    function asyncUpdate() {
-        timeoutId = null;
-        lastCallTime = Date.now();
-        lastResult = func.apply(context, args);
-    }
     var lastResult, context, args;
     var lastCallTime = -refractoryPeriod, timeoutId = null;
-    return function() {
+    function ask() {
         context = this, args = arguments;
         var now = Date.now();
         var refractory = lastCallTime + refractoryPeriod - now;
-        if (0 <= refractory) {
+        if (0 < refractory) {
             // We're in the refractory period after a call.
             if (timeoutId === null)
-                timeoutId = setTimeout(asyncUpdate, refractory);
+                timeoutId = setTimeout(update, refractory);
         } else {
             // We're good to go. First cancel any lagging async call.
             clearTimeout(timeoutId);
-            lastCallTime = now;
-            lastResult = func.apply(context, args);
+            update(now);
         }
         return lastResult;
-    };
+    }
+    function update(now) {
+        timeoutId = null;
+        lastCallTime = now || Date.now();
+        lastResult = func.apply(context, args);
+    }
+    return ask;
 }
 
 // Editorial: Underscore's works out to be nearly the same code as I'd
