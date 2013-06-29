@@ -16,11 +16,11 @@ function unthrottled(func) {
 // A sync throttle: any requests within refractoryPeriod after the
 // last call get the last call's result.
 function throttle(func, refractoryPeriod) {
-    var lastTime = -refractoryPeriod, lastResult;
+    var refractoryUntil = 0, lastResult;
     return function() {
         var now = Date.now();
-        if (lastTime + refractoryPeriod <= now) {
-            lastTime = now;
+        if (refractoryUntil <= now) {
+            refractoryUntil = now + refractoryPeriod;
             lastResult = func.apply(this, arguments);
         }
         return lastResult;
