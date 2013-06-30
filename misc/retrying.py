@@ -1,8 +1,8 @@
 """
 A redesign of
 http://code.activestate.com/recipes/578527-retry-loop/?in=lang-python
-Its example is like example() except for this line:
-    for retry in retryloop(10, timeout=30):
+Its example is like example() except its version would start:
+    for retry in retryloop(3, timeout=2):
 """
 
 def example():
