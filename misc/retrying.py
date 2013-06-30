@@ -10,15 +10,16 @@ def example():
         try:
             print 'something'
             # time.sleep(1)   # Uncomment to test timeout
-            assert False
+            assert False, "No go, Mo"
         except AssertionError:
             retry()
 
 import time
 
 def retrying(trials):
-    def retry(): retry.done = False
-    for _ in trials:
+    def retry():
+        retry.done = False
+    for trial in trials:
         retry.done = True
         yield retry
         if retry.done: 
@@ -40,7 +41,26 @@ def timeout(interval, trials):
 #. 
 #. Traceback (most recent call last):
 #.   File "retrying.py", line 9, in example
-#.     for retry in retrying(timeout(5, range(3))):
-#.   File "retrying.py", line 26, in retrying
+#.     for retry in retrying(timeout(2, range(3))):
+#.   File "retrying.py", line 27, in retrying
 #.     raise RetryError
 #. RetryError
+
+def fancy_retrying(trials):
+    def retry(exc=None):
+        retry.done = False
+        retry.exc = exc
+    retry.exc = None
+    trial = None
+    for trial in trials:
+        retry.done = True
+        yield retry
+        if retry.done: 
+            return
+    # All the trials failed; complain.
+    info = "on trial {0}".format(trial)
+    if retry.exc:
+        retry.exc.args += (info,)
+        raise retry.exc
+    else:
+        raise RetryError(info)
