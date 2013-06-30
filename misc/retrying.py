@@ -6,9 +6,10 @@ Its example is like example() except for this line:
 """
 
 def example():
-    for retry in retrying(timeout(30, range(3))):
+    for retry in retrying(timeout(2, range(3))):
         try:
             print 'something'
+            # time.sleep(1)   # Uncomment to test timeout
             assert False
         except AssertionError:
             retry()
@@ -39,7 +40,7 @@ def timeout(interval, trials):
 #. 
 #. Traceback (most recent call last):
 #.   File "retrying.py", line 9, in example
-#.     for retry in retrying(timeout(30, range(3))):
-#.   File "retrying.py", line 25, in retrying
+#.     for retry in retrying(timeout(5, range(3))):
+#.   File "retrying.py", line 26, in retrying
 #.     raise RetryError
 #. RetryError
