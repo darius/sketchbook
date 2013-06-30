@@ -188,14 +188,14 @@ class VM(object):
             assert False
 
 
-def format_columns(lines, ncols, sep='   '):
-    assert lines 
-    assert all(len(line) == len(lines[0]) for line in lines)
-    nrows = (len(lines) + ncols-1) // ncols
-    lines = list(lines)
-    while len(lines) % nrows != 0:
-        lines.append('')
-    columns = [lines[i:i+nrows] for i in range(0, len(lines), nrows)]
+def format_columns(items, ncols, sep='   '):
+    items = list(items)
+    assert items 
+    assert all(len(item) == len(items[0]) for item in items)
+    nrows = (len(items) + ncols-1) // ncols
+    while len(items) % nrows != 0:
+        items.append('')
+    columns = [items[i:i+nrows] for i in range(0, len(items), nrows)]
     return map(sep.join, zip(*columns))
 
 ## for row in format_columns(map(str, range(10)), 3): print row
