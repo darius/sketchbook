@@ -9,7 +9,7 @@ decimal numbers.
 from assembler import assemble
 
 ## toplevel('thompson.vm.s')
-#.  0 set   7 0  0   20 fetch 7 0 11   40 ifne  1 A 19   60                80             
+#. ==>set   7 0  0   20 fetch 7 0 11   40 ifne  1 A 19   60                80             
 #.  1 fetch 3 7 46   21 set   6 0  0   41 jump  4 0 11   61                81             
 #.  2 store 3 7 47   22 ifeq  7 0  0   42 noop  0 0  0   62                82             
 #.  3 set   3 4  0   23 jump  0 0 29   43 ifne  1 B 19   63                83             
@@ -36,28 +36,6 @@ def toplevel(filename):
     words = assemble(assemble1, open(filename), env)
     vm = VM(words, '')
     vm.show()
-
-def show(words):
-    lines = ['%2d %s %s %s %s' % (addr, word[:5], word[5], word[6], word[7:])
-             for addr, word in enumerate(words)]
-    print '\n'.join(format_columns(lines, 5))
-
-def format_columns(lines, ncols, sep='   '):
-    assert lines 
-    assert all(len(line) == len(lines[0]) for line in lines)
-    nrows = (len(lines) + ncols-1) // ncols
-    lines = list(lines)
-    while len(lines) % nrows != 0:
-        lines.append('')
-    columns = [lines[i:i+nrows] for i in range(0, len(lines), nrows)]
-    return map(sep.join, zip(*columns))
-
-## for row in format_columns(map(str, range(10)), 3): print row
-#. 0   4   8
-#. 1   5   9
-#. 2   6   
-#. 3   7   
-#. 
 
 def assemble1(tokens, env):
     mnemonic, rest = tokens[0].lower(), ' '.join(tokens[1:])
@@ -102,7 +80,13 @@ class VM(object):
             self.store(put_number(' '*7, addr), value)
 
     def show(self):
-        return show(self.M)
+        insns = map(self.show_cell, range(100))
+        print '\n'.join(format_columns(insns, 5))
+
+    def show_cell(self, i):
+        word = self.M[i]
+        addr = '==>' if i == get_number(self.pc)[1] else '%2d ' % i
+        return '%s%s %s %s %s' % (addr, word[:5], word[5], word[6], word[7:])
 
     def fetch(self, addr):
         return self.M[get_number(addr)]
@@ -154,6 +138,24 @@ class VM(object):
             assert False
         else:
             assert False
+
+
+def format_columns(lines, ncols, sep='   '):
+    assert lines 
+    assert all(len(line) == len(lines[0]) for line in lines)
+    nrows = (len(lines) + ncols-1) // ncols
+    lines = list(lines)
+    while len(lines) % nrows != 0:
+        lines.append('')
+    columns = [lines[i:i+nrows] for i in range(0, len(lines), nrows)]
+    return map(sep.join, zip(*columns))
+
+## for row in format_columns(map(str, range(10)), 3): print row
+#. 0   4   8
+#. 1   5   9
+#. 2   6   
+#. 3   7   
+#. 
 
 
 if __name__ == '__main__':
