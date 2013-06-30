@@ -133,5 +133,6 @@ code
         jump    r4,,nnode
         found
 
+        zeroes  60-__here__     ; put clist at address 60, visually nice
 clist   zeroes  20
 nlist   zeroes  20
