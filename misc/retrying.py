@@ -1,7 +1,17 @@
 """
 A redesign of
 http://code.activestate.com/recipes/578527-retry-loop/?in=lang-python
+Its example is like example() except for this line:
+    for retry in retryloop(10, timeout=30):
 """
+
+def example():
+    for retry in retrying(timeout(30, range(3))):
+        try:
+            print 'something'
+            assert False
+        except AssertionError:
+            retry()
 
 import time
 
@@ -22,27 +32,14 @@ def timeout(interval, trials):
         yield trial
         if deadline <= time.time(): break
 
-def eg():
-    for retry in retrying(timeout(30, range(3))):
-        try:
-            print 'something'
-            assert False
-        except AssertionError:
-            retry()
-
-"""
-Example from above link is equivalent except this line:
-for retry in retryloop(10, timeout=30):
-"""
-
-## eg()
+## example()
 #. something
 #. something
 #. something
 #. 
 #. Traceback (most recent call last):
-#.   File "retryloop.py", line 26, in eg
+#.   File "retrying.py", line 9, in example
 #.     for retry in retrying(timeout(30, range(3))):
-#.   File "retryloop.py", line 15, in retrying
+#.   File "retrying.py", line 25, in retrying
 #.     raise RetryError
 #. RetryError
