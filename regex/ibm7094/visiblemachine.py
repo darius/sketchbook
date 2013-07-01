@@ -13,26 +13,26 @@ import re
 ## v.run(0)
 #.                   r2                r4                r6                r8             
 #. r1                r3                r5                r7                r9             
-#. ==>set   7 0  0   20 fetch 7 0 11   40 ifne  1 A 19   60                80                 0 cnode       
-#.  1 fetch 3 7 60   21 set   6 0  0   41 jump  4 0 11   61                81                10 callcmd     
-#.  2 store 3 7 61   22 ifeq  7 0  0   42 noop  0 0  0   62                82                11 nnode       
-#.  3 set   3 4  0   23 jump  0 0 29   43 ifne  1 B 19   63                83                19 fail        
-#.  4 fetch 5 0 10   24 add   7 7 -1   44 jump  4 0 11   64                84                20 xchg        
-#.  5 add   3 5  0   25 fetch 3 7 80   45 found 0 0  0   65                85                22 x1          
-#.  6 store 3 7 60   26 store 3 6 60   46                66                86                29 x2          
-#.  7 add   7 7  1   27 add   6 6  1   47                67                87                36 jumpcmd     
-#.  8 smash 7 0  0   28 jump  0 0 22   48                68                88                37 init        
-#.  9 jump  0 4  2   29 fetch 3 0 36   49                69                89                39 code        
-#. 10 jump  2 0  0   30 store 3 6 60   50                70                90                60 clist       
-#. 11 set   7 0  0   31 smash 7 0  0   51                71                91                80 nlist       
-#. 12 set   3 4  0   32 smash 0 0 11   52                72                92                               
-#. 13 fetch 5 0 10   33 getch 0 0  0   53                73                93                               
-#. 14 add   3 5  0   34 jump  2 0 39   54                74                94                               
-#. 15 store 3 7 80   35 jump  0 0 60   55                75                95                               
-#. 16 add   7 7  1   36 jump  0 0 20   56                76                96                               
-#. 17 smash 7 0 11   37 smash 0 0 11   57                77                97                               
-#. 18 jump  0 2  1   38 jump  0 0 20   58                78                98                               
-#. 19 jump  0 2  1   39 noop  0 0  0   59                79                99                               
+#.  0 cnode          ==>set   7 0  0   20 fetch 7 0 11   40 ifne  1 A 19   60                80             
+#. 10 callcmd         1 fetch 3 7 60   21 set   6 0  0   41 jump  4 0 11   61                81             
+#. 11 nnode           2 store 3 7 61   22 ifeq  7 0  0   42 noop  0 0  0   62                82             
+#. 19 fail            3 set   3 4  0   23 jump  0 0 29   43 ifne  1 B 19   63                83             
+#. 20 xchg            4 fetch 5 0 10   24 add   7 7 -1   44 jump  4 0 11   64                84             
+#. 22 x1              5 add   3 5  0   25 fetch 3 7 80   45 found 0 0  0   65                85             
+#. 29 x2              6 store 3 7 60   26 store 3 6 60   46                66                86             
+#. 36 jumpcmd         7 add   7 7  1   27 add   6 6  1   47                67                87             
+#. 37 init            8 smash 7 0  0   28 jump  0 0 22   48                68                88             
+#. 39 code            9 jump  0 4  2   29 fetch 3 0 36   49                69                89             
+#. 60 clist          10 jump  2 0  0   30 store 3 6 60   50                70                90             
+#. 80 nlist          11 set   7 0  0   31 smash 7 0  0   51                71                91             
+#.                   12 set   3 4  0   32 smash 0 0 11   52                72                92             
+#.                   13 fetch 5 0 10   33 getch 0 0  0   53                73                93             
+#.                   14 add   3 5  0   34 jump  2 0 39   54                74                94             
+#.                   15 store 3 7 80   35 jump  0 0 60   55                75                95             
+#.                   16 add   7 7  1   36 jump  0 0 20   56                76                96             
+#.                   17 smash 7 0 11   37 smash 0 0 11   57                77                97             
+#.                   18 jump  0 2  1   38 jump  0 0 20   58                78                98             
+#.                   19 jump  0 2  1   39 noop  0 0  0   59                79                99             
 #. 
 
 def toplevel(filename):
@@ -100,7 +100,7 @@ class VM(object):
         print '\n'.join(format_columns(regs, 5))
         defs = pad(show_env(self.env), 20)
         insns = map(self.show_cell, range(100))
-        print '\n'.join(format_columns(insns + defs, 6))
+        print '\n'.join(format_columns(defs + insns, 6))
 
     def show_reg(self, i):
         r = '  ' if i == 0 else 'r%d' % i
