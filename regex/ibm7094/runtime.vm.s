@@ -1,3 +1,6 @@
+;;;  The compiled code jumps to FOUND on match.
+found   found
+        
 ;;; r1: current character from input
 ;;; r2: call address from a CLIST instruction
 ;;; r4: call address from a CODE instruction
@@ -40,7 +43,7 @@ x1      ifeq    r7,0,x2         ; if x7 == 0 goto x2
 x2      fetch   r3,,jumpcmd     ; r3 = jumpcmd[0]
         store   r3,r6,clist     ; put JUMP XCHG at bottom
                                 ; clist[r6] = r3
-        smash   r7,,cnode       ; initialize CNODE count
+        smash   r6,,cnode       ; initialize CNODE count
                                 ; cnode->literal = r7
         smash   ,,nnode         ; initialize NNODE count
                                 ; nnode->literal = 0
@@ -92,7 +95,7 @@ cnode   set     r7              ; CLIST count
         set     r7,r7,1         ; r7++
         smash   r7,,cnode       ; increment CLIST count
                                 ; cnode->datum = r7
-        jump    ,r4,2           ; return
+        jump    ,r4,1           ; return
                                 ; goto *(r4+2)
 
 callcmd jump    r2,,0           ; (constant, not executed)

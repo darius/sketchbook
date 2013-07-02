@@ -43,7 +43,7 @@ def nfa_from_postfix(postfix):
             stack.pop()
         else:
             assert False
-    code.append(instruction("found"))
+    code.append(instruction("jump ,,found"))
     return code
 
 def instruction(template, *args):
