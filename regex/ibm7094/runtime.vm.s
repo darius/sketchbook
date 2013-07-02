@@ -72,8 +72,8 @@ fail    jump    ,r2             ; goto *r2
 
 ; FAIL simply returns to the next entry in the current list CLIST.
 
-; A call to CNODE from location x moves the TRA XCHG instruction down
-; one location in CLIST and inserts in its place a TSX x+l,2
+; A call to CNODE from location x moves the JUMP ,,XCHG instruction down
+; one location in CLIST and inserts in its place a JUMP r2,,x+l
 ; instruction.  Control is then returned to x+2.  This effectively
 ; branches the current search path.  The path at x+1 is deferred until
 ; later while the branch at x+2 is searched immediately.
@@ -87,7 +87,7 @@ cnode   set     r7              ; CLIST count
         fetch   r5,,callcmd
         add     r3,r5           ; r3 += callcmd[0]
 
-        store   r3,r7,clist     ; insert new CALL r2,** instruction
+        store   r3,r7,clist     ; insert new JUMP r2,** instruction
                                 ; clist[r7] = r3
         set     r7,r7,1         ; r7++
         smash   r7,,cnode       ; increment CLIST count
