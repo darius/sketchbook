@@ -62,7 +62,7 @@ jumpcmd jump    ,,xchg          ; (constant, not executed)
 ; instruction in CLIST.  This sets up the place in CODE to be executed
 ; with the next character.
 
-nnode   set     r7,,0           ; NLIST count
+nnode   set     r7,,0           ; NLIST count (smashable)
         set     r3,r4           ; r3 = r4
         fetch   r5,,callcmd
         add     r3,r5           ; r3 += callcmd[0]
@@ -81,7 +81,7 @@ fail    jump    ,r2             ; goto *r2
 ; branches the current search path.  The path at x+1 is deferred until
 ; later while the branch at x+2 is searched immediately.
 
-cnode   set     r7              ; CLIST count
+cnode   set     r7              ; CLIST count (smashable)
                                 ; r7 = clist_count (filled in with smash)
         fetch   r3,r7,clist     ; r3 = clist[r7]
         store   r3,r7,clist+1   ; clist[1+r7] = r3
