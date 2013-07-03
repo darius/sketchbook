@@ -9,14 +9,32 @@ decimal numbers.
 from assembler import assemble
 import re
 
-## v = load('thompson.vm.s')
-#. Traceback (most recent call last):
-#. 
-#. TypeError: load() takes exactly 2 arguments (1 given)
+## v = load('thompson.vm.s', '')
 ## v.run(0)
-#. Traceback (most recent call last):
+#.               0   r2                r4                r6                r8             
+#. r1                r3                r5                r7                r9             
 #. 
-#. NameError: name 'v' is not defined
+#.  0 init           ==>smash 0 0 20   20 set   7 0  0   40 noop  0 0  0   60                80             
+#.  1 xchg            1 aload 7 0 20   21 set   3 4  0   41 ifne  1 A 27   61                81             
+#.  3 x1              2 set   6 0  0   22 fetch 5 0 38   42 jump  4 0 20   62                82             
+#.  9 x2              3 ifeq  7 0  9   23 add   3 5  0   43 found 0 0  0   63                83             
+#. 16 jumpcmd         4 set   7 7 -1   24 store 3 7 80   44                64                84             
+#. 20 nnode           5 fetch 3 7 80   25 set   7 7  1   45                65                85             
+#. 27 fail            6 store 3 6 60   26 smash 7 0 20   46                66                86             
+#. 28 cnode           7 set   6 6  1   27 jump  0 2  0   47                67                87             
+#. 38 callcmd         8 jump  0 0  3   28 set   7 0  0   48                68                88             
+#. 40 code            9 fetch 3 0 16   29 fetch 3 7 60   49                69                89             
+#. 60 clist          10 store 3 6 60   30 store 3 7 61   50                70                90             
+#. 80 nlist          11 smash 7 0 28   31 set   3 4  0   51                71                91             
+#.                   12 smash 0 0 20   32 fetch 5 0 38   52                72                92             
+#.                   13 getch 1 0  0   33 add   3 5  0   53                73                93             
+#.                   14 jump  2 0 40   34 store 3 7 60   54                74                94             
+#.                   15 jump  0 0 60   35 set   7 7  1   55                75                95             
+#.                   16 jump  0 0  1   36 smash 7 0 28   56                76                96             
+#.                   17                37 jump  0 4  2   57                77                97             
+#.                   18                38 jump  2 0  0   58                78                98             
+#.                   19                39                59                79                99             
+#. 
 
 def toplevel(filename, inputs=''):
     vm = load(filename, inputs)
@@ -65,8 +83,6 @@ def add(u, v):
     if not uh.strip(): return put_number(vh, rn)
     if not vh.strip(): return put_number(uh, rn)
     assert False
-## add(' '*7+' 1', ' '*7+'-1')
-#. '        0'
 
 class VM(object):
 
