@@ -3,8 +3,6 @@ Parsing context-free grammars using Brzozowski derivatives.
 First cut -- left recursion not considered. Maybe it'll work anyway?
 """
 
-# (I think:)
-
 # A grammar is a map from rule name to list of states; it must
 # include a rule named 'start'. A rule derives s if any of its states 
 # derives s.
