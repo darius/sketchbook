@@ -25,8 +25,11 @@ def parse(grammar, s):
     "Can grammar derive string s?"
     grammar_check(grammar)
     states = set(grammar['start'])
+#    print
     for c in s:
         states = step(grammar, states, c)
+#        print repr(c)
+#        for state in states: print '   ', state
         if not states: return False
     return any_null(grammar, states, set())
 
@@ -135,3 +138,12 @@ xopt = dict(start = [('x',),
 #. True
 ## parse(xopt, 'xx')
 #. False
+
+bal = dict(start = [('(', 'cs', ')')],
+           cs = [('c', 'cs'),
+                 ()],
+           c = [('.',),
+                ('start',)])
+
+## parse(bal, '((())..(.))')
+#. True
