@@ -12,15 +12,25 @@ First cut -- left recursion not considered. Maybe it'll work anyway?
 
 # An element is a rule name or a single literal character.
 
+def grammar_check(grammar):
+    "Check the grammar representation invariant."
+    assert 'start' in grammar
+    for states in grammar.values():
+        for state in states:
+            for element in state:
+                assert isinstance(element, str)
+                assert element in grammar or len(element) == 1
+
 def parse(grammar, s):
-    "Can grammar derive s?"
+    "Can grammar derive string s?"
+    grammar_check(grammar)
     states = set(grammar['start'])
     for c in s:
         states = step(grammar, states, c)
         if not states: return False
-    return nullable_choice(grammar, states, set())
+    return any_null(grammar, states, set())
 
-def nullable_choice(grammar, states, visited):
+def any_null(grammar, states, visited):
     return any(nullable(grammar, state, visited) for state in states)
 
 def nullable(grammar, state, visited):
@@ -29,7 +39,7 @@ def nullable(grammar, state, visited):
     if state in visited: return False
     visited.add(state)
     head = state[0]
-    return head in grammar and nullable_choice(grammar, grammar[head], visited)
+    return head in grammar and any_null(grammar, grammar[head], visited)
 
 lefty = dict(start = [('start', 'x'), ()])
 
@@ -37,9 +47,9 @@ lefty = dict(start = [('start', 'x'), ()])
 #. True
 
 def step(grammar, states, c):
-    """Let's say states produces the language L. Of the sentences in L that 
-    start with c, consider their tails. Return a set of states that produces
-    just these tails."""
+    """Of the sentences starting with c derivable by any of states,
+    consider their tails after the c. Return a set of states that
+    derives just these tails."""
     visited, next_states = set(), set()
     while states:
         state = states.pop()
@@ -47,7 +57,6 @@ def step(grammar, states, c):
         visited.add(state)
         head, tail = state[0], state[1:]
         if head not in grammar: # leading literal
-            assert len(head) == 1
             if c == head: next_states.add(tail)
         else:
             for rhs in grammar[head]:
