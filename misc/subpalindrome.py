@@ -1,5 +1,6 @@
 """
 longest_subpalindrome problem from Udacity CS212.
+Genesis: https://forums.udacity.com/questions/100051766/using-a-heap-to-avoid-trying-starting-positions-that-cant-possibly-give-the-best-answer#cs212
 """
 
 def find_longest_palindrome(s):
