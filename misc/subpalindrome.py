@@ -8,9 +8,10 @@ def find_longest_palindrome(s):
     for max_width in range(len(s), 0, -1):
         if max_width <= j - i:
             break
-        for lo, hi in set([(0, max_width),
-                           (len(s)-max_width, len(s))]):
-            i1, j1 = grow(s, (lo + hi) // 2, (lo + hi + 1) // 2)
+        # Check the candidate centers that on growing to max_width
+        # would reach either the left or the right edge of s.
+        for m in set([max_width, 2*len(s) - max_width]):
+            i1, j1 = grow(s, m // 2, (m + 1) // 2)
             if j - i < j1 - i1:
                 i, j = i1, j1
     return i, j
