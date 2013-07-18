@@ -56,3 +56,4 @@ def test_finder(finder, string):
             assert string[lo:hi] != string[lo:hi][::-1]
 
 ## test_suite()
+# print find_longest_palindrome('x'*100000)

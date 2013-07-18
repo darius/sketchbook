@@ -38,10 +38,12 @@ class Maker:
         self.mkmany = memoize(self._many)
 
     def alt(self, *res):
-        acc = collect_alternatives(res)
-        if len(acc) == 0: return fail
-        if len(acc) == 1: return acc[0]
-        return self.mkalt(frozenset(acc))
+        res = collect_alternatives(res)
+        if len(res) == 0: return fail
+        if len(res) == 1:
+            for re in res:
+                return re
+        return self.mkalt(res)
 
     def _alt(self, re_set):
         return mark(any(re.nullable for re in re_set),
@@ -82,7 +84,7 @@ def collect_alternatives(res):
             acc.extend(re.args)
         elif re is not fail:
             acc.append(re)
-    return acc
+    return frozenset(acc)
 
 def collect_sequence(res):
     acc = []
