@@ -41,8 +41,9 @@ def nullable(grammar, state, visited):
     if not state: return True
     if state in visited: return False
     visited.add(state)
-    head = state[0]
-    return head in grammar and any_null(grammar, grammar[head], visited)
+    return all(element in grammar
+               and any_null(grammar, grammar[element], visited)
+               for element in state)
 
 lefty = dict(start = [('start', 'x'), ()])
 
