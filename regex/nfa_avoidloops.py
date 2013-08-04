@@ -16,17 +16,17 @@ def accepting_state(c): return set()
 def expecting_state(char, k): return lambda c: k() if c == char else set()
 
 def state_node(state): return lambda: set([state])
-def alt_node(k1, k2):  return lambda: k1() | k2()
+def alt_node(k1, k2):  return k1 if k1 is k2 else lambda: k1() | k2()
 def loop_node(k, make_k):
     def loop(): return k() | looping()
     looping = make_k(loop)
-    return looping
+    return k if looping is loop else looping
 
 def prepare(re):
     return optionalize(re)(state_node(accepting_state))()
 
 def optionalize((null, re)):
-    return lambda k: alt_node(k, re(k)) if null else re(k)
+    return (lambda k: alt_node(k, re(k))) if null else re
 
 def lit(char):
     return False, lambda k: state_node(expecting_state(char, k))
@@ -37,7 +37,7 @@ def alt((null1, re1), (null2, re2)):
 def many((null, re)):
     return True, many1((False, re))[1]
 
-def many1((null, re)):    
+def many1((null, re)):
     return null, lambda k: loop_node(k, re)
 
 empty = (True, lambda k: k)
