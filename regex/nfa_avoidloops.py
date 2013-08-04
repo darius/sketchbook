@@ -2,7 +2,7 @@
 Regular-expression matching by the Thompson construction.
 Explained in C at http://swtch.com/~rsc/regexp/regexp1.html
 
-Avoid epsilon-loops by construction. Needs more testing.
+Avoid epsilon-loops by construction.
 """
 
 def match(re, s): return run(prepare(re), s)
