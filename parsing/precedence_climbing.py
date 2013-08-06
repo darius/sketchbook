@@ -32,7 +32,7 @@ def make_parse_primary(parse_literal=int, prefix_ops=default_prefix_ops):
     here's one for the simple common case of prefix operators,
     parentheses, and literals."""
     def parse_primary(scan, parse_expr, infix_ops):
-        if scan.token in default_prefix_ops:
+        if scan.token in prefix_ops:
             pprec, op = prefix_ops[scan.token]
             scan()
             return op(parse_expr(pprec))
