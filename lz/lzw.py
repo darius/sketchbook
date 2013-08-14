@@ -35,7 +35,7 @@ def encode(s, codebook=default_codebook):
 
 def decode(codes, codebook=default_codebook):
     """Given an LZW code sequence as an iterable, generate the
-    plaintext character sequence."""
+    plaintext character sequence it came from."""
     # Pre: codebook is the same as the encoder's.
     for chunk in chunked_decode(iter(codes), codebook):
         for c in chunk:
