@@ -42,6 +42,7 @@ def connected(board, n, mark, seen, frontier, goal):
     return False
 
 def connected_neighbors(board, n, mark, (x, y)):
+    # XXX *hex* neighbors
     for nx, ny in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]:
         if (board.get((nx, ny)) == mark
             or (nx in (0, n) and mark == 'v')
