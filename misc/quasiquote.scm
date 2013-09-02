@@ -2,8 +2,8 @@
 ;; http://norvig.com/paip/compile3.lisp
 
 ;; This handles nested quasiquotes like Alan Bawden 1999,
-;; "Quasiquotation in Scheme", and unlike the Scheme standard and
-;; actual Scheme systems I've tried. This behavior here seems better.
+;; "Quasiquotation in Lisp", and unlike the Scheme standard and actual
+;; Scheme systems I've tried. This behavior here seems better.
 
 (define (qq-expand x)
   (cond ((or (null? x) (symbol? x))
