@@ -25,9 +25,7 @@
 
 (define (qq-cons left right x)
   (cond ((and (constant? left) (constant? right))
-         (list 'quote (cons-if-new (qq-eval left)
-                                   (qq-eval right)
-                                   x)))
+         (list 'quote (reuse-cons (qq-eval left) (qq-eval right) x)))
         ((equal? right ''())
          (list 'list left))
         ((starts-with? right 'list)
@@ -35,8 +33,7 @@
         (else
          (list 'cons left right))))
 
-;; What was this called in PAIP? I forget.
-(define (cons-if-new new-car new-cdr pair)
+(define (reuse-cons new-car new-cdr pair)
   (if (and (eqv? new-car (car pair))
            (eqv? new-cdr (cdr pair)))
       pair
