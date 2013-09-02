@@ -4,6 +4,8 @@
 ;; This handles nested quasiquotes like Alan Bawden 1999,
 ;; "Quasiquotation in Lisp", and unlike the Scheme standard and actual
 ;; Scheme systems I've tried. This behavior here seems better.
+;; N.B. the expansion is not hygienic: it references LIST, etc.,
+;; without regard to scope.
 
 (define (qq-expand x)
   (cond ((or (null? x) (symbol? x))
