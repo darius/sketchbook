@@ -1,6 +1,10 @@
 ;; Expand quasiquote forms. Based on quasi-q from
 ;; http://norvig.com/paip/compile3.lisp
 
+;; This handles nested quasiquotes like Alan Bawden 1999,
+;; "Quasiquotation in Scheme", and unlike the Scheme standard and
+;; actual Scheme systems I've tried. This behavior here seems better.
+
 (define (qq-expand x)
   (cond ((or (null? x) (symbol? x))
          (list 'quote x))
@@ -13,7 +17,8 @@
         ((starts-with? x 'quasiquote)
          (qq-expand (qq-expand (second x))))
         ((starts-with? (car x) 'unquote-splicing)
-         (qq-append (second (car x)) (qq-expand (cdr x))))
+         (qq-append (second (car x))
+                    (qq-expand (cdr x))))
         (else (qq-cons (qq-expand (car x))
                        (qq-expand (cdr x))
                        x))))
