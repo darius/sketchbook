@@ -8,7 +8,11 @@ if the _Scientific American_ editors did that.)
 
 An example of how to run it:
 
-    $ python spew.py rhubarb
-    rigatoni and vongole in oil, lavishly introduced heated under butter
-    and ravioli heated under butter and ravioli heated under butter and
-    rhubarb (belly all stuffed (tummy ache!)) (basta!) (basta!)
+    $ python spew.py 'lamb chops'
+    lamb chops (including noodles), got usually in northern Italy and shad
+    and unusual coffee (eccellente!) and green and red lasagne in cheddar,
+    havarti, Emmentaler (particularly strong, hearty, and rather pungent
+    Emmentaler) (noodles (oodles of delicious lamb chops (including
+    noodles (oodles of delicious linguini), elegantly served), got usually
+    in northern Italy), elegantly served everywhere!) and meatballs,
+    casually heaped onto pasta sauce
