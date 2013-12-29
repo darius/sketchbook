@@ -69,8 +69,10 @@ def with_raw(reacting):
         os.system('stty sane')
 
 esc = chr(27)
-keys = {esc+'[A': 'up',   esc+'[C': 'right',
-        esc+'[B': 'down', esc+'[D': 'left'}
+keys = {esc+'[A': 'up',    esc+'OA': 'up',
+        esc+'[B': 'down',  esc+'OB': 'down',
+        esc+'[C': 'right', esc+'OC': 'right',
+        esc+'[D': 'left',  esc+'OD': 'left'}
 key_prefixes = set(k[:i] for k in keys for i in range(1, len(k)))
 
 def read_key():
