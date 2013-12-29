@@ -56,9 +56,10 @@ def drop(grid, i, thing):
 
 import os, sys
 
-ansi_clear_screen = '\x1b[2J\x1b[H'
-ansi_hide_cursor  = '\x1b[?25l'
-ansi_show_cursor  = '\x1b[?25h'
+esc = chr(27)
+ansi_clear_screen = esc + '[2J\x1b[H'
+ansi_hide_cursor  = esc + '[?25l'
+ansi_show_cursor  = esc + '[?25h'
 write = sys.stdout.write
 
 def with_raw(reacting):
@@ -68,7 +69,6 @@ def with_raw(reacting):
     finally:
         os.system('stty sane')
 
-esc = chr(27)
 keys = {esc+'[A': 'up',    esc+'OA': 'up',
         esc+'[B': 'down',  esc+'OB': 'down',
         esc+'[C': 'right', esc+'OC': 'right',
