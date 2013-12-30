@@ -2,43 +2,42 @@
 Play Sokoban on the tty. (Use the arrow keys.)
 """
 
-def parse(board_pic):
-    lines = [line.strip() for line in board_pic.splitlines()]
+def parse(grid_string):
+    lines = grid_string.splitlines()
     assert lines and all(len(line) == len(lines[0]) for line in lines)
-    return len(lines[0]), list(''.join(lines))
+    return list(grid_string)
 
-def unparse((width, grid)):
-    return '\r\n'.join(' '.join(grid[i:i+width])
-                       for i in range(0, len(grid), width))
+def unparse(grid):
+    return ' '.join(grid).replace('\n ', '\r\n')
 
-def play(board):
+def play(grid):
     write(ansi_hide_cursor)
     while True:
-        write(ansi_clear_screen + unparse(board))
-        if won(board): break
+        write(ansi_clear_screen + unparse(grid))
+        if won(grid): break
         move = read_key()
         if move in 'qQxX': break
-        if move in commands: push(board, commands[move])
+        if move in commands: push(grid, commands[move])
     write(ansi_show_cursor)
 
-def won((width, grid)): return 'o' not in grid
+def won(grid): return 'o' not in grid
 
 commands = dict(up   = lambda width: -width,
                 down = lambda width:  width,
                 left = lambda width: -1,
                 right= lambda width:  1)
 
-def push((width, grid), direction):
-    "Update board, trying to move the player in the direction."
+def push(grid, direction):
+    "Update grid, trying to move the player in the direction."
     i = grid.index('i' if 'i' in grid else 'I')
-    d = direction(width)
+    d = direction(grid.index('\n')+1)
     move(grid, 'o@', i+d, i+d+d) # First push any neighboring box.
     move(grid, 'iI', i, i+d)
 
 def move(grid, thing, src, dst):
     "Move thing from src to dst if possible."
     # N.B. dst is always in bounds when grid[src] in thing because our
-    # boards have '#'-borders.
+    # grids have '#'-borders.
     if grid[src] in thing and grid[dst] in ' .':
         clear(grid, src)
         drop(grid, dst, thing)
@@ -93,5 +92,5 @@ if __name__ == '__main__':
 # ..  #
 #  @  #
 #######"""
-    board = parse(puzzle)
-    with_raw(lambda: play(board))
+    grid = parse(puzzle)
+    with_raw(lambda: play(grid))
