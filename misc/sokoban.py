@@ -42,7 +42,7 @@ def push(grid, direction):
     i = grid.index('i' if 'i' in grid else 'I')
     d = direction(grid.index('\n')+1)
     move(grid, 'o@', i+d, i+d+d) # First push any neighboring box.
-    move(grid, 'iI', i, i+d)
+    move(grid, 'iI', i, i+d)     # Then move the player.
 
 def move(grid, thing, src, dst):
     "Move thing from src to dst if possible."
