@@ -1,5 +1,5 @@
 """
-Play Sokoban on the tty. (Use the arrow keys.)
+Play Sokoban on the tty.
 """
 
 def parse(grid_string):
@@ -14,6 +14,7 @@ def play(grid):
     write(ansi_hide_cursor)
     while True:
         write(ansi_clear_screen + unparse(grid))
+        write("\r\n\r\nMove with the arrow keys or hjkl. Q to quit.")
         if won(grid): break
         move = read_key().lower()
         if move in 'qx': break
