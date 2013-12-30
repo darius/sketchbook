@@ -4,13 +4,11 @@ Play Sokoban on the tty. (Use the arrow keys.)
 
 def parse(board_pic):
     lines = [line.strip() for line in board_pic.splitlines()]
-    assert lines
-    assert all(len(line) == len(lines[0]) for line in lines)
-    assert all(line[1::2].isspace() for line in lines)
+    assert lines and all(len(line) == len(lines[0]) for line in lines)
     return len(lines[0]), list(''.join(lines))
 
 def unparse((width, grid)):
-    return '\r\n'.join(''.join(grid[i:i+width])
+    return '\r\n'.join(' '.join(grid[i:i+width])
                        for i in range(0, len(grid), width))
 
 def play(board):
@@ -27,8 +25,8 @@ def won((width, grid)): return 'o' not in grid
 
 commands = dict(up   = lambda width: -width,
                 down = lambda width:  width,
-                left = lambda width: -2,
-                right= lambda width:  2)
+                left = lambda width: -1,
+                right= lambda width:  1)
 
 def push((width, grid), direction):
     "Update board, trying to move the player in the direction."
@@ -88,12 +86,12 @@ def read_key():
 
 if __name__ == '__main__':
     puzzle = """\
-# # # # # # #
-# . i   #   #
-# o @   o   #
-#       o   #
-#   . .     #
-#     @     #
-# # # # # # #"""
+#######
+#.i # #
+#o@ o #
+#   o #
+# ..  #
+#  @  #
+#######"""
     board = parse(puzzle)
     with_raw(lambda: play(board))
