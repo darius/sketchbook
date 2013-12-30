@@ -12,13 +12,20 @@ def unparse(grid):
 
 def play(grid):
     write(ansi_hide_cursor)
+    trail = []
     while True:
-        write(ansi_clear_screen + unparse(grid))
-        write("\r\n\r\nMove with the arrow keys or hjkl. Q to quit.\r\n")
+        write(ansi_clear_screen + unparse(grid) + '\r\n\r\n')
+        write("Move with the arrow keys or HJKL. U to undo, Q to quit.\r\n")
         if won(grid): break
-        move = read_key().lower()
-        if move in 'qx': break
-        if move in commands: push(grid, commands[move])
+        key = read_key().lower()
+        if key in 'qx':
+            break
+        elif key == 'u':
+            if trail: grid = trail.pop()
+        elif key in directions:
+            previously = grid[:]
+            push(grid, directions[key])
+            if grid != previously: trail.append(previously)
     write(ansi_show_cursor)
 
 def won(grid): return 'o' not in grid
@@ -27,8 +34,8 @@ up    = lambda width: -width
 down  = lambda width:  width
 left  = lambda width: -1
 right = lambda width:  1
-commands = dict(h    = left, j    = down, k  = up, l     = right,
-                left = left, down = down, up = up, right = right)
+directions = dict(h    = left, j    = down, k  = up, l     = right,
+                  left = left, down = down, up = up, right = right)
 
 def push(grid, direction):
     "Update grid, trying to move the player in the direction."
