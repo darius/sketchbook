@@ -15,17 +15,19 @@ def play(grid):
     while True:
         write(ansi_clear_screen + unparse(grid))
         if won(grid): break
-        move = read_key()
-        if move in 'qQxX': break
+        move = read_key().lower()
+        if move in 'qx': break
         if move in commands: push(grid, commands[move])
     write(ansi_show_cursor)
 
 def won(grid): return 'o' not in grid
 
-commands = dict(up   = lambda width: -width,
-                down = lambda width:  width,
-                left = lambda width: -1,
-                right= lambda width:  1)
+up    = lambda width: -width
+down  = lambda width:  width
+left  = lambda width: -1
+right = lambda width:  1
+commands = dict(h    = left, j    = down, k  = up, l     = right,
+                left = left, down = down, up = up, right = right)
 
 def push(grid, direction):
     "Update grid, trying to move the player in the direction."
