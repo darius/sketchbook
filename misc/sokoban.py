@@ -10,7 +10,7 @@ def parse(grid_string):
     return list(grid_string)
 
 def unparse(grid):
-    return ' '.join(grid).replace('\n ', '\r\n')
+    return ' '.join(grid).replace('\n ', '\n')
 
 def play(grids, level=0):
     write(ansi_hide_cursor)
@@ -18,12 +18,12 @@ def play(grids, level=0):
     while True:
         grid, trail = grids[level], trails[level]
         write(ansi_clear_screen)
-        write("Move with the arrow keys or HJKL. U to undo.\r\n")
-        write("N/P for next/previous level, Q to quit.\r\n\r\n")
-        write("Level %s\r\n\r\n" % (level+1))
-        write(unparse(grid) + '\r\n\r\n')
+        write("Move with the arrow keys or HJKL. U to undo.\n")
+        write("N/P for next/previous level, Q to quit.\n\n")
+        write("Level %s\n\n" % (level+1))
+        write(unparse(grid) + '\n\n')
         if won(grid):
-            write("Done!\r\n")
+            write("Done!\n")
         key = read_key().lower()
         if key in 'qx':
             break
@@ -80,7 +80,9 @@ esc = chr(27)
 ansi_clear_screen = esc + '[2J\x1b[H'
 ansi_hide_cursor  = esc + '[?25l'
 ansi_show_cursor  = esc + '[?25h'
-write = sys.stdout.write
+
+def write(s):
+    sys.stdout.write(s.replace('\n', '\r\n'))
 
 def in_raw_mode(reacting):
     # It looks like this could be done with the tty and termios
