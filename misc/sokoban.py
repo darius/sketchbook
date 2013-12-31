@@ -1,11 +1,13 @@
 """
 Play http://en.wikipedia.org/wiki/Sokoban on the tty.
+
 Includes Microban levels by David Skinner,
 from http://sneezingtiger.com/sokoban/levels.html
+
 Some other Sokoban implementations you might enjoy:
+http://eloquentjavascript.net/chapter13.html (by Marijn Haverbeke)
 http://code.google.com/p/cleese/source/browse/trunk/experimental/necco/kernel/soko.py
 (by Dave Long)
-http://eloquentjavascript.net/chapter13.html (by Marijn Haverbeke)
 """
 
 def parse(grid_string):
