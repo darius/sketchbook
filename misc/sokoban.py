@@ -14,16 +14,18 @@ def unparse(grid):
 
 def play(grids, level=0):
     write(ansi_hide_cursor)
+    write(ansi_home + ansi_clear_to_bottom)
     trails = [[] for _ in grids]
     while True:
         grid, trail = grids[level], trails[level]
-        write(ansi_clear_screen)
+        write(ansi_home)
         write("Move with the arrow keys or HJKL. U to undo.\n")
         write("N/P for next/previous level, Q to quit.\n\n")
         write("Level %s\n\n" % (level+1))
         write(unparse(grid) + '\n\n')
         if won(grid):
             write("Done!\n")
+        write(ansi_clear_to_bottom)
         key = read_key().lower()
         if key in 'qx':
             break
@@ -72,17 +74,23 @@ def drop(grid, i, thing):
     grid[i] = thing['.' == grid[i]]
 
 
-# Terminal stuff
+# Raw-mode ANSI terminal
+# It'd be a little simpler to clear the screen before each repaint,
+# but that causes occasional flicker, so we instead start each repaint
+# with ansi_home and then incrementally clear_to_eol on each line, and
+# finally clear_to_bottom.
 
 import os, sys
 
 esc = chr(27)
-ansi_clear_screen = esc + '[2J\x1b[H'
-ansi_hide_cursor  = esc + '[?25l'
-ansi_show_cursor  = esc + '[?25h'
+ansi_home            = esc + '[H'
+ansi_clear_to_bottom = esc + '[J'
+ansi_clear_to_eol    = esc + '[K'
+ansi_hide_cursor     = esc + '[?25l'
+ansi_show_cursor     = esc + '[?25h'
 
 def write(s):
-    sys.stdout.write(s.replace('\n', '\r\n'))
+    sys.stdout.write(s.replace('\n', ansi_clear_to_eol + '\r\n'))
 
 def in_raw_mode(reacting):
     # It looks like this could be done with the tty and termios
