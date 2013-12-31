@@ -27,7 +27,7 @@ def play(grids, level=0):
         write(ansi_home)
         write("Move with the arrow keys or HJKL. U to undo.\n")
         write("N/P for next/previous level, Q to quit.\n\n")
-        write("Level %s\n\n" % (level+1))
+        write("Level %d\n\n" % (level+1))
         write(unparse(grid) + '\n\n')
         if won(grid):
             write("Done!\n")
