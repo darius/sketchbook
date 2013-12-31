@@ -82,7 +82,10 @@ ansi_hide_cursor  = esc + '[?25l'
 ansi_show_cursor  = esc + '[?25h'
 write = sys.stdout.write
 
-def with_raw(reacting):
+def in_raw_mode(reacting):
+    # It looks like this could be done with the tty and termios
+    # modules instead, but at least my code is shorter:
+    # http://stackoverflow.com/questions/1394956/how-to-do-hit-any-key-in-python
     os.system('stty raw -echo')
     try:
         reacting()
@@ -1625,4 +1628,4 @@ levels = levels.split('\n\n')
 
 if __name__ == '__main__':
     grids = map(parse, levels)
-    with_raw(lambda: play(grids))
+    in_raw_mode(lambda: play(grids))
