@@ -1669,5 +1669,5 @@ levels = """\
 levels = levels.split('\n\n')
 
 if __name__ == '__main__':
-    grids = map(parse, levels)
+    grids = [parse(level) for level in levels]
     in_raw_mode(lambda: play(grids))
