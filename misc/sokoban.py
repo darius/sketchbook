@@ -28,8 +28,8 @@ def main(level_collection):
     in_raw_mode(lambda: play(grids))
 
 # We represent a grid as a list of characters, including the newlines,
-# where every line is the same length (which we call the width of the
-# grid). Thus moving up or down from some square means a displacement 
+# with every line the same length (which we call the width of the
+# grid). Thus moving up or down from some square means a displacement
 # by that same width, whatever the starting square.
 
 def parse(grid_string):
