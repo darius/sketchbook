@@ -71,7 +71,7 @@ def play(grids, level=0):
         elif key == 'n':
             level = (level + 1) % len(grids)
         elif key == 'p':
-            level = (level - 1 + len(grids)) % len(grids)
+            level = (level - 1) % len(grids)
         elif key == 'u':
             if trail: grids[level] = trail.pop()
         elif key in directions:
