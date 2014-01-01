@@ -39,7 +39,8 @@ def play(grids, level=0):
         write(ansi_home)
         write("Move with the arrow keys or HJKL. U to undo.\n")
         write("N/P for next/previous level, Q to quit.\n\n")
-        write("Level %d\n\n" % (level+1))
+        write("Level %d                         Move %d\n\n"
+              % (level+1, len(trail)))
         write(unparse(grid) + '\n\n')
         if won(grid):
             write("Done!\n")
