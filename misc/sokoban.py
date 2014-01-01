@@ -18,8 +18,9 @@ squares to make them more nearly, y'know, square.
 
 Some other Sokoban implementations you might enjoy:
 http://eloquentjavascript.net/chapter13.html (by Marijn Haverbeke)
+http://aurelio.net/projects/sedsokoban/ (by Aurelio Marinho Jargas)
 http://code.google.com/p/cleese/source/browse/trunk/experimental/necco/kernel/soko.py
-(by Dave Long)
+(runs without a regular OS, by Dave Long)
 """
 
 def parse(grid_string):
