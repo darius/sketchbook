@@ -34,7 +34,7 @@ def main(level_collection):
 
 def parse(grid_string):
     lines = grid_string.splitlines()
-    assert lines and all(len(line) == len(lines[0]) for line in lines)
+    assert all(len(line) == len(lines[0]) for line in lines)
     return list(grid_string)
 
 def unparse(grid):
