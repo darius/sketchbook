@@ -67,10 +67,10 @@ def play(grids, level=0):
 
 def won(grid): return 'o' not in grid
 
-up    = lambda width: -width
-down  = lambda width:  width
-left  = lambda width: -1
-right = lambda width:  1
+def up   (width): return -width
+def down (width): return  width
+def left (width): return -1
+def right(width): return  1
 directions = dict(h    = left, j    = down, k  = up, l     = right,
                   left = left, down = down, up = up, right = right)
 
