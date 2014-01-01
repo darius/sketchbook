@@ -5,9 +5,9 @@ Includes Microban levels by David Skinner, from
 http://sneezingtiger.com/sokoban/levels.html
 
 You move yourself (shown as 'i' or 'I') around a 2-d grid. You can
-push one barrel at a time (each shown as 'o' or '@'). You win when
-every barrel is on a target square: an empty target appears as '.',
-while one with a barrel on it is '@'. (You are shown as 'I' when on a
+push one crate at a time (each shown as 'o' or '@'). You win when
+every crate is on a target square: an empty target appears as '.',
+while one with a crate on it is '@'. (You are shown as 'I' when on a
 target yourself.) Nothing can move through a wall ('#'). These simple
 rules yield an elegant game with scope for a tremendous variety of
 puzzles, from easy to AI-complete.
