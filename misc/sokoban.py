@@ -34,7 +34,8 @@ def unparse(grid):
 def play(grids, level=0):
     write(ansi_hide_cursor)
     write(ansi_home + ansi_clear_to_bottom)
-    trails = [[] for _ in grids] # The past states for undoing.
+    trails = [[] for _ in grids] # The past history for undo for each level.
+
     while True:
         grid, trail = grids[level], trails[level]
         write(ansi_home)
@@ -46,6 +47,7 @@ def play(grids, level=0):
         if won(grid):
             write("Done!\n")
         write(ansi_clear_to_bottom)
+
         key = read_key().lower()
         if key == 'q':
             break
@@ -59,6 +61,7 @@ def play(grids, level=0):
             previously = grid[:]
             push(grid, directions[key])
             if grid != previously: trail.append(previously)
+
     write(ansi_show_cursor)
 
 def won(grid): return 'o' not in grid
@@ -74,13 +77,13 @@ def push(grid, direction):
     "Update grid, trying to move the player in the direction."
     i = grid.index('i' if 'i' in grid else 'I')
     d = direction(grid.index('\n')+1)
-    move(grid, 'o@', i+d, i+d+d) # First push any neighboring box.
+    move(grid, 'o@', i+d, i+d+d) # First push any neighboring crate.
     move(grid, 'iI', i, i+d)     # Then move the player.
 
 def move(grid, thing, here, there):
     "Move thing from here to there if possible."
-    # N.B. there is always in bounds when grid[here] in thing because our
-    # grids have '#'-borders.
+    # N.B. `there` is always in bounds when `grid[here] in thing`
+    # because our grids have '#'-borders, while `thing` is never a '#'.
     if grid[here] in thing and grid[there] in ' .':
         clear(grid, here)
         drop(grid, there, thing)
@@ -90,7 +93,7 @@ def clear(grid, i):
     grid[i] = ' .'[grid[i] in '.@I']
 
 def drop(grid, i, thing):
-    "At a clear position, put thing."
+    "Into a clear square, put thing."
     grid[i] = thing['.' == grid[i]]
 
 # The above two functions each index a string with a boolean value.
@@ -100,7 +103,7 @@ def drop(grid, i, thing):
 
 # Reading and writing the console:
 #
-# The most standard way to write a console app like this is with curses,
+# The most standard way to code a console app like this is with curses,
 # but curses kind of earns its name. And there are better libraries
 # now, but I'm not familiar with them. Maybe you'll enjoy seeing
 # how to do without? We use http://en.wikipedia.org/wiki/ANSI_escape_code
