@@ -48,9 +48,10 @@ directions = dict(h    = left, j    = down, k  = up, l     = right,
                   left = left, down = down, up = up, right = right)
 
 def play(grids, level=0):
-    "The UI to play a sequence of Sokoban levels."
+    "The UI to a sequence of Sokoban levels."
     write(ansi_hide_cursor)
     write(ansi_home + ansi_clear_to_bottom)
+    keys = gen_keys()
 
     trails = [[] for _ in grids] # The past history for undo for each level.
     while True:
@@ -66,7 +67,7 @@ def play(grids, level=0):
             write("Done!\n")
         write(ansi_clear_to_bottom)
 
-        key = read_key().lower()
+        key = next(keys).lower()
         if key == 'q':
             break
         elif key == 'n':
@@ -148,20 +149,23 @@ def in_raw_mode(reacting):
     finally:
         os.system('stty sane')
 
-# Arrow keys appear as escape sequences in the input:
-keys = {esc+'[A': 'up',    esc+'OA': 'up',
-        esc+'[B': 'down',  esc+'OB': 'down',
-        esc+'[C': 'right', esc+'OC': 'right',
-        esc+'[D': 'left',  esc+'OD': 'left'}
-key_prefixes = set(k[:i] for k in keys for i in range(1, len(k)))
+# Arrow keys are encoded as escape sequences:
+key_map = {esc+'[A': 'up',    esc+'OA': 'up',
+           esc+'[B': 'down',  esc+'OB': 'down',
+           esc+'[C': 'right', esc+'OC': 'right',
+           esc+'[D': 'left',  esc+'OD': 'left'}
+key_prefixes = set(k[:i] for k in key_map for i in range(1, len(k)))
 
-def read_key():
-    k = sys.stdin.read(1)
-    while k in key_prefixes:
-        k1 = sys.stdin.read(1)
-        if not k1: break
-        k += k1
-    return keys.get(k, k)
+def gen_keys():
+    "From the input, parse out any chunks that match key_map."
+    while True: # (Since raw-mode input won't signal EOF, we needn't check.)
+        keys = sys.stdin.read(1)
+        while keys in key_prefixes:
+            keys += sys.stdin.read(1)
+        if keys in key_map:
+            yield key_map[keys]
+        else:
+            for key in keys: yield key
 
 
 # Levels from Microban.
