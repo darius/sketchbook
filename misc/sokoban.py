@@ -1,8 +1,20 @@
 """
-Play http://en.wikipedia.org/wiki/Sokoban on the tty.
+Play http://en.wikipedia.org/wiki/Sokoban on the console.
 
-Includes Microban levels by David Skinner,
-from http://sneezingtiger.com/sokoban/levels.html
+Includes Microban levels by David Skinner, from
+http://sneezingtiger.com/sokoban/levels.html
+
+Briefly, you move yourself (shown as 'i' or 'I') around a 2-d grid.
+You can push one barrel at a time (each shown as 'o' or '@'). You win
+when every barrel is on a target square: an empty target appears as
+'.', while one with a barrel on it is '@'. (You are shown as 'I' when
+on a target yourself.) Nothing can move through a wall ('#'). These
+simple rules yield an elegant game with scope for a tremendous variety
+of puzzles, from easy to AI-complete.
+
+Other console Sokobans display the game a little differently: with
+different symbols and a squeezed aspect ratio. I insert spaces between
+squares to make them more nearly, y'know, square.
 
 Some other Sokoban implementations you might enjoy:
 http://eloquentjavascript.net/chapter13.html (by Marijn Haverbeke)
@@ -21,7 +33,7 @@ def unparse(grid):
 def play(grids, level=0):
     write(ansi_hide_cursor)
     write(ansi_home + ansi_clear_to_bottom)
-    trails = [[] for _ in grids]
+    trails = [[] for _ in grids] # The past states for undoing.
     while True:
         grid, trail = grids[level], trails[level]
         write(ansi_home)
@@ -33,7 +45,7 @@ def play(grids, level=0):
             write("Done!\n")
         write(ansi_clear_to_bottom)
         key = read_key().lower()
-        if key in 'qx':
+        if key == 'q':
             break
         elif key == 'n':
             level = (level + 1) % len(grids)
@@ -63,13 +75,13 @@ def push(grid, direction):
     move(grid, 'o@', i+d, i+d+d) # First push any neighboring box.
     move(grid, 'iI', i, i+d)     # Then move the player.
 
-def move(grid, thing, src, dst):
-    "Move thing from src to dst if possible."
-    # N.B. dst is always in bounds when grid[src] in thing because our
+def move(grid, thing, here, there):
+    "Move thing from here to there if possible."
+    # N.B. there is always in bounds when grid[here] in thing because our
     # grids have '#'-borders.
-    if grid[src] in thing and grid[dst] in ' .':
-        clear(grid, src)
-        drop(grid, dst, thing)
+    if grid[here] in thing and grid[there] in ' .':
+        clear(grid, here)
+        drop(grid, there, thing)
 
 def clear(grid, i):
     "Remove any thing (crate or player) from position i."
@@ -81,10 +93,16 @@ def drop(grid, i, thing):
 
 
 # Raw-mode ANSI terminal
+#
 # It'd be a little simpler to clear the screen before each repaint,
 # but that causes occasional flicker, so we instead start each repaint
 # with ansi_home and then incrementally clear_to_eol on each line, and
 # finally clear_to_bottom.
+#
+# The most standard way to write a console app like this is with curses,
+# but curses kind of earns its name. And there are better libraries
+# now, but I'm not familiar with them. Maybe you'll enjoy seeing
+# how to do without?
 
 import os, sys
 
