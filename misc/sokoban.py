@@ -48,6 +48,7 @@ directions = dict(h    = left, j    = down, k  = up, l     = right,
                   left = left, down = down, up = up, right = right)
 
 def play(grids, level=0):
+    "The UI to play a sequence of Sokoban levels."
     write(ansi_hide_cursor)
     write(ansi_home + ansi_clear_to_bottom)
 
@@ -147,6 +148,7 @@ def in_raw_mode(reacting):
     finally:
         os.system('stty sane')
 
+# Arrow keys appear as escape sequences in the input:
 keys = {esc+'[A': 'up',    esc+'OA': 'up',
         esc+'[B': 'down',  esc+'OB': 'down',
         esc+'[C': 'right', esc+'OC': 'right',
@@ -165,7 +167,8 @@ def read_key():
 # Levels from Microban.
 # "A good set for beginners and children."
 
-the_levels = """\
+if __name__ == '__main__':
+    main("""\
 ####  
 # .#  
 #  ###
@@ -1677,7 +1680,4 @@ the_levels = """\
 #    #########  #    ##### ### 
 # #             # o        #@# 
 #   #########  ### i#####  #@# 
-#####       #### ####   ###### """
-
-if __name__ == '__main__':
-    main(the_levels)
+#####       #### ####   ###### """)
