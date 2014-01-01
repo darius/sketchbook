@@ -124,20 +124,20 @@ def drop(grid, i, thing):
 #
 # It'd be a little simpler to clear the screen before each repaint,
 # but that causes occasional flicker, so we instead start each repaint
-# with ansi_home and then incrementally clear_to_eol on each line, and
+# with ansi_home and then incrementally clear_to_right on each line, and
 # finally clear_to_bottom.
 
 import os, sys
 
 esc = chr(27)
-ansi_home            = esc + '[H'
-ansi_clear_to_bottom = esc + '[J'
-ansi_clear_to_eol    = esc + '[K'
+ansi_home            = esc + '[H' # Go to top left.
+ansi_clear_to_right  = esc + '[K' # Erase the rest of the line.
+ansi_clear_to_bottom = esc + '[J' # Erase the rest of the screen.
 ansi_hide_cursor     = esc + '[?25l'
 ansi_show_cursor     = esc + '[?25h'
 
 def write(s):
-    sys.stdout.write(s.replace('\n', ansi_clear_to_eol + '\r\n'))
+    sys.stdout.write(s.replace('\n', ansi_clear_to_right + '\r\n'))
 
 def in_raw_mode(reacting):
     # It looks like this could be done with the tty and termios
