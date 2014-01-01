@@ -34,8 +34,8 @@ def unparse(grid):
 def play(grids, level=0):
     write(ansi_hide_cursor)
     write(ansi_home + ansi_clear_to_bottom)
-    trails = [[] for _ in grids] # The past history for undo for each level.
 
+    trails = [[] for _ in grids] # The past history for undo for each level.
     while True:
         grid, trail = grids[level], trails[level]
 
