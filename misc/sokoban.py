@@ -86,10 +86,10 @@ def move(grid, thing, here, there):
     # N.B. `there` is always in bounds when `grid[here] in thing`
     # because our grids have '#'-borders, while `thing` is never a '#'.
     if grid[here] in thing and grid[there] in ' .':
-        clear(grid, here)
+        lift(grid, here)
         drop(grid, there, thing)
 
-def clear(grid, i):
+def lift(grid, i):
     "Remove any thing (crate or player) from position i."
     grid[i] = ' .'[grid[i] in '.@I']
 
