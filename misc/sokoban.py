@@ -4,13 +4,13 @@ Play http://en.wikipedia.org/wiki/Sokoban on the console.
 Includes Microban levels by David Skinner, from
 http://sneezingtiger.com/sokoban/levels.html
 
-Briefly, you move yourself (shown as 'i' or 'I') around a 2-d grid.
-You can push one barrel at a time (each shown as 'o' or '@'). You win
-when every barrel is on a target square: an empty target appears as
-'.', while one with a barrel on it is '@'. (You are shown as 'I' when
-on a target yourself.) Nothing can move through a wall ('#'). These
-simple rules yield an elegant game with scope for a tremendous variety
-of puzzles, from easy to AI-complete.
+You move yourself (shown as 'i' or 'I') around a 2-d grid. You can
+push one barrel at a time (each shown as 'o' or '@'). You win when
+every barrel is on a target square: an empty target appears as '.',
+while one with a barrel on it is '@'. (You are shown as 'I' when on a
+target yourself.) Nothing can move through a wall ('#'). These simple
+rules yield an elegant game with scope for a tremendous variety of
+puzzles, from easy to AI-complete.
 
 Other console Sokobans display the game a little differently: with
 different symbols and a squeezed aspect ratio. I insert spaces between
