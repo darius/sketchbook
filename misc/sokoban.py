@@ -23,6 +23,15 @@ http://code.google.com/p/cleese/source/browse/trunk/experimental/necco/kernel/so
 (runs without a regular OS, by Dave Long)
 """
 
+def main(level_collection):
+    grids = [parse(level) for level in level_collection.split('\n\n')]
+    in_raw_mode(lambda: play(grids))
+
+# We represent a grid as a list of characters, including the newlines,
+# where every line is the same length (which we call the width of the
+# grid). Thus moving up or down from some square means a displacement 
+# by that same width, whatever the starting square.
+
 def parse(grid_string):
     lines = grid_string.splitlines()
     assert lines and all(len(line) == len(lines[0]) for line in lines)
@@ -30,6 +39,13 @@ def parse(grid_string):
 
 def unparse(grid):
     return ' '.join(grid).replace('\n ', '\n')
+
+def up   (width): return -width
+def down (width): return  width
+def left (width): return -1
+def right(width): return  1
+directions = dict(h    = left, j    = down, k  = up, l     = right,
+                  left = left, down = down, up = up, right = right)
 
 def play(grids, level=0):
     write(ansi_hide_cursor)
@@ -66,13 +82,6 @@ def play(grids, level=0):
     write(ansi_show_cursor)
 
 def won(grid): return 'o' not in grid
-
-def up   (width): return -width
-def down (width): return  width
-def left (width): return -1
-def right(width): return  1
-directions = dict(h    = left, j    = down, k  = up, l     = right,
-                  left = left, down = down, up = up, right = right)
 
 def push(grid, direction):
     "Update grid, trying to move the player in the direction."
@@ -156,7 +165,7 @@ def read_key():
 # Levels from Microban.
 # "A good set for beginners and children."
 
-levels = """\
+the_levels = """\
 ####  
 # .#  
 #  ###
@@ -1670,8 +1679,5 @@ levels = """\
 #   #########  ### i#####  #@# 
 #####       #### ####   ###### """
 
-levels = levels.split('\n\n')
-
 if __name__ == '__main__':
-    grids = [parse(level) for level in levels]
-    in_raw_mode(lambda: play(grids))
+    main(the_levels)
