@@ -93,8 +93,7 @@ def drop(grid, i, thing):
     grid[i] = thing['.' == grid[i]]
 
 # The above two functions each index a string with a boolean value.
-# I won't apologize, but since this code is meant to be read by
-# anyone, I'll explain:
+# I won't apologize, but I'll explain:
 #  'xy'[False] means the same as 'xy'[0], or 'x'.
 #  'xy'[True]  means the same as 'xy'[1], or 'y'.
 
