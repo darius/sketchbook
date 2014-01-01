@@ -38,6 +38,7 @@ def play(grids, level=0):
 
     while True:
         grid, trail = grids[level], trails[level]
+
         write(ansi_home)
         write("Move with the arrow keys or HJKL. U to undo.\n")
         write("N/P for next/previous level, Q to quit.\n\n")
