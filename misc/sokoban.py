@@ -23,9 +23,9 @@ http://code.google.com/p/cleese/source/browse/trunk/experimental/necco/kernel/so
 (runs without a regular OS, by Dave Long)
 """
 
-def main(level_collection):
+def main(level_collection, name=''):
     grids = [parse(level) for level in level_collection.split('\n\n')]
-    in_raw_mode(lambda: play(grids))
+    in_raw_mode(lambda: play(grids, name))
 
 # We represent a grid as a list of characters, including the newlines,
 # with every line the same length (which we call the width of the
@@ -47,7 +47,7 @@ def right(width): return  1
 directions = dict(h    = left, j    = down, k  = up, l     = right,
                   left = left, down = down, up = up, right = right)
 
-def play(grids, level=0):
+def play(grids, name='', level=0):
     "The UI to a sequence of Sokoban levels."
     write(ansi_hide_cursor)
     write(ansi_home + ansi_clear_to_bottom)
@@ -60,8 +60,8 @@ def play(grids, level=0):
         write(ansi_home)
         write("Move with the arrow keys or HJKL. U to undo.\n")
         write("N/P for next/previous level, Q to quit.\n\n")
-        write("Level %d                         Move %d\n\n"
-              % (level+1, len(trail)))
+        write("Level %d (%s)    Move %d\n\n"
+              % (level+1, name, len(trail)))
         write(unparse(grid) + '\n\n')
         if won(grid):
             write("Done!\n")
@@ -1684,4 +1684,4 @@ if __name__ == '__main__':
 #    #########  #    ##### ### 
 # #             # o        #@# 
 #   #########  ### i#####  #@# 
-#####       #### ####   ###### """)
+#####       #### ####   ###### """, "Microban by David Skinner")
