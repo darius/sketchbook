@@ -130,7 +130,7 @@ def drop(grid, i, thing):
 import os, sys
 
 esc = chr(27)
-ansi_home            = esc + '[H' # Go to top left.
+ansi_home            = esc + '[H' # Go to the top left.
 ansi_clear_to_right  = esc + '[K' # Erase the rest of the line.
 ansi_clear_to_bottom = esc + '[J' # Erase the rest of the screen.
 ansi_hide_cursor     = esc + '[?25l'
