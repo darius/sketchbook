@@ -59,9 +59,9 @@ def play(grids, name='', level=0):
 
         write(ansi_home)
         write("Move with the arrow keys or HJKL. U to undo.\n")
-        write("N/P for next/previous level, Q to quit.\n\n")
-        write("Level %d %s    Move %d\n\n"
-              % (level+1, name, len(trail)))
+        write("N/P for next/previous level; Q to quit.\n\n")
+        write("Level %d %s Move %d\n\n"
+              % (level+1, name.center(50), len(trail)))
         write(unparse(grid) + '\n\n')
         if won(grid):
             write("Done!\n")
@@ -1684,4 +1684,4 @@ if __name__ == '__main__':
 #    #########  #    ##### ### 
 # #             # o        #@# 
 #   #########  ### i#####  #@# 
-#####       #### ####   ###### """, "(Microban by David Skinner)")
+#####       #### ####   ###### """, "(Microban, by David Skinner)")
