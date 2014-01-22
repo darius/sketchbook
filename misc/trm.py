@@ -14,7 +14,6 @@ Glossary:
 ## show(parse('1#111##'))
 #.     add_one 1 
 #.   1 add_hash 3
-#. 
 
 ## run(parse('1#111##'), make_regs('', '', ''), verbose=True)
 #.     add_one 1 	r1: 
@@ -28,7 +27,6 @@ Glossary:
 #.   2 add_one 1 	r1: 1
 #.   1 add_hash 3	r2:  
 #.               	r3: #
-#. 
 #. {1: '1', 2: '', 3: '#'}
 
 
@@ -43,7 +41,6 @@ Glossary:
 #.   4 backward 4             
 #.   5 add_one 1              
 #.   6 backward 6             
-#. 
 ## run(move_r2_r1, make_regs('', '1#1#11##'))
 #. {1: '1#1#11##', 2: ''}
 
@@ -69,31 +66,31 @@ def run(insns, regs, verbose=False):
             show(insns, pc, regs)
             print
         fn, n = insns[pc]
-        pc = fn(n, pc, regs)
+        pc += fn(n, regs)
     if verbose:
         show(insns, pc, regs)
     return regs
 
-def do_add_one(n, pc, regs):
+def do_add_one(n, regs):
     regs[n] += '1'
-    return pc + 1
+    return 1
 
-def do_add_hash(n, pc, regs):
+def do_add_hash(n, regs):
     regs[n] += '#'
-    return pc + 1
+    return 1
 
-def do_forward(n, pc, regs):
-    return pc + n
+def do_forward(n, regs):
+    return n
 
-def do_backward(n, pc, regs):
-    return pc - n
+def do_backward(n, regs):
+    return -n
 
-def do_case(n, pc, regs):
+def do_case(n, regs):
     reg = regs[n]
-    if not reg:   return pc + 1
+    if not reg:   return 1
     ch, regs[n] = reg[0], reg[1:]
-    if ch == '1': return pc + 2
-    if ch == '#': return pc + 3
+    if ch == '1': return 2
+    if ch == '#': return 3
     assert False
 
 insn_table = {1: do_add_one, 2: do_add_hash,
