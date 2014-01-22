@@ -21,6 +21,8 @@ http://eloquentjavascript.net/chapter13.html (by Marijn Haverbeke)
 http://aurelio.net/projects/sedsokoban/ (by Aurelio Marinho Jargas)
 http://code.google.com/p/cleese/source/browse/trunk/experimental/necco/kernel/soko.py
 (runs without a regular OS, by Dave Long)
+
+Thanks to Dave Long for helpful discussion of gen_keys().
 """
 
 def main(level_collection, name=''):
@@ -154,18 +156,25 @@ key_map = {esc+'[A': 'up',    esc+'OA': 'up',
            esc+'[B': 'down',  esc+'OB': 'down',
            esc+'[C': 'right', esc+'OC': 'right',
            esc+'[D': 'left',  esc+'OD': 'left'}
-key_prefixes = set(k[:i] for k in key_map for i in range(1, len(k)))
+key_prefixes = set(k[:i] for k in key_map for i in range(len(k)))
 
 def gen_keys():
     "From the input, parse out any chunks that match key_map."
     while True: # (Since raw-mode input won't signal EOF, we needn't check.)
-        keys = sys.stdin.read(1)
+        keys = ''
         while keys in key_prefixes:
             keys += sys.stdin.read(1)
         if keys in key_map:
             yield key_map[keys]
         else:
             for key in keys: yield key
+
+# The above gen_keys() wouldn't work for all possible keymaps:
+# * If key_map = {}, then gen_keys() never yields any value.
+# * If key_map = {'abcd': 'key1', 'bc': 'key2'}, and if you type
+#   'abcf', then gen_keys() yields 'a', 'b', 'c'', 'f', never
+#   chunking the 'b' and 'c' into 'key2' as you might expect.
+# How would you fix these flaws?
 
 
 # Levels from Microban.
