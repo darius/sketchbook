@@ -190,7 +190,9 @@ class ChessBoard:
             if has_opponent(r+forward, c-1): yield move_to(r+forward, c-1)
             if has_opponent(r+forward, c+1): yield move_to(r+forward, c+1)
         elif piece == 'K':
+            # TODO castling
             # TODO forbid moving into check
+            # (and this can apply to moves of other pieces)
             for dr, dc in queen_dirs:
                 if is_takeable(r+dr, c+dc):
                     yield move_to(r+dr, c+dc)
