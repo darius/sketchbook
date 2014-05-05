@@ -197,3 +197,5 @@ def collect_sequence(res):
 #. True
 ## mk.many(mk.lit('x')) is mk.many(mk.lit('x'))
 #. True
+
+### match(mk.seq(*[mk.alt(mk.lit('a'), mk.seq(mk.lit('a'), mk.lit('a')))]*1200), 'a'*1200)
