@@ -76,6 +76,7 @@ class MRUDict(dict):
 
 
 # Fancier still
+# See also http://code.activestate.com/recipes/577970-simplified-lru-cache/
 
 P, S, K, V = range(4) # Fields in a cache entry: predecessor, successor, key, value
 
