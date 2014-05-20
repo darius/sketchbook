@@ -69,7 +69,7 @@ def play(grids, name='', level=0):
         write(ansi_clear_to_bottom)
 
         key = next(keys).lower()
-        if key == 'q':
+        if   key == 'q':
             break
         elif key == 'n':
             level = (level + 1) % len(grids)
