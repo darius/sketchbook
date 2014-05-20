@@ -22,8 +22,6 @@ http://eloquentjavascript.net/chapter13.html (by Marijn Haverbeke)
 http://aurelio.net/projects/sedsokoban/ (by Aurelio Marinho Jargas)
 http://code.google.com/p/cleese/source/browse/trunk/experimental/necco/kernel/soko.py
 (runs without a regular OS, by Dave Long)
-
-Thanks to Dave Long for helpful discussion of gen_keys().
 """
 
 import sturm

@@ -2,6 +2,9 @@
 Simple console terminal interaction.
 TODO: example apps to see what's missing
 TODO: app that needs timed events, e.g. tetris
+
+Thanks to Dave Long for helpful discussion of the key-reading
+code.
 """
 
 import contextlib, os, sys
