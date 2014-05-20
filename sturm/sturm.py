@@ -36,11 +36,12 @@ ansi_hide_cursor     = esc + '[?25l'
 ansi_show_cursor     = esc + '[?25h'
 
 @contextlib.contextmanager
-def raw_mode():
+def mode(name):       # 'raw' or 'cbreak'
+    # XXX cbreak mode is more usually what you want.
     # It looks like this could be done with the tty and termios
     # modules instead, but at least my code is shorter:
     # http://stackoverflow.com/questions/1394956/how-to-do-hit-any-key-in-python
-    os.system('stty raw -echo')
+    os.system('stty {} -echo'.format(name))
     write(ansi_home + ansi_clear_to_bottom)
     try:
         yield
@@ -75,7 +76,7 @@ def get_key():
         key_stack.extend(reversed(keys))
         return get_raw_key()
 
-def get_raw_key():
+def get_raw_key():              # XXX 'raw' is a confusing name here
     return key_stack.pop() if key_stack else sys.stdin.read(1)
 
 key_stack = []
