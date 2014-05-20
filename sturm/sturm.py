@@ -23,9 +23,10 @@ import contextlib, os, sys
 # with ansi_home and then incrementally clear_to_right on each line, and
 # finally clear_to_bottom.
 #
-# OTOH it's still noticeably bad if you repaint many times a second; the next
-# step up in complexity would be to remember what we painted last frame as a
-# list of lines, and only rewrite the lines that differ.
+# OTOH it's still noticeably bad if you repaint many times a second;
+# the next step up in complexity would be to remember, after each
+# frame, a list of the lines showing on the screen, and then only send
+# to the screen the lines that change in the new frame.
 
 esc = chr(27)
 ansi_home            = esc + '[H' # Go to the top left.
