@@ -13,7 +13,7 @@ import contextlib, os, sys
 #
 # The most standard way to code a console app like this is with curses,
 # but curses kind of earns its name. And there are better libraries
-# now, but I'm not familiar with them. Maybe you'll enjoy seeing
+# now, but I'm not familiar with them yet. (Soon!) Maybe you'll enjoy seeing
 # how to do without? We use http://en.wikipedia.org/wiki/ANSI_escape_code
 # and raw mode
 # http://en.wikipedia.org/wiki/Seventh_Edition_Unix_terminal_interface#Input_modes
