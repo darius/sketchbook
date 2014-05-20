@@ -35,9 +35,6 @@ ansi_clear_to_bottom = esc + '[J' # Erase the rest of the screen.
 ansi_hide_cursor     = esc + '[?25l'
 ansi_show_cursor     = esc + '[?25h'
 
-def write(s):
-    sys.stdout.write(s.replace('\n', ansi_clear_to_right + '\r\n'))
-
 @contextlib.contextmanager
 def raw_mode():
     # It looks like this could be done with the tty and termios
@@ -50,11 +47,15 @@ def raw_mode():
     finally:
         os.system('stty sane') # XXX save and restore instead
 
-@contextlib.contextmanager
-def frame():
+def write_frame(string):
     write(ansi_home + ansi_hide_cursor)
-    yield
+    write(string)
     write(ansi_clear_to_bottom + ansi_show_cursor) # XXX TODO: show optional, placed where wanted
+    # XXX the clear_to_bottom works only in Python 2, not 3.
+    #   Some unicode encoding thing?
+
+def write(s):
+    sys.stdout.write(s.replace('\n', ansi_clear_to_right + '\r\n'))
 
 
 # Arrow keys are encoded as escape sequences:

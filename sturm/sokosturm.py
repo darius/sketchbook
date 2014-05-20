@@ -57,14 +57,17 @@ def play(grids, name='', level=0):
     while True:
         grid, trail = grids[level], trails[level]
 
-        with sturm.frame():
-            sturm.write("Move with the arrow keys or HJKL. U to undo.\n")
-            sturm.write("N/P for next/previous level; Q to quit.\n\n")
-            sturm.write("Level {} {:^50} Move {}\n\n".format(level+1, name, len(trail)))
-            sturm.write(unparse(grid) + '\n\n')
+        def frame():
+            yield "Move with the arrow keys or HJKL. U to undo."
+            yield "N/P for next/previous level; Q to quit."
+            yield ""
+            yield "Level {} {:^50} Move {}\n".format(level+1, name, len(trail))
+            yield unparse(grid)
+            yield ""
             if won(grid):
-                sturm.write("Done!\n")
+                yield "Done!"
 
+        sturm.write_frame('\n'.join(frame()))
         key = sturm.get_key().lower()
         if   key == 'q':
             break
