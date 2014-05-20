@@ -137,3 +137,7 @@ going through the match network at runtime.
 
 What applications might all this have besides production systems?
 Stream databases?
+
+----------------------------------------------------
+https://github.com/hraberg/mimir
+has some refs that might be worth a look.
