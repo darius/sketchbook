@@ -23,6 +23,9 @@ http://code.google.com/p/cleese/source/browse/trunk/experimental/necco/kernel/so
 (runs without a regular OS, by Dave Long)
 
 Thanks to Dave Long for helpful discussion of gen_keys().
+
+See https://github.com/darius/sketchbook/blob/master/sturm/ for
+future developments -- maybe that version'll get fancier.
 """
 
 def main(level_collection, name=''):
