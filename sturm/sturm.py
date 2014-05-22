@@ -1,23 +1,9 @@
 """
 Simple console terminal interaction.
-TODO: example apps to see what's missing
-TODO: app that needs timed events, e.g. tetris
-
-Thanks to Dave Long for helpful discussion of the key-reading
-code.
 """
 
 import contextlib, os, sys
 
-# Reading and writing the console:
-#
-# The most standard way to code a console app like this is with curses,
-# but curses kind of earns its name. And there are better libraries
-# now, but I'm not familiar with them yet. (Soon!) Maybe you'll enjoy seeing
-# how to do without? We use http://en.wikipedia.org/wiki/ANSI_escape_code
-# and raw mode
-# http://en.wikipedia.org/wiki/Seventh_Edition_Unix_terminal_interface#Input_modes
-#
 # It'd be a little simpler to clear the screen before each repaint,
 # but that causes occasional flicker, so we instead start each repaint
 # with ansi_home and then incrementally clear_to_right on each line, and
