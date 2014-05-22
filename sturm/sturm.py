@@ -61,7 +61,7 @@ def get_key():
         key_stack.extend(reversed(keys))
         return get_key_unmapped()
 
-def get_key_unmapped():              # XXX 'raw' is a confusing name here
+def get_key_unmapped():
     return key_stack.pop() if key_stack else sys.stdin.read(1)
 
 key_stack = []
