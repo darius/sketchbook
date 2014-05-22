@@ -66,16 +66,16 @@ key_map = {esc+'[A': 'up',    esc+'OA': 'up',
 keymap_prefixes = set(k[:i] for k in key_map for i in range(1, len(k)))
 
 def get_key():
-    keys = get_raw_key()
+    keys = get_key_unmapped()
     while keys in keymap_prefixes:
-        keys += get_raw_key()
+        keys += get_key_unmapped()
     if keys in key_map:
         return key_map[keys]
     else:
         key_stack.extend(reversed(keys))
-        return get_raw_key()
+        return get_key_unmapped()
 
-def get_raw_key():              # XXX 'raw' is a confusing name here
+def get_key_unmapped():              # XXX 'raw' is a confusing name here
     return key_stack.pop() if key_stack else sys.stdin.read(1)
 
 key_stack = []
