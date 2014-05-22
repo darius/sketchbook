@@ -37,7 +37,6 @@ ansi_show_cursor     = esc + '[?25h'
 
 @contextlib.contextmanager
 def mode(name):       # 'raw' or 'cbreak'
-    # XXX cbreak mode is more usually what you want.
     # It looks like this could be done with the tty and termios
     # modules instead, but at least my code is shorter:
     # http://stackoverflow.com/questions/1394956/how-to-do-hit-any-key-in-python
@@ -48,7 +47,7 @@ def mode(name):       # 'raw' or 'cbreak'
     finally:
         os.system('stty sane') # XXX save and restore instead
 
-def write_frame(string):
+def render(string):
     write(ansi_home + ansi_hide_cursor)
     write(string)
     write(ansi_clear_to_bottom + ansi_show_cursor) # XXX TODO: show optional, placed where wanted
