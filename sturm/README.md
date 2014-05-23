@@ -1,6 +1,3 @@
-TODO: example apps to see what's missing
-TODO: app that needs timed events, e.g. tetris
-
 An excessively-minimal terminal-UI module.
 
 The most standard way to code a console app like this is with curses,
@@ -12,3 +9,9 @@ http://en.wikipedia.org/wiki/Seventh_Edition_Unix_terminal_interface#Input_modes
 
 Thanks to Dave Long for helpful discussion of the key-reading
 code.
+
+TODO: example apps to see what's missing
+  X games like tictactoe
+  * pager
+  * text editor
+  * realtime game (what's the tictactoe of realtime console games?)
