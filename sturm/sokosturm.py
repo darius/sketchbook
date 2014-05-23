@@ -28,7 +28,7 @@ import sturm
 
 def main(level_collection, name=''):
     grids = [parse(level) for level in level_collection.split('\n\n')]
-    with sturm.mode('cbreak'):
+    with sturm.cbreak_mode():
         play(grids, name)
 
 # We represent a grid as a list of characters, including the newlines,
@@ -64,11 +64,11 @@ def play(grids, name='', level=0):
             yield "Level {} {:^50} Move {}".format(level+1, name, len(trail))
             yield ""
             yield unparse(grid)
-            yield ""
             if won(grid):
+                yield ""
                 yield "Done!"
 
-        sturm.render('\n'.join(frame()))
+        sturm.render('\n'.join(frame()) + '\n')
         key = sturm.get_key().lower()
         if   key == 'q':
             break

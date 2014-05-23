@@ -21,6 +21,9 @@ ansi_clear_to_bottom = esc + '[J' # Erase the rest of the screen.
 ansi_hide_cursor     = esc + '[?25l'
 ansi_show_cursor     = esc + '[?25h'
 
+def raw_mode():    return mode('raw')
+def cbreak_mode(): return mode('cbreak')
+
 @contextlib.contextmanager
 def mode(name):       # 'raw' or 'cbreak'
     # It looks like this could be done with the tty and termios
