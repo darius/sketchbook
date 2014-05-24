@@ -11,7 +11,8 @@ Thanks to Dave Long for helpful discussion of the key-reading
 code.
 
 TODO: example apps to see what's missing
-  X games like tictactoe
+  X Games like tictactoe
+  * Why are some examples showing the cursor and others not?
   * pager
   * text editor
   * realtime game 
