@@ -77,15 +77,20 @@ def get_key_unmapped(deadline):
 key_stack = []
 
 def get_key_on_deadline(deadline):
-    if deadline is None:
+    if deadline is None or wait_for_input(sys.stdin.fileno(), deadline):
         return sys.stdin.read(1)
     else:
-        fd = sys.stdin.fileno()
+        return None
+
+def wait_for_input(fd, deadline):
+    "Return true if fd is ready to read; wait till deadline at latest."
+    while True:
         r, w, e = [fd], [], [fd]
+        timeout = max(0, deadline - time.time())
         try:
-            r, w, e = select.select(r, w, e, max(0, deadline - time.time()))
+            r, w, e = select.select(r, w, e, timeout)
         except select.error as err:
             if err[0] == errno.EINTR:
-                return None     # XXX I guess?
+                continue
             raise
-        return sys.stdin.read(1) if r or e else None
+        return not not (r or e)
