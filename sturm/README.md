@@ -14,4 +14,10 @@ TODO: example apps to see what's missing
   X games like tictactoe
   * pager
   * text editor
-  * realtime game (what's the tictactoe of realtime console games?)
+  * realtime game 
+    * What's the tictactoe of realtime console games? Frogger? Tower defense?
+    * Simpler:
+      * Type something in while a stopwatch counts, and show your typing speed.
+        (The 'realtime' element is the stopwatch display.)
+      * A little more fun: solve a puzzle, e.g. SAT, along with a stopwatch.
+        Or escape a maze.
