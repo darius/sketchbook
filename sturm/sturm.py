@@ -42,6 +42,7 @@ def render(string):
     write(ansi_clear_to_bottom + ansi_show_cursor) # XXX TODO: show optional, placed where wanted
     # XXX the clear_to_bottom works only in Python 2, not 3.
     #   Some unicode encoding thing?
+    sys.stdout.flush()
 
 def write(s):
     sys.stdout.write(s.replace('\n', ansi_clear_to_right + '\r\n'))

@@ -12,7 +12,7 @@ code.
 
 TODO: example apps to see what's missing
   X Games like tictactoe
-  * Why are some examples showing the cursor and others not?
+  X Why are some examples showing the cursor and others not? Ah, missing flush().
   * pager
   * text editor
   * realtime game 
