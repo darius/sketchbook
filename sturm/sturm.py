@@ -2,7 +2,7 @@
 Simple console terminal interaction.
 """
 
-import contextlib, os, sys
+import contextlib, os, select, sys, time
 
 # It'd be a little simpler to clear the screen before each repaint,
 # but that causes occasional flicker, so we instead start each repaint
@@ -54,17 +54,38 @@ key_map = {esc+'[A': 'up',    esc+'OA': 'up',
            esc+'[D': 'left',  esc+'OD': 'left'}
 keymap_prefixes = set(k[:i] for k in key_map for i in range(1, len(k)))
 
-def get_key():
-    keys = get_key_unmapped()
+def get_key(timeout=None):
+    deadline = None if timeout is None else time.time() + timeout
+    keys = get_key_unmapped(deadline)
+    if keys is None:
+        return None
     while keys in keymap_prefixes:
-        keys += get_key_unmapped()
+        key = get_key_unmapped(deadline)
+        if key is None:
+            key_stack.extend(reversed(keys))
+            return None
+        keys += key
     if keys in key_map:
         return key_map[keys]
     else:
         key_stack.extend(reversed(keys))
-        return get_key_unmapped()
+        return key_stack.pop()
 
-def get_key_unmapped():
-    return key_stack.pop() if key_stack else sys.stdin.read(1)
+def get_key_unmapped(deadline):
+    return key_stack.pop() if key_stack else get_key_on_deadline(deadline)
 
 key_stack = []
+
+def get_key_on_deadline(deadline):
+    if deadline is None:
+        return sys.stdin.read(1)
+    else:
+        fd = sys.stdin.fileno()
+        r, w, e = [fd], [], [fd]
+        try:
+            r, w, e = select.select(r, w, e, max(0, deadline - time.time()))
+        except select.error as err:
+            if err[0] == errno.EINTR:
+                return None     # XXX I guess?
+            raise
+        return sys.stdin.read(1) if r or e else None
