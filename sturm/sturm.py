@@ -48,11 +48,13 @@ def write(s):
     sys.stdout.write(s.replace('\n', ansi_clear_to_right + '\r\n'))
 
 
-# Arrow keys are encoded as escape sequences:
-key_map = {esc+'[A': 'up',    esc+'OA': 'up',
-           esc+'[B': 'down',  esc+'OB': 'down',
-           esc+'[C': 'right', esc+'OC': 'right',
-           esc+'[D': 'left',  esc+'OD': 'left'}
+# Arrow keys, etc., are encoded as escape sequences:
+key_map = {esc+'[1~': 'home',  esc+'[A': 'up',    esc+'OA': 'up',
+           esc+'[3~': 'del',   esc+'[B': 'down',  esc+'OB': 'down',
+           esc+'[4~': 'end',   esc+'[C': 'right', esc+'OC': 'right',
+           esc+'[5~': 'pgup',  esc+'[D': 'left',  esc+'OD': 'left',
+           esc+'[6~': 'pgdn',
+           chr(127):  'backspace'}
 keymap_prefixes = set(k[:i] for k in key_map for i in range(1, len(k)))
 
 def get_key(timeout=None):
