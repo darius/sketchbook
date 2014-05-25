@@ -4,6 +4,12 @@ Simple console terminal interaction.
 
 import contextlib, os, select, sys, time
 
+ROWS, COLS = 24, 80
+
+def note_screen_size():
+    global ROWS, COLS
+    ROWS, COLS = map(int, os.popen('stty size', 'r').read().split())
+
 # It'd be a little simpler to clear the screen before each repaint,
 # but that causes occasional flicker, so we instead start each repaint
 # with ansi_home and then incrementally clear_to_right on each line, and
@@ -29,6 +35,7 @@ def mode(name):       # 'raw' or 'cbreak'
     # It looks like this could be done with the tty and termios
     # modules instead, but at least my code is shorter:
     # http://stackoverflow.com/questions/1394956/how-to-do-hit-any-key-in-python
+    note_screen_size()
     os.system('stty {} -echo'.format(name))
     write(ansi_home + ansi_clear_to_bottom)
     try:
