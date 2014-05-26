@@ -16,9 +16,9 @@ def main():
             sturm.render("Use the arrow keys or 'q' to quit.\n\n"
                          + view(board) + "\n\n"
                          + message + "\n")
+            if message: break
             key = sturm.get_key()
-            if key == 'q' or message:
-                break
+            if key == 'q': break
             elif key in globals(): # Hacky hacky, sorry. :P
                 board2 = globals()[key](board)
                 if board2 != board:
