@@ -57,9 +57,11 @@ def view(board):
 #.  .    .    .    .  
 #. 
 #.  .    .    4    .  
+## is_won(update(empty_board, 3, 2, 2048))
+#. True
 
 def is_full(board): return all(all(row) for row in board)
-def is_won(board): return any(any(v == 2048 for v in row) for row in board)
+def is_won(board): return any(row.count(2048) for row in board)
 
 # Arrow-key actions:
 def left(board):  return tuple(map(collapse, board))
