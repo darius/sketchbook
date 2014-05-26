@@ -19,7 +19,7 @@ def main():
             key = sturm.get_key()
             if key == 'q' or message:
                 break
-            elif key in globals():
+            elif key in globals(): # Hacky hacky, sorry. :P
                 board2 = globals()[key](board)
                 if board2 != board:
                     v = 2 if random.random() < .9 else 4
