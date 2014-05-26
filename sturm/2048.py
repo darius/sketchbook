@@ -15,15 +15,14 @@ def main():
             else:               message = ""
             sturm.render("Use the arrow keys or 'q' to quit.\n\n"
                          + view(board) + "\n\n"
-                         + message)
+                         + message + "\n")
             key = sturm.get_key()
             if key == 'q' or message:
                 break
             elif key in globals(): # Hacky hacky, sorry. :P
                 board2 = globals()[key](board)
                 if board2 != board:
-                    v = 2 if random.random() < .9 else 4
-                    board = plop(board2, v)
+                    board = plop(board2, 2 if random.random() < .9 else 4)
 
 # A board is a tuple of rows;
 # a row is a tuple of values;
