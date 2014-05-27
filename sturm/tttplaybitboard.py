@@ -30,7 +30,7 @@ def main(argv):
         print "where a player is one of:", ', '.join(sorted(pool))
         return 1
     else:
-        with sturm.mode('cbreak'):
+        with sturm.cbreak_mode():
             tictactoe(*faceoff)
         return 0
 
