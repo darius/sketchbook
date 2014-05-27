@@ -13,7 +13,7 @@ def main():
             if is_full(board):  message = "You lose!"
             elif is_won(board): message = "You win!"
             else:               message = ""
-            sturm.render("Use the arrow keys or 'q' to quit.\n\n"
+            sturm.render("Use the arrow keys, or 'q' to quit.\n\n"
                          + view(board) + "\n\n"
                          + message + "\n")
             if message: break
