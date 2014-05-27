@@ -39,7 +39,11 @@ def write(c):
     if c == '\n':
         sturm.write(c)
         row, col = row+1, 0
-    else:                       # XXX tabs too
+    elif c == '\t':
+        while True:
+            write(' ')
+            if col % 8 == 0: break
+    else:
         if not is_printable(c):
             c = '?'             # XXX color it or something
         sturm.write(c)
