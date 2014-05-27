@@ -38,7 +38,6 @@ def tictactoe(player, opponent, grid=None):
     "Put two strategies to a classic battle of wits."
     grid = grid or empty_grid
     while True:
-        sturm.render(view(grid))
         if is_won(grid):
             _, winner = player_marks(grid)
             sturm.render(view(grid) + "\n\n%s wins.\n" % winner)
@@ -46,6 +45,10 @@ def tictactoe(player, opponent, grid=None):
         if not successors(grid):
             sturm.render(view(grid) + "\n\nA draw.\n")
             break
+        if human_play not in (player, opponent):
+            sturm.render(view(grid) + ("\n\n%s (%s) to move. (Press a key.)"
+                                       % (player.__name__, whose_move(grid))))
+            sturm.get_key()
         grid = player(grid)
         player, opponent = opponent, player
 
