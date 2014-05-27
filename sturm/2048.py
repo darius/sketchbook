@@ -10,13 +10,12 @@ def main():
     board = make_board()
     with sturm.cbreak_mode():
         while True:
-            if is_full(board):  message = "You lose!"
-            elif is_won(board): message = "You win!"
-            else:               message = ""
+            game_over = is_full(board)
+            score = "You win!" if is_won(board) else "You lose!" if game_over else ""
             sturm.render("Use the arrow keys, or 'q' to quit.\n\n"
                          + view(board) + "\n\n"
-                         + message + "\n")
-            if message: break
+                         + score + "\n")
+            if game_over: break
             key = sturm.get_key()
             if key == 'q': break
             elif key in globals(): # Hacky hacky, sorry. :P
