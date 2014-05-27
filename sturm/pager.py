@@ -18,21 +18,20 @@ def main(argv):
             page(sys.stdin)
     return 0
 
-rows, cols = 25, 80             # XXX query for them
 row, col = 0, 0
 
 def page(f):
+    global row, col
     while True:
         c = f.read(1)
         if not c: return
         write(c)
-        if rows-1 <= row:
+        if sturm.ROWS-1 <= row:
             sturm.write("--more--")
             k = sturm.get_key()
             sturm.write('\b' * len("--more--"))  # XXX clear it too
             if k == 'q':
                 sys.exit()
-            global row, col
             row, col = 0, 0
 
 def write(c):
