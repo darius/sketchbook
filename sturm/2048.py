@@ -61,7 +61,7 @@ def view(board):
 #. True
 
 def is_full(board): return all(all(row) for row in board)
-def is_won(board): return any(row.count(2048) for row in board)
+def is_won(board):  return any(row.count(2048) for row in board)
 
 # Arrow-key actions:
 def left(board):  return tuple(map(collapse, board))
