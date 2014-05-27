@@ -36,11 +36,17 @@ def page(f):
 
 def write(c):
     global row, col
-    sturm.write(c)
     if c == '\n':
+        sturm.write(c)
         row, col = row+1, 0
-    else:
+    else:                       # XXX tabs
+        if not is_printable(c):
+            c = '?'             # XXX color it or something
+        sturm.write(c)
         col += 1
+
+def is_printable(c):
+    return 32 <= ord(c) < 127   # XXX unicode
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
