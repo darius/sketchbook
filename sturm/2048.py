@@ -37,10 +37,10 @@ def plop(board, v):
     while True:
         r, c = random.randint(0, 3), random.randint(0, 3)
         if board[r][c] == 0:
-            return update(board, r, c, v)
+            return update(board, (r, c), v)
 
-def update(board, nr, nc, nv):
-    return tuple(tuple(nv if (r,c) == (nr,nc) else v
+def update(board, pos, new_v):
+    return tuple(tuple(new_v if (r,c) == pos else v
                        for c, v in enumerate(row))
                  for r, row in enumerate(board))
 
@@ -49,7 +49,7 @@ def view(board):
                                 for v in row)
                        for row in board)
 
-## print(view(update(empty_board, 3, 2, 4)))
+## print(view(update(empty_board, (3, 2), 4)))
 #.  .    .    .    .  
 #. 
 #.  .    .    .    .  
@@ -57,7 +57,7 @@ def view(board):
 #.  .    .    .    .  
 #. 
 #.  .    .    4    .  
-## is_won(update(empty_board, 3, 2, 2048))
+## is_won(update(empty_board, (3, 2), 2048))
 #. True
 
 def is_full(board): return all(all(row) for row in board)
