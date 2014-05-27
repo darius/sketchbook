@@ -78,7 +78,7 @@ def collapse(row):
     for v in filter(None, row):
         if vs[i] != v and vs[i]: i += 1
         vs[i] += v
-        if vs[i] == 2*v:         i += 1
+        if vs[i] == v+v:         i += 1
     return tuple(vs)
 
 ## collapse((0, 0, 0, 0))
