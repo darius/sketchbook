@@ -24,8 +24,8 @@ def main():
                 if slid_board != board:
                     board = plop(slid_board, 2 if random.random() < .9 else 4)
 
-# A board is a tuple of rows;
-# a row is a tuple of values;
+# A board is a tuple of 4 rows;
+# a row is a tuple of 4 values;
 # a value is 0 for empty, or a positive number.
 
 def make_board(): return plop(plop(empty_board, 2), 2)
