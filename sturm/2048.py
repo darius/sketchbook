@@ -74,16 +74,12 @@ def flipd(board): return tuple(zip(*board))         # diagonal
 def fliph(board): return flipd(flipv(flipd(board))) # horizontal
 
 def collapse(row):
-    xs, ys = [], []
+    i, vs = 0, [0]*4
     for v in filter(None, row):
-        if ys == [v]:
-            xs.append(2*v)
-            ys = []
-        else:
-            xs.extend(ys)
-            ys = [v]
-    xs.extend(ys)
-    return tuple(xs) + (0,) * (4 - len(xs))
+        if vs[i] != v and vs[i]: i += 1
+        vs[i] += v
+        if vs[i] == 2*v:         i += 1
+    return tuple(vs)
 
 ## collapse((0, 0, 0, 0))
 #. (0, 0, 0, 0)
