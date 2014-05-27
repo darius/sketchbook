@@ -39,11 +39,14 @@ def write(c):
     if c == '\n':
         sturm.write(c)
         row, col = row+1, 0
-    else:                       # XXX tabs
+    else:                       # XXX tabs too
         if not is_printable(c):
             c = '?'             # XXX color it or something
         sturm.write(c)
         col += 1
+        if sturm.COLS <= col:
+            sturm.write('\n')
+            row, col = row+1, 0
 
 def is_printable(c):
     return 32 <= ord(c) < 127   # XXX unicode
