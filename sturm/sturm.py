@@ -63,6 +63,8 @@ key_map = {esc+'[1~': 'home',  esc+'[A': 'up',    esc+'OA': 'up',
            esc+'[6~': 'pgdn',
            chr(127):  'backspace'}
 keymap_prefixes = set(k[:i] for k in key_map for i in range(1, len(k)))
+# N.B. in raw mode, the enter key is '\r'; in cbreak, it's '\n'.
+# Should we just let the client deal with that?
 
 def get_key(timeout=None):
     deadline = None if timeout is None else time.time() + timeout
