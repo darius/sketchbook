@@ -57,14 +57,16 @@ def write(s):
 
 # Arrow keys, etc., are encoded as escape sequences:
 key_map = {esc+'[1~': 'home',  esc+'[A': 'up',    esc+'OA': 'up',
-           esc+'[3~': 'del',   esc+'[B': 'down',  esc+'OB': 'down',
-           esc+'[4~': 'end',   esc+'[C': 'right', esc+'OC': 'right',
-           esc+'[5~': 'pgup',  esc+'[D': 'left',  esc+'OD': 'left',
+           esc+'[2~': 'ins',   esc+'[B': 'down',  esc+'OB': 'down',
+           esc+'[3~': 'del',   esc+'[C': 'right', esc+'OC': 'right',
+           esc+'[4~': 'end',   esc+'[D': 'left',  esc+'OD': 'left',
+           esc+'[5~': 'pgup',   
            esc+'[6~': 'pgdn',
            chr(127):  'backspace'}
 keymap_prefixes = set(k[:i] for k in key_map for i in range(1, len(k)))
 # N.B. in raw mode, the enter key is '\r'; in cbreak, it's '\n'.
 # Should we just let the client deal with that?
+# TODO: detect bare escape (with no following char-codes available yet)
 
 def get_key(timeout=None):
     deadline = None if timeout is None else time.time() + timeout
