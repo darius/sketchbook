@@ -10,7 +10,7 @@ def main():
     board = make_board()
     with sturm.cbreak_mode():
         while True:
-            game_over = is_full(board)
+            game_over = all(move(board) == board for move in [up,down,left,right])
             score = "You win!" if is_won(board) else "You lose!" if game_over else ""
             sturm.render("Use the arrow keys, or 'q' to quit.\n\n"
                          + view(board) + "\n\n"
@@ -31,8 +31,9 @@ def make_board(): return plop(plop(empty_board, 2), 2)
 
 empty_board = ((0,)*4,)*4
 
-# Pre: not is_full(board)
+# Pre: board has at least one empty square.
 def plop(board, v):
+    assert not all(all(row) for row in board)
     while True:
         r, c = random.randint(0, 3), random.randint(0, 3)
         if board[r][c] == 0:
@@ -59,7 +60,6 @@ def view(board):
 ## is_won(update(empty_board, (3, 2), 2048))
 #. True
 
-def is_full(board): return all(all(row) for row in board)
 def is_won(board):  return any(row.count(2048) for row in board)
 
 # Arrow-key actions:
