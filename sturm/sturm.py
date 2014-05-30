@@ -86,11 +86,11 @@ def get_key(timeout=None):
         return key_stack.pop()
 
 def get_key_unmapped(deadline):
-    return key_stack.pop() if key_stack else get_key_on_deadline(deadline)
+    return key_stack.pop() if key_stack else get_key_by(deadline)
 
 key_stack = []
 
-def get_key_on_deadline(deadline):
+def get_key_by(deadline):
     if deadline is None or wait_for_input(sys.stdin.fileno(), deadline):
         return sys.stdin.read(1)
     else:
