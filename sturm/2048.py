@@ -1,5 +1,9 @@
 """
 Modeled after https://github.com/fewf/curtsies_2048
+TODO: Transient highlighting where numbers coalesce?
+      And a different kind of highlight on the new
+      number plopped down.
+      And smoother animation?
 """
 
 import random
@@ -12,7 +16,7 @@ def main():
         while True:
             game_over = all(move(board) == board for move in [up,down,left,right])
             score = "You win!" if is_won(board) else "You lose!" if game_over else ""
-            sturm.render("Use the arrow keys, or 'q' to quit.\n\n"
+            sturm.render("Use the arrow keys, or Q to quit.\n\n"
                          + view(board) + "\n\n"
                          + score + "\n")
             if game_over: break
@@ -33,11 +37,13 @@ empty_board = ((0,)*4,)*4
 
 # Pre: board has at least one empty square.
 def plop(board, v):
-    assert not all(all(row) for row in board)
-    while True:
-        r, c = random.randint(0, 3), random.randint(0, 3)
-        if board[r][c] == 0:
-            return update(board, (r, c), v)
+    return update(board, random_empty(board), v)
+
+def random_empty(board):
+    return random.choice([(r,c)
+                          for r, row in enumerate(board)
+                          for c, v in enumerate(row)
+                          if v == 0])
 
 def update(board, pos, new_v):
     return tuple(tuple(new_v if (r,c) == pos else v
@@ -60,7 +66,7 @@ def view(board):
 ## is_won(update(empty_board, (3, 2), 2048))
 #. True
 
-def is_won(board):  return any(row.count(2048) for row in board)
+def is_won(board): return any(row.count(2048) for row in board)
 
 # Arrow-key actions:
 def left(board):  return tuple(map(collapse, board))
