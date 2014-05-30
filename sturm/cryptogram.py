@@ -29,7 +29,7 @@ def puzzle(cryptogram):
             if c.isalpha() and next(pos) == my.cursor: yield sturm.cursor
             yield decoder.get(c, ' ')
         yield '\n'
-        yield ''.join(' -'[c.isalpha()]   for c in cryptogram) + '\n'
+        yield ''.join(' -'[c.isalpha()] for c in cryptogram) + '\n'
         yield cryptogram + '\n\n'
 
     while True:
