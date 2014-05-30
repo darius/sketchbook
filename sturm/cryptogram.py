@@ -14,12 +14,11 @@ def puzzle(cryptogram):
     my.cursor = 0
     decoder = {}
     code = ''.join(c for c in cryptogram if c.isalpha())
-    size = len(code)
-    assert 0 < size
+    assert code
 
     def erase():          jot(' ')
     def jot(letter):      decoder[code[my.cursor]] = letter
-    def shift_by(offset): my.cursor = (my.cursor + offset) % size
+    def shift_by(offset): my.cursor = (my.cursor + offset) % len(code)
 
     def view():
         # Assume 1 line, for now.
