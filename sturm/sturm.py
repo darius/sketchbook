@@ -24,8 +24,10 @@ esc = chr(27)
 ansi_home            = esc + '[H' # Go to the top left.
 ansi_clear_to_right  = esc + '[K' # Erase the rest of the line.
 ansi_clear_to_bottom = esc + '[J' # Erase the rest of the screen.
-ansi_hide_cursor     = esc + '[?25l'
-ansi_show_cursor     = esc + '[?25h'
+ansi_cursor_hide     = esc + '[?25l'
+ansi_cursor_show     = esc + '[?25h'
+ansi_cursor_save     = esc + '[s'
+ansi_cursor_restore  = esc + '[u'
 
 def raw_mode():    return mode('raw')
 def cbreak_mode(): return mode('cbreak')
@@ -41,18 +43,32 @@ def mode(name):       # 'raw' or 'cbreak'
     try:
         yield
     finally:
+        sys.stdout.write(ansi_cursor_show)
         os.system('stty -F /dev/tty sane') # XXX save and restore instead
 
-def render(string):
-    write(ansi_home + ansi_hide_cursor)
-    write(string)
-    write(ansi_clear_to_bottom + ansi_show_cursor) # XXX TODO: show optional, placed where wanted
+def render(scene):
+    cursor_seen = False
+    out = sys.stdout.write
+    out(ansi_home + ansi_cursor_hide)
+    for part in scene:
+        if part is cursor:
+            cursor_seen = True
+            out(ansi_cursor_save)
+        else:
+            out(part.replace('\n', newline))
+    # TODO: save *this* cursor position too and restore it on mode-exit
+    out(ansi_clear_to_bottom)
+    if cursor_seen:
+        out(ansi_cursor_restore + ansi_cursor_show)
     # XXX the clear_to_bottom works only in Python 2, not 3.
     #   Some unicode encoding thing?
     sys.stdout.flush()
 
+cursor = object()
+newline = ansi_clear_to_right + '\r\n'
+
 def write(s):
-    sys.stdout.write(s.replace('\n', ansi_clear_to_right + '\r\n'))
+    sys.stdout.write(s.replace('\n', newline))
 
 
 # Arrow keys, etc., are encoded as escape sequences:

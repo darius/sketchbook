@@ -1,8 +1,9 @@
 """
 A UI for cryptogram puzzles.
-Incomplete in many ways, the worst being that we can't see the cursor!
+Incomplete in many ways.
 """
 
+import itertools
 import sturm
 
 def main():
@@ -22,11 +23,14 @@ def puzzle(cryptogram):
 
     def view():
         # Assume 1 line, for now.
-        result = '\n'
-        result += ''.join(decoder.get(c, ' ') for c in cryptogram) + '\n'
-        result += ''.join(' -'[c.isalpha()]   for c in cryptogram) + '\n'
-        result += cryptogram + '\n\n'
-        return result
+        yield '\n'
+        pos = itertools.count(0)
+        for c in cryptogram:
+            if c.isalpha() and next(pos) == my.cursor: yield sturm.cursor
+            yield decoder.get(c, ' ')
+        yield '\n'
+        yield ''.join(' -'[c.isalpha()]   for c in cryptogram) + '\n'
+        yield cryptogram + '\n\n'
 
     while True:
         sturm.render(view())

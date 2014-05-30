@@ -16,7 +16,8 @@ def interact():
     strokes = ''
     while True:
         banner = '%5.1f' % (time.time() - start)
-        sturm.render(banner + '\n\n' + strokes)
+        sturm.render((banner + '\n\n' + strokes,
+                      sturm.cursor))
         key = sturm.get_key(timeout=0.1)
         if key is None:
             continue

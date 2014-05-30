@@ -46,8 +46,9 @@ def tictactoe(player, opponent, grid=None):
             sturm.render(view(grid) + "\n\nA draw.\n")
             break
         if human_play not in (player, opponent):
-            sturm.render(view(grid) + ("\n\n%s (%s) to move. (Press a key.)"
-                                       % (player.__name__, whose_move(grid))))
+            sturm.render(view(grid) + ("\n\n%s to move %s. (Press a key.)"
+                                       % (player.__name__.replace('_play', ''),
+                                          whose_move(grid))))
             sturm.get_key()
         grid = player(grid)
         player, opponent = opponent, player
@@ -77,7 +78,8 @@ def human_play(grid):
     plaint = ''
     prompt = whose_move(grid) + " move? [1-9] "
     while True:
-        sturm.render(view(grid) + "\n\n" + plaint + prompt)
+        sturm.render((view(grid) + "\n\n" + plaint + prompt,
+                      sturm.cursor))
         key = sturm.get_key()
         try:
             move = int(key)
