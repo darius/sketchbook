@@ -32,7 +32,12 @@ def puzzle(cryptogram):
     while True:
         sturm.render(view())
         key = sturm.get_key()
-        if   key == 'right':
+        if   key == '\n':
+            break
+        elif key.isalpha() and len(key) == 1: # ouch
+            jot(key)
+            shift_by(1)
+        elif key == 'right':
             shift_by(1)
         elif key == 'left':
             shift_by(-1)
@@ -42,11 +47,6 @@ def puzzle(cryptogram):
         elif key == 'del':
             erase()
             shift_by(1)
-        elif key.isalpha():
-            jot(key)
-            shift_by(1)
-        elif key == '\n':
-            break
 
 if __name__ == '__main__':
     main()
