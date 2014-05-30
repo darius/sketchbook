@@ -10,21 +10,16 @@ def main():
         puzzle('nggnpx ng qnja')
 
 def puzzle(cryptogram):
-    def my(): pass
+    def my(): pass        # A hack to get a mutable-nonlocal variable.
+    my.cursor = 0
     decoder = {}
-    my.cursor = 0               # A hack to get a mutable-nonlocal var.
-    size = sum(c.isalpha() for c in cryptogram)
+    code = ''.join(c for c in cryptogram if c.isalpha())
+    size = len(code)
     assert 0 < size
 
-    def erase():     del decoder[read_code_at_cursor()]
-    def jot(letter): decoder[read_code_at_cursor()] = letter
-
-    def read_code_at_cursor():
-        code = ''.join(c for c in cryptogram if c.isalpha())
-        return code[my.cursor]
-
-    def shift_by(offset):
-        my.cursor = (my.cursor + offset) % size
+    def erase():          jot(' ')
+    def jot(letter):      decoder[code[my.cursor]] = letter
+    def shift_by(offset): my.cursor = (my.cursor + offset) % size
 
     def view():
         # Assume 1 line, for now.
