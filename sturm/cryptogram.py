@@ -3,7 +3,7 @@ A UI for cryptogram puzzles.
 Incomplete in many ways.
 """
 
-import itertools
+import itertools, string
 import sturm
 
 def main():
@@ -37,7 +37,7 @@ def puzzle(cryptogram):
         key = sturm.get_key()
         if   key == '\n':
             break
-        elif key.isalpha() and len(key) == 1: # ouch
+        elif key in string.ascii_letters:
             jot(key)
             shift_by(1)
         elif key == 'right':
