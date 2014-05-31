@@ -40,11 +40,9 @@ def mode(name):       # 'raw' or 'cbreak'
     note_screen_size()
     os.system('stty -F /dev/tty {} -echo'.format(name))
     write(home + clear_to_bottom)
-    try:
-        yield
-    finally:
-        sys.stdout.write(cursor_show)
-        os.system('stty -F /dev/tty sane') # XXX save and restore instead
+    yield
+    sys.stdout.write(cursor_show)
+    os.system('stty -F /dev/tty sane') # XXX save and restore instead
 
 cursor = object()
 
