@@ -49,7 +49,8 @@ def tictactoe(player, opponent, grid=None):
             sturm.render(view(grid) + ("\n\n%s to move %s. (Press a key.)"
                                        % (player.__name__.replace('_play', ''),
                                           whose_move(grid))))
-            sturm.get_key()
+            if sturm.get_key() == sturm.esc:
+                break
         grid = player(grid)
         player, opponent = opponent, player
 
@@ -81,6 +82,8 @@ def human_play(grid):
         sturm.render((view(grid) + "\n\n" + plaint + prompt,
                       sturm.cursor))
         key = sturm.get_key()
+        if key == sturm.esc:
+            sys.exit()
         try:
             move = int(key)
         except ValueError:
