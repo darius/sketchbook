@@ -29,8 +29,8 @@ def page(f):
         if sturm.ROWS-1 <= row:
             sturm.write("--more--")
             k = sturm.get_key()
-            sturm.write('\b' * len("--more--"))  # XXX clear it too
-            if k == 'q':
+            sturm.write('\b' * len("--more--"))
+            if k == 'q' or k == sturm.esc:
                 sys.exit()
             row, col = 0, 0
 
