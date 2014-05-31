@@ -35,7 +35,7 @@ def puzzle(cryptogram):
     while True:
         sturm.render(view())
         key = sturm.get_key()
-        if   key == '\n':
+        if   key == sturm.esc:
             break
         elif key in string.ascii_letters:
             jot(key)
