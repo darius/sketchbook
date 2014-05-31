@@ -82,8 +82,7 @@ def human_play(grid):
         sturm.render((view(grid) + "\n\n" + plaint + prompt,
                       sturm.cursor))
         key = sturm.get_key()
-        if key == sturm.esc:
-            sys.exit()
+        if key == sturm.esc: sys.exit()
         try:
             move = int(key)
         except ValueError:
