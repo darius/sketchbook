@@ -75,17 +75,20 @@ def write(s):
 
 
 # Arrow keys, etc., are encoded as escape sequences:
-key_map = {esc+'[1~': 'home',  esc+'[A': 'up',    esc+'OA': 'up',
+key_map = {chr(127): 'backspace',
+           esc+'[1~': 'home',  esc+'[A': 'up',    esc+'OA': 'up',
            esc+'[2~': 'ins',   esc+'[B': 'down',  esc+'OB': 'down',
            esc+'[3~': 'del',   esc+'[C': 'right', esc+'OC': 'right',
            esc+'[4~': 'end',   esc+'[D': 'left',  esc+'OD': 'left',
-           esc+'[5~': 'pgup',   
-           esc+'[6~': 'pgdn',
-           chr(127):  'backspace'}
+           esc+'[5~': 'pgup',  
+           esc+'[6~': 'pgdn',  
+           esc+'[17~': 'f6',   esc+'[20~': 'f9',  esc+'[23~': 'f11',
+           esc+'[18~': 'f7',   esc+'[21~': 'f10', esc+'[24~': 'f12',
+           esc+'[19~': 'f8'}
+key_map.update({esc+'[1%d~'%n: 'f%d'%n for n in range(1, 6)})
 keymap_prefixes = set(k[:i] for k in key_map for i in range(1, len(k)))
 # N.B. in raw mode, the enter key is '\r'; in cbreak, it's '\n'.
-# Should we just let the client deal with that?
-# TODO: detect bare escape (with no following char-codes available yet)
+# Just let the client deal with that, I guess.
 
 def get_key(timeout=None):
     keys = get_key_unmapped(timeout)

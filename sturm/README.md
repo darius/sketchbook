@@ -13,12 +13,12 @@ code.
 TODO: example apps to see what's missing
   X Games like tictactoe
   X Why are some examples showing the cursor and others not? Ah, missing flush().
-  * pager
+  X pager
   * text editor
   * realtime game 
     * What's the tictactoe of realtime console games? Frogger? Tower defense?
     * Simpler:
-      * Type something in while a stopwatch counts, and show your typing speed.
+      X Type something in while a stopwatch counts, and show your typing speed.
         (The 'realtime' element is the stopwatch display.)
       * A little more fun: solve a puzzle, e.g. SAT, along with a stopwatch.
         Or escape a maze.
