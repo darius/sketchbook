@@ -1,6 +1,7 @@
 """
 Like `more`, but really crude.
 XXX it's not nice of this program to clear the screen.
+XXX long lines don't wrap
 """
 
 import sys
