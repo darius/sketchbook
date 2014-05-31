@@ -12,7 +12,7 @@ def note_screen_size():
 
 # It'd be a little simpler to clear the screen before each repaint,
 # but that causes occasional flicker, so we instead start each repaint
-# with ansi_home and then incrementally clear_to_right on each line, and
+# with home and then incrementally clear_to_right on each line, and
 # finally clear_to_bottom.
 #
 # OTOH it's still noticeably bad if you repaint many times a second;
@@ -21,13 +21,13 @@ def note_screen_size():
 # to the screen the lines that change in the new frame.
 
 esc = chr(27)
-ansi_home            = esc + '[H' # Go to the top left.
-ansi_clear_to_right  = esc + '[K' # Erase the rest of the line.
-ansi_clear_to_bottom = esc + '[J' # Erase the rest of the screen.
-ansi_cursor_hide     = esc + '[?25l'
-ansi_cursor_show     = esc + '[?25h'
-ansi_cursor_save     = esc + '[s'
-ansi_cursor_restore  = esc + '[u'
+home            = esc + '[H' # Go to the top left.
+clear_to_right  = esc + '[K' # Erase the rest of the line.
+clear_to_bottom = esc + '[J' # Erase the rest of the screen.
+cursor_hide     = esc + '[?25l'
+cursor_show     = esc + '[?25h'
+cursor_save     = esc + '[s'
+cursor_restore  = esc + '[u'
 
 def raw_mode():    return mode('raw')
 def cbreak_mode(): return mode('cbreak')
@@ -39,33 +39,36 @@ def mode(name):       # 'raw' or 'cbreak'
     # http://stackoverflow.com/questions/1394956/how-to-do-hit-any-key-in-python
     note_screen_size()
     os.system('stty -F /dev/tty {} -echo'.format(name))
-    write(ansi_home + ansi_clear_to_bottom)
+    write(home + clear_to_bottom)
     try:
         yield
     finally:
-        sys.stdout.write(ansi_cursor_show)
+        sys.stdout.write(cursor_show)
         os.system('stty -F /dev/tty sane') # XXX save and restore instead
+
+cursor = object()
 
 def render(scene):
     cursor_seen = False
     out = sys.stdout.write
-    out(ansi_home + ansi_cursor_hide)
+    out(home_and_hide)
     for part in scene:
         if part is cursor:
             cursor_seen = True
-            out(ansi_cursor_save)
+            out(cursor_save)
         else:
             out(part.replace('\n', newline))
     # TODO: save *this* cursor position too and restore it on mode-exit
-    out(ansi_clear_to_bottom)
-    if cursor_seen:
-        out(ansi_cursor_restore + ansi_cursor_show)
     # XXX the clear_to_bottom works only in Python 2, not 3.
     #   Some unicode encoding thing?
+    out(clear_to_bottom)
+    if cursor_seen:
+        out(restore_and_show)
     sys.stdout.flush()
 
-cursor = object()
-newline = ansi_clear_to_right + '\r\n'
+home_and_hide    = home + cursor_hide
+restore_and_show = cursor_restore + cursor_show
+newline          = clear_to_right + '\r\n'
 
 def write(s):
     sys.stdout.write(s.replace('\n', newline))
