@@ -85,15 +85,16 @@ keymap_prefixes = set(k[:i] for k in key_map for i in range(1, len(k)))
 # TODO: detect bare escape (with no following char-codes available yet)
 
 def get_key(timeout=None):
-    deadline = None if timeout is None else time.time() + timeout
-    keys = get_key_unmapped(deadline)
+    keys = get_key_unmapped(timeout)
     if keys is None:
         return None
     while keys in keymap_prefixes:
-        key = get_key_unmapped(deadline)
+        key = get_key_unmapped(0)
         if key is None:
-            key_stack.extend(reversed(keys))
-            return None
+            # We assume the bytes of a mapped key-sequence must all be
+            # available together; if not, the user must have hit the
+            # escape key themself, and we'll just return that.
+            break
         keys += key
     if keys in key_map:
         return key_map[keys]
@@ -101,26 +102,26 @@ def get_key(timeout=None):
         key_stack.extend(reversed(keys))
         return key_stack.pop()
 
-def get_key_unmapped(deadline):
-    return key_stack.pop() if key_stack else get_key_by(deadline)
+def get_key_unmapped(timeout):
+    return key_stack.pop() if key_stack else get_key_timed(timeout)
 
 key_stack = []
 
-def get_key_by(deadline):
-    if deadline is None or wait_for_input(sys.stdin.fileno(), deadline):
+def get_key_timed(timeout):
+    if timeout is None or wait_for_input(sys.stdin.fileno(), timeout):
         return sys.stdin.read(1)
     else:
         return None
 
-def wait_for_input(fd, deadline):
-    "Return true if fd is ready to read; wait till deadline at latest."
+def wait_for_input(fd, timeout):
+    "Return true if fd is ready to read; wait for timeout at most."
     while True:
         r, w, e = [fd], [], [fd]
-        timeout = max(0, deadline - time.time())
         try:
             r, w, e = select.select(r, w, e, timeout)
         except select.error as err:
             if err[0] == errno.EINTR:
+                timeout = 0  # TODO: is it worth the trouble to adjust this correctly?
                 continue
             raise
         return not not (r or e)
