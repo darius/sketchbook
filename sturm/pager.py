@@ -30,7 +30,7 @@ def page(f):
             sturm.write("--more--")
             k = sturm.get_key()
             sturm.write('\b' * len("--more--"))
-            if k == 'q' or k == sturm.esc:
+            if k.upper() in ('Q', sturm.esc):
                 sys.exit()
             row, col = 0, 0
 
