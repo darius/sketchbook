@@ -46,9 +46,9 @@ There are two kinds of memory:
 And a few kinds of node: 
 
   * A match node tests a property of the incoming fact (does slot 2
-    hold literal atom 'foo'? Does slot 1 equal slot 3?). It passes on
-    each fact that satisfies the test. The match nodes collectively
-    match patterns.
+    hold literal atom 'foo'? Does slot 1 equal slot 3?). It produces
+    each incoming fact that satisfies the test. The match nodes
+    collectively match patterns.
 
   * A join node tries to make new tokens for a particular
     guard-prefix. It has two input ports: one from a join memory (for
@@ -58,11 +58,11 @@ And a few kinds of node:
     extend any incoming fact with matches to any remembered tokens. A
     token joins with a fact if particular fields of the fact match
     particular fields of particular elements of the token. The node
-    passes on 0 or more extended tokens for each incoming token or
+    produces 0 or more extended tokens for each incoming token or
     fact.
 
-    (The join node for the *first* pattern in a guard inputs from a
-    special join memory that's pre-filled with a single empty token.)
+    (The join node for the *first* pattern in a guard takes input from
+    a special join memory that's pre-filled with a single empty token.)
 
   * An action node takes a token (for a complete guard) and runs an
     action using the bindings. (This action might be to queue up the
@@ -141,3 +141,8 @@ Stream databases?
 ----------------------------------------------------
 https://github.com/hraberg/mimir
 has some refs that might be worth a look.
+
+----------------------------------------------------
+@Johnicholas
+Maybe I'm missing something, but if you take a select/project/join
+query tree and turn it upside down, don't you get the Rete algorithm?
