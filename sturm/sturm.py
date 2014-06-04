@@ -8,7 +8,7 @@ ROWS, COLS = 24, 80
 
 def note_screen_size():
     global ROWS, COLS
-    ROWS, COLS = map(int, os.popen('stty -F /dev/tty size', 'r').read().split())
+    ROWS, COLS = map(int, os.popen('stty size', 'r').read().split())
 
 # It'd be a little simpler to clear the screen before each repaint,
 # but that causes occasional flicker, so we instead start each repaint
@@ -38,11 +38,11 @@ def mode(name):       # 'raw' or 'cbreak'
     # modules instead, but at least my code is shorter:
     # http://stackoverflow.com/questions/1394956/how-to-do-hit-any-key-in-python
     note_screen_size()
-    os.system('stty -F /dev/tty {} -echo'.format(name))
+    os.system('stty {} -echo'.format(name))
     write(home + clear_to_bottom)
     yield
     sys.stdout.write(cursor_show)
-    os.system('stty -F /dev/tty sane') # XXX save and restore instead
+    os.system('stty sane') # XXX save and restore instead
 
 cursor = object()
 
