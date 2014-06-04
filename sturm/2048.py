@@ -1,9 +1,10 @@
 """
 Modeled after https://github.com/fewf/curtsies_2048
-TODO: Transient highlighting where numbers coalesce?
+TODO: Animated sliding
+      Transient highlighting where numbers coalesce?
       And a different kind of highlight on the new
       number plopped down.
-      And smoother animation?
+      Background colors, boldness for different numbers
 """
 
 import random
