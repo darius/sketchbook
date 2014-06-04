@@ -22,7 +22,7 @@ def main():
                          + score + "\n")
             if game_over: break
             key = sturm.get_key()
-            if key == 'q': break
+            if key.upper() == 'Q': break
             elif key in globals(): # Hacky hacky, sorry. :P
                 slid_board = globals()[key](board)
                 if slid_board != board:
