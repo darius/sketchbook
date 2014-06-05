@@ -36,7 +36,7 @@ empty_board = ((0,)*4,)*4
 def view(board):
     for row in board:
         for v in row:
-            yield ' '; yield colors[v]
+            yield ' '; yield colors[v] if v in colors else S.bold(str(v))
         yield '\n\n'
 
 S = sturm
@@ -51,9 +51,7 @@ colors = {0:                              '  . ',
           256:  S.bold(S.green(           '256 ')),
           512:  S.on_blue(S.bold(S.yellow('512 '))),
           1024: S.on_green(S.bold(S.red(  '1024'))),
-          2048: S.on_red(S.bold(S.blue(   '2048'))),
-          4096: S.bold(                   '4096'),
-          8192: S.bold(                   '8192')}
+          2048: S.on_red(S.bold(S.blue(   '2048')))}
 
 def is_won(board):
     return any(row.count(2048) for row in board)
