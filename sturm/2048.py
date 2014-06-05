@@ -33,21 +33,6 @@ def make_board(): return plop(plop(empty_board, 2), 2)
 
 empty_board = ((0,)*4,)*4
 
-# Pre: board is not full.
-def plop(board, v):
-    return update(board, random_empty_square(board), v)
-
-def random_empty_square(board):
-    return random.choice([(r,c)
-                          for r, row in enumerate(board)
-                          for c, v in enumerate(row)
-                          if v == 0])
-
-def update(board, pos, new_v):
-    return tuple(tuple(new_v if (r,c) == pos else v
-                       for c, v in enumerate(row))
-                 for r, row in enumerate(board))
-
 def view(board):
     for row in board:
         for v in row:
@@ -72,6 +57,21 @@ colors = {0:                              '  . ',
           8192: S.bold(                   '8192')}
 
 def is_won(board): return any(row.count(2048) for row in board)
+
+# Pre: board is not full.
+def plop(board, v):
+    return update(board, random_empty_square(board), v)
+
+def random_empty_square(board):
+    return random.choice([(r,c)
+                          for r, row in enumerate(board)
+                          for c, v in enumerate(row)
+                          if v == 0])
+
+def update(board, pos, new_v):
+    return tuple(tuple(new_v if (r,c) == pos else v
+                       for c, v in enumerate(row))
+                 for r, row in enumerate(board))
 
 def flipv(board): return board[::-1]                # vertical flip
 def flipd(board): return tuple(zip(*board))         # diagonal
