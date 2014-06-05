@@ -62,9 +62,9 @@ def fliph(board): return flipd(flipv(flipd(board))) # horizontal
 
 # Arrow-key actions. Each returns an iterable of boards animating
 # the move, empty if there's no move in that direction.
-def up(board):    return map(flipd, left(flipd(board)))
+def up(board):    return map(flipd, left( flipd(board)))
 def down(board):  return map(flipd, right(flipd(board)))
-def right(board): return map(fliph, left(fliph(board)))
+def right(board): return map(fliph, left( fliph(board)))
 def left(board):
     states = tuple((0, row) for row in board)
     while True:
@@ -74,7 +74,7 @@ def left(board):
         yield tuple(row for _,row in states)
 
 def collapsing(lo, row):
-    for i in range(1, 4):
+    for i in range(lo+1, 4):
         if row[i-1] == 0 and row[i] != 0:
             break
         if lo < i and row[i-1] and row[i-1] == row[i]:
@@ -85,44 +85,41 @@ def collapsing(lo, row):
     return lo, row[:i-1] + (row[i-1] + row[i],) + row[i+1:] + (0,)
 
 
-# For testing
-def collapse(row):
-    lo = 0
-    while True:
-        lo, row = collapsing(lo, row)
-        if lo == 4: break
+# Let's test collapsing:
+def test_left(row):
+    for row, in left((row,)):
         print(row)
 
-## collapse((0, 0, 0, 0))
-## collapse((2, 4, 2, 2))
+## test_left((0, 0, 0, 0))
+## test_left((2, 4, 2, 2))
 #. (2, 4, 4, 0)
-## collapse((2, 2, 2, 2))
+## test_left((2, 2, 2, 2))
 #. (4, 2, 2, 0)
 #. (4, 4, 0, 0)
-## collapse((0, 2, 0, 2))
+## test_left((0, 2, 0, 2))
 #. (2, 0, 2, 0)
 #. (2, 2, 0, 0)
 #. (4, 0, 0, 0)
-## collapse((2, 0, 2, 0))
+## test_left((2, 0, 2, 0))
 #. (2, 2, 0, 0)
 #. (4, 0, 0, 0)
-## collapse((2, 0, 0, 2))
+## test_left((2, 0, 0, 2))
 #. (2, 0, 2, 0)
 #. (2, 2, 0, 0)
 #. (4, 0, 0, 0)
-## collapse((0, 0, 0, 2))
+## test_left((0, 0, 0, 2))
 #. (0, 0, 2, 0)
 #. (0, 2, 0, 0)
 #. (2, 0, 0, 0)
-## collapse((0, 2, 4, 4))
+## test_left((0, 2, 4, 4))
 #. (2, 4, 4, 0)
 #. (2, 8, 0, 0)
-## collapse((0, 2, 2, 4))
+## test_left((0, 2, 2, 4))
 #. (2, 2, 4, 0)
 #. (4, 4, 0, 0)
-## collapse((2, 2, 2, 4))
+## test_left((2, 2, 2, 4))
 #. (4, 2, 4, 0)
-## collapse((2, 2, 4, 4))
+## test_left((2, 2, 4, 4))
 #. (4, 4, 4, 0)
 #. (4, 8, 0, 0)
 
