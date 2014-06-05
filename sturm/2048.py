@@ -12,7 +12,7 @@ def main():
     with sturm.cbreak_mode():
         while True:
             heading = "Use the arrow keys, or Q to quit.\n\n"
-            game_over = all(not list(move(board)) for move in [up,down,left,right])
+            game_over = not any(list(move(board)) for move in [up,down,left,right])
             score = "You win!" if is_won(board) else "You lose!" if game_over else ""
             sturm.render(heading + view(board) + "\n\n" + score + "\n")
             if game_over: break
@@ -23,7 +23,7 @@ def main():
                 if sliding:
                     for board in sliding:
                         sturm.render(heading + view(board))
-                        time.sleep(0.03)
+                        time.sleep(.04)
                     board = plop(board, 2 if random.random() < .9 else 4)
 
 # A board is a tuple of 4 rows;
@@ -92,7 +92,7 @@ def collapse(row):
     while True:
         lo, row = collapsing(lo, row)
         if lo is None: break
-        print row
+        print(row)
 
 ## collapse((0, 0, 0, 0))
 ## collapse((2, 4, 2, 2))
