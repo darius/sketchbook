@@ -31,8 +31,16 @@ def main(argv):
         return 1
     else:
         with sturm.cbreak_mode():
-            tictactoe(*faceoff)
+            try:
+                tictactoe(*faceoff)
+            except Quit:
+                # TODO: Is there something like sys.exit() we could
+                # use without all this rigmarole? For some reason the
+                # cbreak_mode() cleanup doesn't run anymore on sys.exit().
+                pass
         return 0
+
+class Quit(Exception): pass
 
 def tictactoe(player, opponent, grid=None):
     "Put two strategies to a classic battle of wits."
@@ -82,7 +90,7 @@ def human_play(grid):
         sturm.render((view(grid) + "\n\n" + plaint + prompt,
                       sturm.cursor))
         key = sturm.get_key()
-        if key == sturm.esc: sys.exit()
+        if key == sturm.esc: raise Quit()
         try:
             move = int(key)
         except ValueError:

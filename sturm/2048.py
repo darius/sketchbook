@@ -52,8 +52,25 @@ def update(board, pos, new_v):
 def view(board):
     for row in board:
         for v in row:
-            yield ' ' + ('%d' % v if v else '.').center(4)
+            yield ' '
+            yield colors[v]
         yield '\n\n'
+
+S = sturm
+colors = {0:                              '  . ',
+          2:    S.yellow(                 '  2 '),
+          4:    S.red(                    '  4 '),
+          8:    S.blue(                   '  8 '),
+          16:   S.green(                  ' 16 '),
+          32:   S.bold(S.yellow(          ' 32 ')),
+          64:   S.bold(S.red(             ' 64 ')),
+          128:  S.bold(S.blue(            '128 ')),
+          256:  S.bold(S.green(           '256 ')),
+          512:  S.on_blue(S.bold(S.yellow('512 '))),
+          1024: S.on_green(S.bold(S.red(  '1024'))),
+          2048: S.on_red(S.bold(S.blue(   '2048'))),
+          4096: S.bold(                   '4096'),
+          8192: S.bold(                   '8192')}
 
 def is_won(board): return any(row.count(2048) for row in board)
 

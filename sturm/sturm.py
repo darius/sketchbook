@@ -44,12 +44,19 @@ def mode(name):       # 'raw' or 'cbreak'
     sys.stdout.write(cursor_show)
     os.system('stty sane') # XXX save and restore instead
 
+def write(s):
+    sys.stdout.write(s.replace('\n', newline))
+
+
+# Rendering with styles and cursor marker.
+# I know, this is way too much code.
+
 cursor = object()
 
 def render(scene):
     out = sys.stdout.write
     out(home_and_hide)
-    cursor_seen = rendering(False, scene)
+    cursor_seen = top_paint(scene)
     # TODO: save *this* cursor position too and restore it on mode-exit
     # XXX the clear_to_bottom works only in Python 2, not 3.
     #   Some unicode encoding thing?
@@ -58,24 +65,115 @@ def render(scene):
         out(restore_and_show)
     sys.stdout.flush()
 
-def rendering(cursor_seen, scene):
-    if isinstance(scene, str):    # XXX py2/3
-        sys.stdout.write(scene.replace('\n', newline))
-    elif scene is cursor:
-        sys.stdout.write(cursor_save)
-        cursor_seen = True
-    else:
-        for part in scene:
-            cursor_seen = rendering(cursor_seen, part)
-    return cursor_seen
+def top_paint(scene):
+    state = default_state.copy()
+    paint(screen_state, state, scene)
+    assert state == default_state
+    paint(screen_state, state, '')
+    assert state == default_state
+    assert screen_state.fg == default_state.fg
+    assert screen_state.bg == default_state.bg
+    assert screen_state.styles == default_state.styles
+    return screen_state.cursor_seen
 
 home_and_hide    = home + cursor_hide
 restore_and_show = cursor_restore + cursor_show
 newline          = clear_to_right + '\r\n'
 
-def write(s):
-    sys.stdout.write(s.replace('\n', newline))
+def sgr(num): return '\x1b[%dm' % num
 
+class State(object):
+    def __init__(self, fg, bg, styles, cursor_seen):
+        self.fg = fg
+        self.bg = bg
+        self.styles = styles
+        self.cursor_seen = cursor_seen
+    def copy(self):
+        return State(self.fg, self.bg, self.styles, self.cursor_seen)
+    def __eq__(self, other):
+        return (isinstance(other, State)
+                and self.fg == other.fg
+                and self.bg == other.bg
+                and self.styles == other.styles
+                and self.cursor_seen == other.cursor_seen)
+
+def paint(screen, state, scene):
+    if isinstance(scene, str):    # XXX py2/3
+        if screen.styles != state.styles:
+            sys.stdout.write(sgr(0)); screen.fg = 39; screen.bg = 49
+            if state.styles & (1 << 1): sys.stdout.write(sgr(1))
+            if state.styles & (1 << 4): sys.stdout.write(sgr(4))
+            if state.styles & (1 << 5): sys.stdout.write(sgr(5))
+            if state.styles & (1 << 7): sys.stdout.write(sgr(7))
+            screen.styles = state.styles
+        if screen.fg != state.fg:
+            sys.stdout.write(sgr(state.fg))
+            screen.fg = state.fg
+        if screen.bg != state.bg:
+            sys.stdout.write(sgr(state.bg))
+            screen.bg = state.bg
+        sys.stdout.write(scene.replace('\n', newline))
+    elif scene is cursor:
+        sys.stdout.write(cursor_save)
+        screen.cursor_seen = True
+    elif hasattr(scene, 'paint'):
+        scene.paint(screen, state)
+    else:
+        for part in scene:
+            paint(screen, state, part)
+
+class Painter(object):
+    def __init__(self, paint):
+        self.paint = paint
+
+def ForegroundColor(code):
+    def Attribute(subscene):
+        def subpaint(screen, state):
+            fg = state.fg
+            state.fg = code
+            try:
+                paint(screen, state, subscene)
+            finally:
+                state.fg = fg
+        return Painter(subpaint)
+    return Attribute
+
+def BackgroundColor(code):
+    def Attribute(subscene):
+        def subpaint(screen, state):
+            bg = state.bg
+            state.bg = code
+            try:
+                paint(screen, state, subscene)
+            finally:
+                state.bg = bg
+        return Painter(subpaint)
+    return Attribute
+
+def Style(code):
+    mask = 1 << code
+    def Attribute(subscene):
+        def subpaint(screen, state):
+            styles = state.styles
+            state.styles |= mask
+            try:
+                paint(screen, state, subscene)
+            finally:
+                state.styles = styles
+        return Painter(subpaint)
+    return Attribute
+
+black, red, green, yellow, blue, magenta, cyan, white = map(ForegroundColor, range(30, 38))
+fg_default = ForegroundColor(39)
+on_black, on_red, on_green, on_yellow, on_blue, on_magenta, on_cyan, on_white = map(BackgroundColor, range(40, 48))
+on_default = BackgroundColor(49)
+bold, underlined, blinking, inverted = map(Style, (1, 4, 5, 7))
+
+default_state = State(39, 49, 0, False)
+screen_state  = default_state.copy()
+
+
+# Keyboard input
 
 # Arrow keys, etc., are encoded as escape sequences:
 key_map = {chr(127): 'backspace',
