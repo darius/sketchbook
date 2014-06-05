@@ -36,22 +36,22 @@ empty_board = ((0,)*4,)*4
 def view(board):
     for row in board:
         for v in row:
-            yield ' '; yield colors[v] if v in colors else S.bold(str(v))
+            yield ' '; yield tiles[v] if v in tiles else S.bold(str(v))
         yield '\n\n'
 
 S = sturm
-colors = {0:                              '  . ',
-          2:    S.yellow(                 '  2 '),
-          4:    S.red(                    '  4 '),
-          8:    S.blue(                   '  8 '),
-          16:   S.green(                  ' 16 '),
-          32:   S.bold(S.yellow(          ' 32 ')),
-          64:   S.bold(S.red(             ' 64 ')),
-          128:  S.bold(S.blue(            '128 ')),
-          256:  S.bold(S.green(           '256 ')),
-          512:  S.on_blue(S.bold(S.yellow('512 '))),
-          1024: S.on_green(S.bold(S.red(  '1024'))),
-          2048: S.on_red(S.bold(S.blue(   '2048')))}
+tiles = {   0:                           '  . ',
+            2: S.yellow(                 '  2 '),
+            4: S.red(                    '  4 '),
+            8: S.blue(                   '  8 '),
+           16: S.green(                  ' 16 '),
+           32: S.bold(S.yellow(          ' 32 ')),
+           64: S.bold(S.red(             ' 64 ')),
+          128: S.bold(S.blue(            '128 ')),
+          256: S.bold(S.green(           '256 ')),
+          512: S.bold(S.yellow(S.on_blue('512 '))),
+         1024: S.bold(S.red(S.on_green(  '1024'))),
+         2048: S.bold(S.blue(S.on_red(   '2048')))}
 
 def is_won(board):
     return any(row.count(2048) for row in board)
