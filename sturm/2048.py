@@ -8,8 +8,8 @@ import random, time
 import sturm
 
 def main():
-    board = make_board()
     with sturm.cbreak_mode():
+        board = make_board()
         while True:
             heading = "Use the arrow keys, or Q to quit.\n\n"
             game_over = not any(list(move(board)) for move in [up,down,left,right])
@@ -36,9 +36,9 @@ empty_board = ((0,)*4,)*4
 
 # Pre: board has at least one empty square.
 def plop(board, v):
-    return update(board, random_empty(board), v)
+    return update(board, random_empty_square(board), v)
 
-def random_empty(board):
+def random_empty_square(board):
     return random.choice([(r,c)
                           for r, row in enumerate(board)
                           for c, v in enumerate(row)
