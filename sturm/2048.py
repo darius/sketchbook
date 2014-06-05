@@ -60,7 +60,8 @@ def flipv(board): return board[::-1]                # vertical flip
 def flipd(board): return tuple(zip(*board))         # diagonal
 def fliph(board): return flipd(flipv(flipd(board))) # horizontal
 
-# Arrow-key actions:
+# Arrow-key actions. Each returns an iterable of boards animating
+# the move, empty if there's no move in that direction.
 def up(board):    return map(flipd, left(flipd(board)))
 def down(board):  return map(flipd, right(flipd(board)))
 def right(board): return map(fliph, left(fliph(board)))
