@@ -89,6 +89,8 @@ def left(board):
         states = tuple(sliding(lo, row) for lo,row in states)
 
 def sliding(lo, row):
+    """Slide row one place leftward, leaving fixed any places left of lo.
+    Advance lo past merging or completion."""
     for i in range(lo+1, 4):
         if (row[i-1] == 0) != (row[i-1] == row[i]):
             if row[i-1] == row[i]: lo = i
