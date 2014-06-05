@@ -23,7 +23,7 @@ def main():
                 if sliding:
                     for board in sliding:
                         sturm.render(heading + view(board))
-                        time.sleep(.04)
+                        time.sleep(1./30)
                     board = plop(board, 2 if random.random() < .9 else 4)
 
 # A board is a tuple of 4 rows;
