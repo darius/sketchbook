@@ -1,6 +1,5 @@
 """
 Modeled after https://github.com/fewf/curtsies_2048
-TODO: Background colors, boldness for different numbers
 """
 
 import random, time
