@@ -36,8 +36,7 @@ empty_board = ((0,)*4,)*4
 def view(board):
     for row in board:
         for v in row:
-            yield ' '
-            yield colors[v]
+            yield ' '; yield colors[v]
         yield '\n\n'
 
 S = sturm
