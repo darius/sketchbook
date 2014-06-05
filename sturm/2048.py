@@ -14,7 +14,7 @@ def main():
             heading = "Use the arrow keys, or Q to quit.\n\n"
             game_over = not any(list(move(board)) for move in [up,down,left,right])
             score = "You win!" if is_won(board) else "You lose!" if game_over else ""
-            sturm.render((heading, view(board), "\n\n", score, "\n"))
+            sturm.render((heading, view(board), score, "\n"))
             if game_over: break
             key = sturm.get_key()
             if key.upper() == 'Q': break
