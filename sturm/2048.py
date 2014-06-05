@@ -94,7 +94,7 @@ def sliding(lo, row):
     for i in range(lo+1, 4):
         if (row[i-1] == 0) != (row[i-1] == row[i]):
             if row[i-1] == row[i]: lo = i
-            return lo, row[:i-1] + (row[i-1] + row[i],) + row[i+1:] + (0,)
+            return lo, row[:i-1] + (row[i-1]+row[i],) + row[i+1:] + (0,)
     return 4, row
 
 
