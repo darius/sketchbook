@@ -55,7 +55,8 @@ colors = {0:                              '  . ',
           4096: S.bold(                   '4096'),
           8192: S.bold(                   '8192')}
 
-def is_won(board): return any(row.count(2048) for row in board)
+def is_won(board):
+    return any(row.count(2048) for row in board)
 
 # Pre: board is not full.
 def plop(board, v):
