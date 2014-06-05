@@ -68,14 +68,12 @@ def right(board): return map(fliph, left(fliph(board)))
 def left(board):
     states = tuple((0, row) for row in board)
     while True:
-        states = tuple(collapsing(lo,row) for lo,row in states)
-        if all(lo is None for lo,_ in states):
+        states = tuple(collapsing(lo, row) for lo,row in states)
+        if all(lo == 4 for lo,_ in states):
             break
         yield tuple(row for _,row in states)
 
 def collapsing(lo, row):
-    if lo is None:
-        return lo, row
     for i in range(1, 4):
         if row[i-1] == 0 and row[i] != 0:
             break
@@ -83,7 +81,7 @@ def collapsing(lo, row):
             lo = i
             break
     else:
-        return None, row
+        return 4, row
     return lo, row[:i-1] + (row[i-1] + row[i],) + row[i+1:] + (0,)
 
 
@@ -92,7 +90,7 @@ def collapse(row):
     lo = 0
     while True:
         lo, row = collapsing(lo, row)
-        if lo is None: break
+        if lo == 4: break
         print(row)
 
 ## collapse((0, 0, 0, 0))
