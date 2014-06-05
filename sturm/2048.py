@@ -14,7 +14,7 @@ def main():
             heading = "Use the arrow keys, or Q to quit.\n\n"
             game_over = not any(list(move(board)) for move in [up,down,left,right])
             score = "You win!" if is_won(board) else "You lose!" if game_over else ""
-            sturm.render(heading + view(board) + "\n\n" + score + "\n")
+            sturm.render((heading, view(board), "\n\n", score, "\n"))
             if game_over: break
             key = sturm.get_key()
             if key.upper() == 'Q': break
@@ -22,7 +22,7 @@ def main():
                 sliding = list(globals()[key](board))
                 if sliding:
                     for board in sliding:
-                        sturm.render(heading + view(board))
+                        sturm.render((heading, view(board)))
                         time.sleep(1./30)
                     board = plop(board, 2 if random.random() < .9 else 4)
 
@@ -50,9 +50,10 @@ def update(board, pos, new_v):
                  for r, row in enumerate(board))
 
 def view(board):
-    return '\n\n'.join(' '.join(('%d' % v if v else '.').center(4)
-                                for v in row)
-                       for row in board)
+    for row in board:
+        for v in row:
+            yield ' ' + ('%d' % v if v else '.').center(4)
+        yield '\n\n'
 
 def is_won(board): return any(row.count(2048) for row in board)
 

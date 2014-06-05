@@ -47,15 +47,9 @@ def mode(name):       # 'raw' or 'cbreak'
 cursor = object()
 
 def render(scene):
-    cursor_seen = False
     out = sys.stdout.write
     out(home_and_hide)
-    for part in scene:
-        if part is cursor:
-            cursor_seen = True
-            out(cursor_save)
-        else:
-            out(part.replace('\n', newline))
+    cursor_seen = rendering(False, scene)
     # TODO: save *this* cursor position too and restore it on mode-exit
     # XXX the clear_to_bottom works only in Python 2, not 3.
     #   Some unicode encoding thing?
@@ -63,6 +57,17 @@ def render(scene):
     if cursor_seen:
         out(restore_and_show)
     sys.stdout.flush()
+
+def rendering(cursor_seen, scene):
+    if isinstance(scene, str):    # XXX py2/3
+        sys.stdout.write(scene.replace('\n', newline))
+    elif scene is cursor:
+        sys.stdout.write(cursor_save)
+        cursor_seen = True
+    else:
+        for part in scene:
+            cursor_seen = rendering(cursor_seen, part)
+    return cursor_seen
 
 home_and_hide    = home + cursor_hide
 restore_and_show = cursor_restore + cursor_show
