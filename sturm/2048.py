@@ -1,13 +1,9 @@
 """
 Modeled after https://github.com/fewf/curtsies_2048
-TODO: Animated sliding
-      Transient highlighting where numbers coalesce?
-      And a different kind of highlight on the new
-      number plopped down.
-      Background colors, boldness for different numbers
+TODO: Background colors, boldness for different numbers
 """
 
-import random
+import random, time
 
 import sturm
 
@@ -15,18 +11,20 @@ def main():
     board = make_board()
     with sturm.cbreak_mode():
         while True:
-            game_over = all(move(board) == board for move in [up,down,left,right])
+            heading = "Use the arrow keys, or Q to quit.\n\n"
+            game_over = all(not list(move(board)) for move in [up,down,left,right])
             score = "You win!" if is_won(board) else "You lose!" if game_over else ""
-            sturm.render("Use the arrow keys, or Q to quit.\n\n"
-                         + view(board) + "\n\n"
-                         + score + "\n")
+            sturm.render(heading + view(board) + "\n\n" + score + "\n")
             if game_over: break
             key = sturm.get_key()
             if key.upper() == 'Q': break
             elif key in globals(): # Hacky hacky, sorry. :P
-                slid_board = globals()[key](board)
-                if slid_board != board:
-                    board = plop(slid_board, 2 if random.random() < .9 else 4)
+                sliding = list(globals()[key](board))
+                if sliding:
+                    for board in sliding:
+                        sturm.render(heading + view(board))
+                        time.sleep(0.03)
+                    board = plop(board, 2 if random.random() < .9 else 4)
 
 # A board is a tuple of 4 rows;
 # a row is a tuple of 4 values;
@@ -56,51 +54,79 @@ def view(board):
                                 for v in row)
                        for row in board)
 
-## print(view(update(empty_board, (3, 2), 4)))
-#.  .    .    .    .  
-#. 
-#.  .    .    .    .  
-#. 
-#.  .    .    .    .  
-#. 
-#.  .    .    4    .  
-## is_won(update(empty_board, (3, 2), 2048))
-#. True
-
 def is_won(board): return any(row.count(2048) for row in board)
-
-# Arrow-key actions:
-def left(board):  return tuple(map(collapse, board))
-def right(board): return fliph(left(fliph(board)))
-def up(board):    return flipd(left(flipd(board)))
-def down(board):  return flipd(right(flipd(board)))
 
 def flipv(board): return board[::-1]                # vertical flip
 def flipd(board): return tuple(zip(*board))         # diagonal
 def fliph(board): return flipd(flipv(flipd(board))) # horizontal
 
+# Arrow-key actions:
+def up(board):    return map(flipd, left(flipd(board)))
+def down(board):  return map(flipd, right(flipd(board)))
+def right(board): return map(fliph, left(fliph(board)))
+def left(board):
+    states = tuple((0, row) for row in board)
+    while True:
+        states = tuple(collapsing(lo,row) for lo,row in states)
+        if all(lo is None for lo,_ in states):
+            break
+        yield tuple(row for _,row in states)
+
+def collapsing(lo, row):
+    if lo is None:
+        return lo, row
+    for i in range(1, 4):
+        if row[i-1] == 0 and row[i] != 0:
+            break
+        if lo < i and row[i-1] and row[i-1] == row[i]:
+            lo = i
+            break
+    else:
+        return None, row
+    return lo, row[:i-1] + (row[i-1] + row[i],) + row[i+1:] + (0,)
+
+
+# For testing
 def collapse(row):
-    i, vs = 0, [0]*4
-    for v in filter(None, row):
-        if vs[i] != v and vs[i]: i += 1
-        vs[i] += v
-        if vs[i] == v+v:         i += 1
-    return tuple(vs)
+    lo = 0
+    while True:
+        lo, row = collapsing(lo, row)
+        if lo is None: break
+        print row
 
 ## collapse((0, 0, 0, 0))
-#. (0, 0, 0, 0)
-## collapse((0, 0, 0, 2))
-#. (2, 0, 0, 0)
+## collapse((2, 4, 2, 2))
+#. (2, 4, 4, 0)
+## collapse((2, 2, 2, 2))
+#. (4, 2, 2, 0)
+#. (4, 4, 0, 0)
 ## collapse((0, 2, 0, 2))
+#. (2, 0, 2, 0)
+#. (2, 2, 0, 0)
 #. (4, 0, 0, 0)
+## collapse((2, 0, 2, 0))
+#. (2, 2, 0, 0)
+#. (4, 0, 0, 0)
+## collapse((2, 0, 0, 2))
+#. (2, 0, 2, 0)
+#. (2, 2, 0, 0)
+#. (4, 0, 0, 0)
+## collapse((0, 0, 0, 2))
+#. (0, 0, 2, 0)
+#. (0, 2, 0, 0)
+#. (2, 0, 0, 0)
 ## collapse((0, 2, 4, 4))
+#. (2, 4, 4, 0)
 #. (2, 8, 0, 0)
 ## collapse((0, 2, 2, 4))
+#. (2, 2, 4, 0)
 #. (4, 4, 0, 0)
 ## collapse((2, 2, 2, 4))
 #. (4, 2, 4, 0)
 ## collapse((2, 2, 4, 4))
+#. (4, 4, 4, 0)
 #. (4, 8, 0, 0)
+
 
 if __name__ == '__main__':
     main()
