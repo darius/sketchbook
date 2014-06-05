@@ -85,24 +85,20 @@ def right(board): return map(fliph, left( fliph(board)))
 def left(board):
     states = tuple((0, row) for row in board)
     while True:
-        states = tuple(collapsing(lo, row) for lo,row in states)
+        states = tuple(sliding(lo, row) for lo,row in states)
         if all(lo == 4 for lo,_ in states):
             break
         yield tuple(row for _,row in states)
 
-def collapsing(lo, row):
+def sliding(lo, row):
     for i in range(lo+1, 4):
-        if row[i-1] == 0 and row[i] != 0:
-            break
-        if lo < i and row[i-1] and row[i-1] == row[i]:
-            lo = i
-            break
-    else:
-        return 4, row
-    return lo, row[:i-1] + (row[i-1] + row[i],) + row[i+1:] + (0,)
+        if (row[i-1] == 0) != (row[i-1] == row[i]):
+            if row[i-1] == row[i]: lo = i
+            return lo, row[:i-1] + (row[i-1] + row[i],) + row[i+1:] + (0,)
+    return 4, row
 
 
-# Let's test collapsing:
+# Let's test sliding:
 def test_left(row):
     for row, in left((row,)):
         print(row)
