@@ -34,7 +34,7 @@ def make_board(): return plop(plop(empty_board, 2), 2)
 
 empty_board = ((0,)*4,)*4
 
-# Pre: board has at least one empty square.
+# Pre: board is not full.
 def plop(board, v):
     return update(board, random_empty_square(board), v)
 
