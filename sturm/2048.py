@@ -83,12 +83,10 @@ def up(board):    return map(flipd, left( flipd(board)))
 def down(board):  return map(flipd, right(flipd(board)))
 def right(board): return map(fliph, left( fliph(board)))
 def left(board):
-    states = tuple((0, row) for row in board)
-    while True:
-        states = tuple(sliding(lo, row) for lo,row in states)
-        if all(lo == 4 for lo,_ in states):
-            break
+    states = tuple(sliding(0, row) for row in board)
+    while any(lo < 4 for lo,_ in states):
         yield tuple(row for _,row in states)
+        states = tuple(sliding(lo, row) for lo,row in states)
 
 def sliding(lo, row):
     for i in range(lo+1, 4):
