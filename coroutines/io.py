@@ -18,6 +18,7 @@ def writable(fd): return blocking(wfds, fd)
 def blocking(fd_dict, fd):
     if not (rfds or wfds):
         multitask.spawn(polling())
+    assert fd not in fd_dict  # Or return the existing get-facet?
     put, get = multitask.make_channel()
     fd_dict[fd] = put
     return get
@@ -29,3 +30,4 @@ def polling():
         r, w, e = select.select(rfds, wfds, [], timeout)
         for fd in r: rfds.pop(fd)(fd)
         for fd in w: wfds.pop(fd)(fd)
+        # TODO: do something with e
