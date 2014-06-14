@@ -1,4 +1,6 @@
 """
+Obsoleted by https://github.com/darius/sturm/blob/master/satgame.py
+
 A crude human interface for SAT solving -- I want to see if it can
 make a fun puzzle game.
 """
