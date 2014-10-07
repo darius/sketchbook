@@ -5,22 +5,22 @@ Suggested by reading http://www.ps.uni-sb.de/~duchier/python/validity.py
 and https://gist.github.com/2789099
 """
 
-def is_valid(expr):       return not satisfy(expr, 0)
-def satisfy(expr, value): return expr(value, {None:None}, lambda env: env)
+def is_valid(expr):      return not satisfy(expr, 0)
+def satisfy(expr, goal): return expr(goal, {None:None}, lambda env: env)
 
-def Literal(my_value):
-    return lambda value, env, succeed: (
-        my_value == value and succeed(env))
+def Literal(value):
+    return lambda goal, env, succeed: (
+        value == goal and succeed(env))
 
 def Variable(name):
-    return lambda value, env, succeed: (
-        env[name] == value and succeed(env) if name in env
-        else succeed(extend(env, name, value)))
+    return lambda goal, env, succeed: (
+        env[name] == goal and succeed(env) if name in env
+        else succeed(extend(env, name, goal)))
 
 def Choice(test, if0, if1):
-    return lambda value, env, succeed: (
-           test(0, env, lambda env: if0(value, env, succeed))
-        or test(1, env, lambda env: if1(value, env, succeed)))
+    return lambda goal, env, succeed: (
+           test(0, env, lambda env: if0(goal, env, succeed))
+        or test(1, env, lambda env: if1(goal, env, succeed)))
 
 def extend(env, var, value):
     result = dict(env)
