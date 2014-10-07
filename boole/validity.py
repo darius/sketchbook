@@ -5,31 +5,31 @@ Suggested by reading http://www.ps.uni-sb.de/~duchier/python/validity.py
 and https://gist.github.com/2789099
 """
 
-def is_valid(expr): return satisfy(expr, 0) == False
+def is_valid(expr): return not satisfy(expr, 0)
 
 def satisfy(expr, value):
-    return expr(value, Env({None:None}), lambda env: env)
+    return expr(value, {None:None}, lambda env: env)
 
-class Env(dict):
-    def extend(self, var, value):
-        result = Env(self)
-        result[var] = value
-        return result
-
-def Literal(x):
-    return lambda value, env, succeed: x == value and succeed(env)
-
-zero, one = Literal(0), Literal(1)
+def Literal(my_value):
+    return lambda value, env, succeed: (
+        my_value == value and succeed(env))
 
 def Variable(name):
     return lambda value, env, succeed: (
-        Literal(env[name])(value, env, succeed) if name in env 
-        else succeed(env.extend(name, value)))
+        env[name] == value and succeed(env) if name in env
+        else succeed(extend(env, name, value)))
 
-def Choice(test, if_zero, if_one):
+def Choice(test, if0, if1):
     return lambda value, env, succeed: (
-           test(0, env, lambda env: if_zero(value, env, succeed))
-        or test(1, env, lambda env: if_one(value, env, succeed)))
+           test(0, env, lambda env: if0(value, env, succeed))
+        or test(1, env, lambda env: if1(value, env, succeed)))
+
+def extend(env, var, value):
+    result = dict(env)
+    result[var] = value
+    return result
+
+zero, one = Literal(0), Literal(1)
 
 def and_(x, y): return Choice(x, zero, y)
 def or_(x, y):  return Choice(x, y, one)
@@ -50,11 +50,11 @@ def impl(x, y): return Choice(x, one, y)
 #. False
 
 ## satisfy(x, 1)
-#. {None: None, 'x': 1}
+#. {'x': 1, None: None}
 ## satisfy(not_(x), 1)
-#. {None: None, 'x': 0}
+#. {'x': 0, None: None}
 ## satisfy(and_(x, x), 1)
-#. {None: None, 'x': 1}
+#. {'x': 1, None: None}
 ## satisfy(and_(x, not_(x)), 1)
 #. False
 
