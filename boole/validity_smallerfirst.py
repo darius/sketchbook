@@ -5,10 +5,8 @@ For AND and OR we test the simpler argument first.
 In the original code we always went left to right instead.
 """
 
-def is_valid(expr): return not satisfy(expr, 0)
-
-def satisfy(expr, value):
-    return expr(value, {None:None}, lambda env: env)
+def is_valid(expr):       return not satisfy(expr, 0)
+def satisfy(expr, value): return expr(value, {None:None}, lambda env: env)
 
 def make(size, fn):
     fn.size = size

@@ -5,10 +5,8 @@ Suggested by reading http://www.ps.uni-sb.de/~duchier/python/validity.py
 and https://gist.github.com/2789099
 """
 
-def is_valid(expr): return not satisfy(expr, 0)
-
-def satisfy(expr, value):
-    return expr(value, {None:None}, lambda env: env)
+def is_valid(expr):       return not satisfy(expr, 0)
+def satisfy(expr, value): return expr(value, {None:None}, lambda env: env)
 
 def Literal(my_value):
     return lambda value, env, succeed: (
