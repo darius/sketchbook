@@ -12,7 +12,7 @@ def make(size, fn):
     fn.size = size
     return fn
 
-def Literal(value):
+def Constant(value):
     return make(1, lambda goal, env, succeed: (
         value == goal and succeed(env)))
 
@@ -32,7 +32,7 @@ def extend(env, var, value):
     result[var] = value
     return result
 
-zero, one = Literal(0), Literal(1)
+zero, one = Constant(0), Constant(1)
 
 def and_(x, y): return Choice(x, zero, y) if x.size <= y.size else and_(y, x)
 def or_(x, y):  return Choice(x, y, one)  if x.size <= y.size else or_ (y, x)
