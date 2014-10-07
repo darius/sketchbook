@@ -37,7 +37,7 @@ zero, one = Constant(0), Constant(1)
 def and_(x, y): return Choice(x, zero, y) if x.size <= y.size else and_(y, x)
 def or_(x, y):  return Choice(x, y, one)  if x.size <= y.size else or_ (y, x)
 def not_(x):    return Choice(x, one, zero)
-def impl(x, y): return Choice(x, one, y)
+def impl(x, y): return Choice(x, one, y)    # 'x implies y'
 
 ## x, y = map(Variable, 'x y'.split())
 ## is_valid(zero), is_valid(one), is_valid(x)
