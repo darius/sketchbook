@@ -7,9 +7,6 @@ import validity_smallerfirst as V
 
 def Eqv(e1, e2):
     return V.Choice(e1, V.not_(e2), e2)
-    return lambda value, env, succeed: (
-           e1(0, env, lambda env: e2(0, env, succeed))
-        or e1(1, env, lambda env: e2(1, env, succeed)))
 
 # XXX whitespace *with* a newline shouldn't be an AND -- too error-prone.
 # Only with lhs and rhs on the same line should whitespace be AND.
