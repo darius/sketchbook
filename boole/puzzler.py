@@ -55,6 +55,10 @@ def show(opt_env):
 ## solve(' hey (there | ~there), ~hey | ~there')
 #. hey
 #. ~there
+## solve(' hey (there, ~there)')
+#. Unsatisfiable.
+## solve('a=>b = ~b=>~a')
+#. Valid.
 
 
 if __name__ == '__main__':
