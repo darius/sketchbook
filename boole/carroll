@@ -1,0 +1,17 @@
+# Example input for puzzler.py.
+# Derived from https://ssodelta.wordpress.com/2014/10/06/logix-an-overview/
+
+(
+  brown         => dear_sir,
+  dear_sir      => ~third_person,
+  ~third_person => ~black_ink,
+  ~crossed      => black_ink,
+  ~one_sheet    => ~crossed,
+  one_sheet     => dated_letter,
+  dated_letter  => blue_paper,
+  blue_paper    => filed,
+  can_read      => ~filed
+)
+=> (
+  brown         => ~can_read
+)
