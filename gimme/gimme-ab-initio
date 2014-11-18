@@ -1,0 +1,9 @@
+#!/bin/sh
+# Use this with gimme: in a maker with no dependencies, call this
+# after making, to avoid propagating the update-time when there's no
+# actual change in the file.
+# XXX this needs a better name or something
+
+set -e
+
+if cmp -s ${goal} $1; then exit 137; fi
