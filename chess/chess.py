@@ -2,6 +2,7 @@
 Chess board
 No computer player yet
 Sucks in other ways too
+TO DO: look over http://home.hccnet.nl/h.g.muller/max-src2.html
 """
 
 ## b = InitialChessBoard()
