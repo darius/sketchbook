@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+"""
+    $ gimme foo bar baz
+
+Runs
+    goal=foo ./foo.maker tmpdest  # for a fresh tmpdest filename
+and expects either
+    $? is 0 and tmpdest exists: Rename tmpdest to foo.
+or
+    $? is 137 and foo exists:   Do nothing.
+else:
+    Exit with 1.
+And likewise for bar and baz.
+
+Now exit with 137 if goal was set at entry and the goal file exists
+and is younger than any of foo, bar, baz; else exit with 0.
+
+The purpose of all this: foo.maker should work like
+
+    #!/bin/sh
+    set -e
+    gimme this that the-other
+    make-foo this that the-other >$1
+
+so that, at top level,
+
+    $ gimme foo
+
+runs make-foo and mv's the result to foo, but only if foo is stale
+after recursively gimme-ing this, that, and the-other.
+"""
+# XXX todo: 
+#  auto-dependency on maker script
+#  default makers
+#  verbose mode
+#  help message
+#  notice if dependencies are invalidated dynamically?
+#  allow no maker if goal exists?
+
+import os, sys
+
+def gimme(goals, supergoal=None):
+    if supergoal is None:
+        for goal in goals:
+            make(goal)
+    else:
+        youngest = max(map(make, goals)) if goals else 0
+        try: superstat = os.stat(supergoal)
+        except OSError: pass
+        else:
+            if youngest < superstat.st_mtime:
+                sys.exit(137)
+
+def make(goal):
+    os.environ['goal'] = goal
+    destination = 'gimme-tmp'  # XXX os.tempnam(None, 'gimme-')
+    maker = goal+'.maker'
+    status = os.spawnl(os.P_WAIT, maker, maker, destination)
+    if status == 0 and os.access(destination, os.F_OK):
+        os.rename(destination, goal)
+    elif not (status == 137 and os.access(goal, os.F_OK)):
+        sys.stderr.write('%s: failed on %s\n' % (sys.argv[0], goal))
+        try: os.remove(destination) # XXX a bit too eager?
+        except OSError: pass
+        sys.exit(1)
+    return os.stat(goal).st_mtime
+
+if __name__ == '__main__':
+    gimme(sys.argv[1:], os.environ.get('goal'))
