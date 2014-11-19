@@ -1,6 +1,6 @@
 # Notes for a post
 
-The simplest way to rebuild things is, make a build script, run it
+The simplest way to rebuild things is with a build script you rerun
 every time. This is fine for lots of things.
 
 Issues:
