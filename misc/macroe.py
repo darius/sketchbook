@@ -1,6 +1,12 @@
 """
 Hi I'm MacRoe and I'll be your macro evaluator today.
 I'm pretty simpleminded, so you know.
+
+TODO:
+  user-defined macros
+  conditionals
+  some way to quote metacharacters
+  more primitives
 """
 
 import sys
