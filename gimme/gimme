@@ -31,7 +31,6 @@ after recursively gimme-ing this, that, and the-other.
 """
 # XXX todo: 
 #  auto-dependency on maker script
-#  default makers
 #  verbose mode
 #  help message
 #  notice if dependencies are invalidated dynamically?
@@ -54,16 +53,28 @@ def gimme(goals, supergoal=None):
 def make(goal):
     os.environ['goal'] = goal
     destination = 'gimme-tmp'  # XXX os.tempnam(None, 'gimme-')
-    maker = goal+'.maker'
+    maker = find_maker(goal)
     status = os.spawnl(os.P_WAIT, maker, maker, destination)
     if status == 0 and os.access(destination, os.F_OK):
         os.rename(destination, goal)
     elif not (status == 137 and os.access(goal, os.F_OK)):
-        sys.stderr.write('%s: failed on %s\n' % (sys.argv[0], goal))
         try: os.remove(destination) # XXX a bit too eager?
         except OSError: pass
-        sys.exit(1)
+        panic("failed on %s", goal)
     return os.stat(goal).st_mtime
+
+def find_maker(goal):
+    ext = os.path.splitext(goal)[1]
+    for stem in [goal] + (['default'+ext] if ext else []) + ['default']:
+        filename = stem+'.maker'
+        if os.access(filename, os.F_OK):
+            return filename
+    panic("no maker for %s", goal)
+
+def panic(format, *args):
+    sys.stderr.write(("%s: " % sys.argv[0]) + (format % args) + '\n')
+    sys.exit(1)
+
 
 if __name__ == '__main__':
     gimme(sys.argv[1:], os.environ.get('goal'))
