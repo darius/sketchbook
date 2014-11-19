@@ -1,0 +1,7 @@
+#!/bin/sh
+# Example/smoketest of gimme
+set -e
+
+gimme bar
+echo REMAKING FOO
+(cat bar; echo i am foo) >$1

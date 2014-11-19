@@ -1,0 +1,6 @@
+#!/bin/sh
+# Example/smoketest of gimme
+set -e
+
+echo i am bar >$1
+gimme-ab-initio $1
