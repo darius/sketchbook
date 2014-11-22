@@ -32,7 +32,6 @@ after recursively gimme-ing this, that, and the-other.
 # XXX todo: 
 #  auto-dependency on maker script
 #  verbose mode
-#  help message
 #  notice if dependencies are invalidated dynamically?
 #  allow no maker if goal exists?
 
@@ -77,4 +76,6 @@ def panic(format, *args):
 
 
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['-h']:
+        panic("usage: %s goal ...", sys.argv[0])
     gimme(sys.argv[1:], os.environ.get('goal'))
