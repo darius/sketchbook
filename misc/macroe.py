@@ -53,10 +53,15 @@ def collect_call(chars):
 def call(parts):
     if not parts: raise Exception("Missing operator", parts)
     rator, rands = parts[0], parts[1:]
-    if rator == 'length' and len(rands) == 1:
-        return iter(str(len(rands[0])))
-    else:
-        raise Exception("Bad call", rator, rands)
+    try:             expander = expanders[rator]
+    except KeyError: raise Exception("Bad call", rator, rands)
+    else:            return expander(rands)
+
+def length(args):
+    if len(args) != 1: raise Exception("length: expected 1 argument", args)
+    return iter(str(len(args[0])))
+
+expanders = dict(length=length)
 
 
 if __name__ == '__main__':
