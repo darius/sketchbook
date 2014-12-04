@@ -35,9 +35,10 @@ def listing():
 def store_line(n, text):
     i = bisect.bisect(lines, (n, ''))
     if i < len(lines) and lines[i][0] == n:
-        lines[i] = (n, text)
+        if text.strip(): lines[i] = (n, text)
+        else:            lines.pop(i)
     else:
-        lines.insert(i, (n, text))
+        if text.strip(): lines.insert(i, (n, text))
     return ()
 
 def goto(n):
