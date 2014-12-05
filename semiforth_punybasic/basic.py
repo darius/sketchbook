@@ -102,6 +102,7 @@ stmt      = print\b _ maybemore           $ next
           | if\b _ relexp then\b _ exp0   $ if_goto
           | end\b _                       $ end
           | list\b _              list    $ next
+          | rem\b .*                      $ next
 
 writes    = \; _       maybemore
           | \, _ space maybemore
