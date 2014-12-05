@@ -55,6 +55,8 @@ def next_line(a_pc):
 def run():
     global pc
     pc = 0 if lines else None
+    return_stack[:] = []
+    env.clear()
     go()
 
 def go():
