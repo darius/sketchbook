@@ -26,7 +26,7 @@ def run_stmt(text):
 
 
 lines = []       # A sorted array of (line_number, source_line) pairs.
-pc = None        # The program counter: an index into lines[], or None
+pc = None        # The program counter: an index into lines[], or None.
 
 def listing():
     for n, line in lines:
@@ -47,10 +47,10 @@ def goto(n):
     else: raise Exception("Missing line", n)
 
 def if_goto(flag, n):
-    return goto(n) if flag else next_line()
+    return goto(n) if flag else next_line(pc)
 
-def next_line():
-    return None if pc is None or pc+1 == len(lines) else pc+1
+def next_line(a_pc):
+    return None if a_pc is None or a_pc+1 == len(lines) else a_pc+1
 
 def run():
     global pc
@@ -63,7 +63,6 @@ def go():
 
 def step():
     global pc
-    assert 0 <= pc < len(lines), pc
     _, line = lines[pc]
     pc, = run_stmt(line)
 
@@ -72,12 +71,25 @@ env = {}
 fetch = env.__getitem__
 store = env.__setitem__
 
+return_stack = []      # A stack of line numbers of GOSUBs in progress.
+
+def gosub(n):
+    target = goto(n)
+    return_stack.append(lines[pc][0])
+    return target
+
+def do_return():
+    return next_line(goto(return_stack.pop()))
+    
+
 primitives['fetch']   = mkprim(1, fetch)
 primitives['store']   = mkstacker(2, lambda var, val: null(store(var, val)))
 primitives['input']   = mkstacker(1, lambda var: null(store(var, int(raw_input(var+'? ')))))
 primitives['store_line'] = mkstacker(2, store_line)
 primitives['goto']    = mkprim(1, goto)
 primitives['if_goto'] = mkprim(2, if_goto)
+primitives['gosub']   = mkprim(1, gosub)
+primitives['return']  = mkprim(0, do_return)
 primitives['eq']      = mkprim(2, operator.eq)
 primitives['ne']      = mkprim(2, operator.ne)
 primitives['<']       = mkprim(2, operator.lt)
@@ -87,7 +99,7 @@ primitives['>']       = mkprim(2, operator.gt)
 primitives['end']     = mkprim(0, lambda: None)
 primitives['list']    = mkaction(listing)
 primitives['run']     = mkaction(run)
-primitives['next']    = mkprim(0, next_line)
+primitives['next']    = mkprim(0, lambda: next_line(pc))
 
 basic_grammar = r"""
 top       = _ (\d+) _ int (.*)            $ store_line
@@ -100,6 +112,8 @@ stmt      = print\b _ maybemore           $ next
           | input\b _ id          input   $ next
           | goto\b _ exp0                 $ goto
           | if\b _ relexp then\b _ exp0   $ if_goto
+          | gosub\b _ exp0                $ gosub
+          | return\b _                    $ return
           | end\b _                       $ end
           | list\b _              list    $ next
           | rem\b .*                      $ next
