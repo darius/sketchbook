@@ -1,5 +1,3 @@
-# (c) 2012 Darius Bacon
-# Licensed under the GNU General Public Licence version 3
 r'''
 Semideterministic Forth. (Call it Eighth?)
 
