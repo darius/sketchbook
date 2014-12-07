@@ -22,7 +22,7 @@ seq    = token seq
 token  = [{] qchars [}] _     join tok_qchars
        | [/] xchars [/] _     join tok_xchars
        | id                   tok_id
-       | [%] id               tok_primitive
+       | [:] id               tok_primitive
 
 qchars = qchar qchars
        | 
