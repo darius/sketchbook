@@ -234,7 +234,7 @@ with open('metatoo.metatoo') as f:
 #.     return pos, vals
 #.   while True:
 #.     pos, vals = start_pos, start_vals
-#.     m = re.match('%', text[pos:])
+#.     m = re.match(':', text[pos:])
 #.     if not m: break
 #.     pos, vals = pos + m.end(), vals + m.groups()
 #.     pos, vals = parse_id(text, pos, vals)
