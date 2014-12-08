@@ -69,8 +69,7 @@ def tok_primitive(name):
     return ("    vals = metalib.%s(vals)\n"
             % name)
 
-def meta(text):
-    return Parser(meta_grammar, **globals())(text)
+meta = Parser(meta_grammar, **globals())
 
 with open('metatoo.metatoo') as f:
     sys.stdout.write(''.join(meta(f.read())))
