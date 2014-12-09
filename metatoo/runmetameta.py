@@ -5,4 +5,4 @@ is a new metatoo compiler on stdout.
 
 import metatoo, sys
 with open('metatoo.metatoo') as f:
-    sys.stdout.write(''.join(metatoo.meta(f.read())))
+    sys.stdout.write(''.join(metatoo.parse(f.read())))
