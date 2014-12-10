@@ -12,6 +12,7 @@ def repl():
         try: text = raw_input('> ')
         except EOFError: break
         if text == 'bye': break
+        if not text.strip(): continue
         try: run_line(text)
         except Exception, e:
             # TODO: put the current line# in the prompt instead, if any;
