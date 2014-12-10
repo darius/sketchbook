@@ -1,4 +1,4 @@
-program = *st '.END';
+program = *st .EOF;
 
 st      = .ID           .LABEL %
           '=' ex1 ';'   <'R'>;
@@ -15,6 +15,7 @@ ex2     =  ( ex3        <'BF ' %1>
 
 ex3     = .ID           <'CLL '%>
         | .STRING       <'TST '%>
+        | '.EOF'        <'EOF'>
         | '.ID'         <'ID'>
         | '.NUMBER'     <'NUM'>
         | '.STRING'     <'SR'>
@@ -33,5 +34,3 @@ out1    = '%1'          <'GN1'>
         | '%2'          <'GN2'>
         | '%'           <'CI'>
         | .STRING       <'CL '%>;
-
-.END

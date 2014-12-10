@@ -8,7 +8,8 @@ anything you dislike about this code is probably his fault.
 '''
 # Some slight differences from Schorre's design:
 #   * No ADR or END instructions. We start at address 0 and end by
-#     returning. Just s/ADR/B/ in your compiler.
+#     returning. Just s/ADR/B/ in your compiler. An EOF instruction
+#     tests for end of input.
 #   * His had two variables: the switch and what I'm calling the
 #     bite. I have only the bite; the switch is deemed true when bite
 #     is not None. As used in the compilers we've seen, this
@@ -66,6 +67,10 @@ class Meta_II_VM(object):
 
   def SET(self):
     self.bite = ''
+
+  def EOF(self):
+    self.feed = self.feed.lstrip()
+    self.bite = None if self.feed else ''
 
   def TST(self, string):
     self.feed = self.feed.lstrip()

@@ -1,6 +1,6 @@
 .SYNTAX program
 
-program = $st '.END' .,
+program = $st .,
 
 st      = .ID           .LABEL *
           '=' ex1 ';'   .OUT('R') .,
@@ -17,6 +17,7 @@ ex2     =  ( ex3        .OUT('BF ' *1)
 
 ex3     = .ID           .OUT('CLL '*)
         / .STRING       .OUT('TST '*)
+        / '.EOF'        .OUT('EOF')
         / '.ID'         .OUT('ID')
         / '.NUMBER'     .OUT('NUM')
         / '.STRING'     .OUT('SR')
