@@ -21,6 +21,19 @@ anything you dislike about this code is probably his fault.
 
 import itertools, sys
 
+def main(argv):
+  assert len(argv) == 3, "usage: %s asm-file source-file" % argv[0]
+  vm = Meta_II_VM()
+  vm.load(open_for_read(argv[1]).read())
+  sys.stdout.write(vm.run(open_for_read(argv[2]).read()))
+  sys.stdout.flush()
+  if vm.poisoned:
+    vm.inspect()
+  return vm.poisoned
+
+def open_for_read(filename):
+  return sys.stdin if filename == '-' else open(filename)
+
 class Meta_II_VM(object):
   def __init__(self):
     self.code = []
@@ -156,7 +169,7 @@ class Meta_II_VM(object):
     self.poop += self.turd.rstrip() + '\n'
     self.turd = '\t'
 
-  # Debugging/introspection. (Not strictly needed.)
+  # Debugging/introspection.
 
   def inspect(self):
     print >> sys.stderr, 'stack:', self.stack
@@ -175,15 +188,5 @@ class Meta_II_VM(object):
     op, args = self.code[addr]
     print >> sys.stderr, '   %3d %-3s %s' % (addr, op.__name__, ''.join(args))
 
-def open_for_read(filename):
-  return sys.stdin if filename == '-' else open(filename)
-
 if __name__ == '__main__':
-  from sys import argv
-  vm = Meta_II_VM()
-  vm.load(open_for_read(argv[1]).read())
-  sys.stdout.write(vm.run(open_for_read(argv[2]).read()))
-  sys.stdout.flush()
-  if vm.poisoned:
-    vm.inspect()
-    sys.exit(1)
+  sys.exit(main(sys.argv))
