@@ -86,7 +86,7 @@ def do_return():
 
 primitives['fetch']   = mkprim(1, fetch)
 primitives['store']   = mkstacker(2, lambda var, val: null(store(var, val)))
-primitives['input']   = mkstacker(1, lambda var: null(store(var, int(raw_input(var+'? ')))))
+primitives['input']   = mkstacker(1, lambda var: null(store(var, int(raw_input()))))
 primitives['store_line'] = mkstacker(2, store_line)
 primitives['goto']    = mkprim(1, goto)
 primitives['if_goto'] = mkprim(2, if_goto)
