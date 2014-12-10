@@ -7,12 +7,11 @@ from semiforth import (Parser, Unparsable, primitives,
                        mkaction, mkprim, mkstacker, null)
 
 def repl():
-    print "I am Puny Basic. Enter 'bye' to quit."
+    print "I am Puny Basic. Enter 'bye' to dismiss me."
     while True:
         try: text = raw_input('> ')
         except EOFError: break
-        if text == 'bye': break
-        if not text.strip(): continue
+        if text.strip() == 'bye': break
         try: run_line(text)
         except Exception, e:
             # TODO: put the current line# in the prompt instead, if any;
@@ -108,6 +107,7 @@ basic_grammar = r"""
 top       = _ (\d+) _ int (.*)            $ store_line
           | _ run\b _                     $ run
           | _ stmt
+          | _                             $
 
 stmt      = print\b _ maybemore           $ next
           | \? _      maybemore           $ next
