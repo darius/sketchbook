@@ -50,7 +50,7 @@ def if_goto(flag, n):
     return goto(n) if flag else next_line(pc)
 
 def next_line(a_pc):
-    return None if a_pc is None or a_pc+1 == len(lines) else a_pc+1
+    return None if a_pc in (None, len(lines)-1) else a_pc+1
 
 def run():
     global pc
