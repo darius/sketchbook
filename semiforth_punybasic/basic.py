@@ -82,7 +82,33 @@ def gosub(n):
 
 def do_return():
     return next_line(goto(return_stack.pop()))
-    
+
+def new():
+    global env, lines, pc
+    env.clear()
+    lines = []
+    pc = 0
+
+def load(filename):
+    try: f = open(filename)
+    except IOError:
+        print "Can't open", filename
+        return
+    new()
+    with f:
+        for line in f:
+            run_line(line)
+    return ()
+
+def save(filename):
+    try: f = open(filename, 'w')
+    except IOError:
+        print "Can't open", filename
+        return
+    with f:
+        for pair in lines:
+            f.write('%d %s\n' % pair)
+    return ()
 
 primitives['fetch']   = mkprim(1, fetch)
 primitives['store']   = mkstacker(2, lambda var, val: null(store(var, val)))
@@ -102,10 +128,16 @@ primitives['end']     = mkprim(0, lambda: None)
 primitives['list']    = mkaction(listing)
 primitives['run']     = mkaction(run)
 primitives['next']    = mkprim(0, lambda: next_line(pc))
+primitives['new']     = mkaction(new)
+primitives['load']    = mkstacker(1, load)
+primitives['save']    = mkstacker(1, save)
 
 basic_grammar = r"""
 top       = _ (\d+) _ int (.*)            $ store_line
           | _ run\b _                     $ run
+          | _ new\b _                     $ new
+          | _ load\b _ (\S+) _            $ load
+          | _ save\b _ (\S+) _            $ save
           | _ stmt
           | _                             $
 
