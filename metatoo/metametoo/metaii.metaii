@@ -1,0 +1,37 @@
+program = *st '.END';
+
+st      = .ID           .LABEL %
+          '=' ex1 ';'   <'R'>;
+
+ex1     = ex2 *('|'     <'BT ' %1>
+                ex2)
+                        .LABEL %1;
+
+ex2     =  ( ex3        <'BF ' %1>
+           | output)
+          *( ex3        <'BE'>
+           | output)
+                        .LABEL %1;
+
+ex3     = .ID           <'CLL '%>
+        | .STRING       <'TST '%>
+        | '.ID'         <'ID'>
+        | '.NUMBER'     <'NUM'>
+        | '.STRING'     <'SR'>
+        | '(' ex1 ')'
+        | '.EMPTY'      <'SET'>
+        | '*'           .LABEL %1
+          ex3           <'BT ' %1>
+                        <'SET'>;
+
+output  = ( '<' *out1 '>'
+          | '.LABEL'    <'LB'>
+            out1)
+                        <'OUT'>;
+
+out1    = '%1'          <'GN1'>
+        | '%2'          <'GN2'>
+        | '%'           <'CI'>
+        | .STRING       <'CL '%>;
+
+.END
