@@ -22,12 +22,12 @@ about this code is probably his fault.
 import itertools, sys
 
 def main(argv):
-    tracing = False
+    trace = False
     if argv[1:2] == ['-trace']:
-        tracing = True
+        trace = True
         del argv[1]
     assert len(argv) == 3, "usage: %s [-trace] asm-file source-file" % argv[0]
-    vm = Meta_II_VM(tracing)
+    vm = Meta_II_VM(trace)
     vm.load(open_for_read(argv[1]).read())
     sys.stdout.write(vm.run(open_for_read(argv[2]).read()))
     sys.stdout.flush()
@@ -39,10 +39,10 @@ def open_for_read(filename):
     return sys.stdin if filename == '-' else open(filename)
 
 class Meta_II_VM(object):
-    def __init__(self, tracing=False):
+    def __init__(self, trace=False):
         self.code = []
         self.labels = {}
-        self.tracing = tracing
+        self.trace = trace
 
     def load(self, source_code):
         for line in source_code.splitlines():
@@ -73,7 +73,7 @@ class Meta_II_VM(object):
             op, args = self.code[self.pc]
             self.pc += 1
             op(*args)
-            if self.tracing:
+            if self.trace:
                 self.print_instruction(cur_pc, '  ' + self.state_gist())
         return self.poop
 
