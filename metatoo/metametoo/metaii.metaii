@@ -14,11 +14,11 @@ chain   =  ( maybe       :'   if_lose ' :label1 :nl
                          :label1 :nl;
 
 maybe   = ?id            :'   call ' :it :nl
-        | ?squote        :'   read ' :it :nl
+        | ?qstring       :'   read ' :it :nl
         | '?' ?id        :'   read_' :it :nl
         | '(' choice ')';
 
 surely  = '*'            :label1 :nl
           maybe          :'   win_loop ' :label1 :nl
         | ':' ( ?id      :'   write_' :it        :nl
-              | ?squote  :'   write ' :it        :nl);
+              | ?qstring :'   write ' :it        :nl);

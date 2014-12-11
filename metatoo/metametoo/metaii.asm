@@ -80,7 +80,7 @@ maybe
    write_nl
 L20
    if_win L21
-   read_squote
+   read_qstring
    if_lose L22
    write '   read '
    write_it
@@ -126,7 +126,7 @@ L25
    write_nl
 L28
    if_win L29
-   read_squote
+   read_qstring
    if_lose L30
    write '   write '
    write_it

@@ -108,7 +108,7 @@ class Meta_II_VM(object):
         else:
             self.success = False
 
-    def READ_SQUOTE(self):
+    def READ_QSTRING(self):
         self.feed = self.feed.lstrip()
         if self.feed.startswith("'"):
             i = self.feed.find("'", 1)
