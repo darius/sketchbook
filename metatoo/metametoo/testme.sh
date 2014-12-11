@@ -1,4 +1,4 @@
 #!/bin/sh
-python metaii.py oldsyntax-metaii.asm oldsyntax-metaii.oldsyntax-metaii >foo &&
-diff -u oldsyntax-metaii.asm foo &&
+./metaii.sh metaii.metaii >foo &&
+diff -u metaii.asm foo &&
 rm foo

@@ -1,36 +1,36 @@
 program = *st .EOF;
 
-st      = .ID           .LABEL %
-          '=' ex1 ';'   <'R'>;
+st      = .ID            .LABEL %
+          '=' choice ';' <'R'>;
 
-ex1     = ex2 *('|'     <'BT ' %1>
-                ex2)
-                        .LABEL %1;
+choice  = chain *('|'    <'BT ' %1>
+                  chain)
+                         .LABEL %1;
 
-ex2     =  ( ex3        <'BF ' %1>
-           | output)
-          *( ex3        <'BE'>
-           | output)
-                        .LABEL %1;
+chain   =  ( maybe       <'BF ' %1>
+           | surely)
+          *( maybe       <'BE'>
+           | surely)
+                         .LABEL %1;
 
-ex3     = .ID           <'CLL '%>
-        | .STRING       <'TST '%>
-        | '.EOF'        <'EOF'>
-        | '.ID'         <'ID'>
-        | '.NUMBER'     <'NUM'>
-        | '.STRING'     <'SR'>
-        | '(' ex1 ')'
-        | '.EMPTY'      <'SET'>
-        | '*'           .LABEL %1
-          ex3           <'BT ' %1>
-                        <'SET'>;
+maybe   = .ID            <'CLL '%>
+        | .STRING        <'TST '%>
+        | '.EOF'         <'EOF'>
+        | '.ID'          <'ID'>
+        | '.NUMBER'      <'NUM'>
+        | '.STRING'      <'SR'>
+        | '(' choice ')';
 
-output  = ( '<' *out1 '>'
-          | '.LABEL'    <'LB'>
-            out1)
-                        <'OUT'>;
+surely  = '.EMPTY'       <'TST ' .Q .Q>
+        | '*'            .LABEL %1
+          maybe          <'BTT '%1>
+        | ( '<' *out '>'
+          | '.LABEL'     <'LB'>
+            out)
+                         <'OUT'>;
 
-out1    = '%1'          <'GN1'>
-        | '%2'          <'GN2'>
-        | '%'           <'CI'>
-        | .STRING       <'CL '%>;
+out     = '%1'           <'GN1'>
+        | '%2'           <'GN2'>
+        | '%'            <'CI'>
+        | '.Q'           <'CQ'>
+        | .STRING        <'CL '%>;
