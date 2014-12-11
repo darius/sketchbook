@@ -202,15 +202,17 @@ class Meta_II_VM(object):
         if labels:
             print >> sys.stderr, labels + ':'
         op, args = self.code[addr]
-        print >> sys.stderr, ('     %3d %-3s %-10s%s'
-                              % (addr, op.__name__, ''.join(args), suffix))
+        print >> sys.stderr, ('     %3d %-18s%s'
+                              % (addr,
+                                 op.__name__.lower() + ' ' + ''.join(args),
+                                 suffix))
 
     def state_gist(self):
         calls = ' '.join(((self.stack[i+1] if 0 < i else '')
                           + ''.join('-'+label if label else '.'
                                     for label in [self.stack[i+2], self.stack[i+3]]))
                          for i in range(0, len(self.stack), 4))
-        return '%s %-10s %s' % ('yn'[self.success], self.feed[:8], calls)
+        return '%s %-10r %s' % ('yn'[self.success], self.feed[:8], calls)
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
