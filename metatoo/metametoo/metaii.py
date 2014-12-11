@@ -23,9 +23,9 @@ import itertools, sys
 
 def main(argv):
     tracing = False
-    if argv[1:2] == '-tracing':
+    if argv[1:2] == ['-trace']:
         tracing = True
-        del argv[1:2]
+        del argv[1]
     assert len(argv) == 3, "usage: %s [-trace] asm-file source-file" % argv[0]
     vm = Meta_II_VM(tracing)
     vm.load(open_for_read(argv[1]).read())
