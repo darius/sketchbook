@@ -75,9 +75,6 @@ class Meta_II_VM(object):
             op(*args)
             if self.tracing:
                 self.print_instruction(cur_pc, '  ' + self.state_gist())
-        if self.poisoned:
-            self.inspect()
-            sys.exit(1)
         return self.poop
 
     def eat(self, nchars):
