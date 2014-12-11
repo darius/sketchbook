@@ -9,7 +9,7 @@ about this code is probably his fault.
 # Differences from Schorre's design:
 #   * Changed all the instruction names.
 #   * No ADR or END instructions. We start at address 0 and end by
-#     returning. Just s/ADR/B/ in your compiler.
+#     returning. Just s/ADR/GOTO/ in your compiler.
 #   * Also no SET instruction; subsumed by new WRITE_Q and WIN_LOOP instructions.
 #   * The WRITE instructions set the success flag.
 #   * New READ_EOF and WRITE_Q instructions.
@@ -162,6 +162,10 @@ class Meta_II_VM(object):
         self.poop += "'"
         self.success = True
 
+    def WRITE_NL(self):
+        self.poop += '\n'
+        self.success = True
+
     def WRITE_IT(self):
         self.poop += self.bite
         self.success = True
@@ -176,10 +180,6 @@ class Meta_II_VM(object):
         if self.stack[-2] is None:
             self.stack[-2] = self.next_label()
         self.poop += self.stack[-2]
-        self.success = True
-
-    def WRITE_NL(self):
-        self.poop += '\n'
         self.success = True
 
     # Debugging/introspection.
