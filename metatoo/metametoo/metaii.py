@@ -101,29 +101,29 @@ class Meta_II_VM(object):
     def READ_ID(self):
         self.feed = self.feed.lstrip()
         if self.feed[:1].isalpha():
-            n = 1
-            while self.feed[n:n+1].isalnum():
-                n += 1
-            self.eat(n)
+            i = 1
+            while self.feed[i:i+1].isalnum():
+                i += 1
+            self.eat(i)
         else:
             self.success = False
 
     def READ_SQUOTE(self):
         self.feed = self.feed.lstrip()
         if self.feed.startswith("'"):
-            n = self.feed.find("'", 1)
-            if n != -1:
-                self.eat(n+1)
+            i = self.feed.find("'", 1)
+            if i != -1:
+                self.eat(i+1)
                 return
         self.success = False
 
     def READ_DECIMAL(self):
         self.feed = self.feed.lstrip()
-        n = 0
-        while self.feed[n:n+1].isdigit():
-            n += 1
-        if n:
-            self.eat(n)
+        i = 0
+        while self.feed[i:i+1].isdigit():
+            i += 1
+        if i:
+            self.eat(i)
         else:
             self.success = False
 
