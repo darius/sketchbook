@@ -5,11 +5,10 @@ L1
    read_eof
    win_or_die
 L2
-L3
    return
 st
    read_id
-   if_lose L4
+   if_lose L3
    write_it
    write_nl
    read '='
@@ -20,94 +19,84 @@ st
    win_or_die
    write '   return'
    write_nl
+L3
 L4
-L5
    return
 choice
    call chain
-   if_lose L6
-L7
+   if_lose L5
+L6
    read '|'
-   if_lose L8
+   if_lose L7
    write '   if_win '
    write_label1
    write_nl
    call chain
    win_or_die
+L7
 L8
-L9
-   win_loop L7
+   win_loop L6
    write_label1
    write_nl
-L6
-L10
+L5
+L9
    return
 chain
+   call surely
+   if_lose L10
+   call tail
+   win_or_die
+L10
+   if_win L11
    call maybe
-   if_lose L11
+   if_lose L12
    write '   if_lose '
    write_label1
    write_nl
-L11
-   if_win L12
-   call surely
-   if_lose L13
-L13
+   call tail
+   win_or_die
+   write_label1
+   write_nl
 L12
+L11
+   return
+tail
+L13
+   call surely
    if_lose L14
-L15
+L14
+   if_win L15
    call maybe
    if_lose L16
    write '   win_or_die'
    write_nl
 L16
-   if_win L17
-   call surely
-   if_lose L18
-L18
+L15
+   win_loop L13
 L17
-   win_loop L15
-   write_label1
-   write_nl
-L14
-L19
-   return
-maybe
-   read_id
-   if_lose L20
-   write '   call '
-   write_it
-   write_nl
-L20
-   if_win L21
-   read_qstring
-   if_lose L22
-   write '   read '
-   write_it
-   write_nl
-L22
-   if_win L21
-   read '?'
-   if_lose L23
-   read_id
-   win_or_die
-   write '   read_'
-   write_it
-   write_nl
-L23
-   if_win L21
-   read '('
-   if_lose L24
-   call choice
-   win_or_die
-   read ')'
-   win_or_die
-L24
-L21
    return
 surely
+   read ':'
+   if_lose L18
+   read_qstring
+   if_lose L19
+   write '   write '
+   write_it
+   write_nl
+L19
+   if_win L20
+   read_id
+   if_lose L21
+   write '   write_'
+   write_it
+   write_nl
+L21
+L20
+   win_or_die
+L18
+   if_win L22
    read '*'
-   if_lose L25
+   if_lose L23
    write_label1
    write_nl
    call maybe
@@ -115,25 +104,39 @@ surely
    write '   win_loop '
    write_label1
    write_nl
-L25
-   if_win L26
-   read ':'
-   if_lose L27
-   read_id
-   if_lose L28
-   write '   write_'
-   write_it
-   write_nl
-L28
-   if_win L29
+L23
+L22
+   return
+maybe
    read_qstring
-   if_lose L30
-   write '   write '
+   if_lose L24
+   write '   read '
    write_it
    write_nl
-L30
-L29
+L24
+   if_win L25
+   read '?'
+   if_lose L26
+   read_id
    win_or_die
-L27
+   write '   read_'
+   write_it
+   write_nl
 L26
+   if_win L25
+   read_id
+   if_lose L27
+   write '   call '
+   write_it
+   write_nl
+L27
+   if_win L25
+   read '('
+   if_lose L28
+   call choice
+   win_or_die
+   read ')'
+   win_or_die
+L28
+L25
    return
