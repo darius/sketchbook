@@ -1,0 +1,16 @@
+main   = e0 ?eof       :'  halt' :nl;
+
+e0     = e1;
+e1     = e2 *( '+' e2  :'  add' :nl
+             | '-' e2  :'  sub' :nl);
+e2     = e3 *( '*' e3  :'  mul' :nl
+             | '/' e3  :'  div' :nl);
+e3     = '(' e0 ')'
+       | 'if' e0
+                       :'  if-false ' :label1 :nl
+         'then' e0
+                       :'  goto '     :label2 :nl
+                       :label1 :nl
+         'else' e0
+                       :label2 :nl
+       | ?id           :'  var ' :it :nl;
