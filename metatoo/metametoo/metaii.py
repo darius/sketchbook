@@ -74,7 +74,7 @@ class Meta_II_VM(object):
             self.pc += 1
             op(*args)
             if self.tracing:
-                self.print_instruction(cur_pc, '    ' + self.state_gist())
+                self.print_instruction(cur_pc, '  ' + self.state_gist())
         if self.poisoned:
             self.inspect()
             sys.exit(1)
