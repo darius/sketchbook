@@ -17,7 +17,7 @@ about this code is probably his fault.
 #   * Stack frames are always 4 wide, including, for helpful
 #     backtrace on error, the destination label. Schorre focused
 #     on saving memory instead.
-#   * There's a tracing mode. TODO: add an instruction to turn it on or off.
+#   * There's a trace mode. TODO: add an instruction to turn it on or off.
 
 import itertools, sys
 
