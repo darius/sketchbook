@@ -1,36 +1,24 @@
-program = *st .EOF;
+program = *st ?eof;
 
-st      = .ID            .LABEL %
-          '=' choice ';' <'R'>;
+st      = ?id            :it          :nl
+          '=' choice ';' :'   return' :nl;
 
-choice  = chain *('|'    <'BT ' %1>
+choice  = chain *('|'    :'   if_win ' :label1 :nl
                   chain)
-                         .LABEL %1;
+                         :label1 :nl;
 
-chain   =  ( maybe       <'BF ' %1>
+chain   =  ( maybe       :'   if_lose ' :label1 :nl
            | surely)
-          *( maybe       <'BE'>
+          *( maybe       :'   win_or_die' :nl
            | surely)
-                         .LABEL %1;
+                         :label1 :nl;
 
-maybe   = .ID            <'CLL '%>
-        | .STRING        <'TST '%>
-        | '.EOF'         <'EOF'>
-        | '.ID'          <'ID'>
-        | '.NUMBER'      <'NUM'>
-        | '.STRING'      <'SR'>
+maybe   = ?id            :'   call ' :it :nl
+        | ?squote        :'   read ' :it :nl
+        | '?' ?id        :'   read_' :it :nl
         | '(' choice ')';
 
-surely  = '.EMPTY'       <'TST ' .Q .Q>
-        | '*'            .LABEL %1
-          maybe          <'BTT '%1>
-        | ( '<' *out '>'
-          | '.LABEL'     <'LB'>
-            out)
-                         <'OUT'>;
-
-out     = '%1'           <'GN1'>
-        | '%2'           <'GN2'>
-        | '%'            <'CI'>
-        | '.Q'           <'CQ'>
-        | .STRING        <'CL '%>;
+surely  = '*'            :label1 :nl
+          maybe          :'   win_loop ' :label1 :nl
+        | ':' ( ?id      :'   write_' :it        :nl
+              | ?squote  :'   write ' :it        :nl);

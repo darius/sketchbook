@@ -16,7 +16,8 @@ about this code is probably his fault.
 #     backtrace on error, the destination label. Schorre focused
 #     on saving memory instead.
 #   * There's a tracing mode. TODO: add an instruction to turn it on or off.
-# TODO: modernize the instruction names
+#   * XXX actually we changed all the names now
+#   * XXX etc.
 
 import itertools, sys
 
@@ -61,7 +62,6 @@ class Meta_II_VM(object):
         # Appropriate terminology for a hylomorphism:
         self.feed = input_text
         self.bite = None
-        self.turd = '\t'
         self.poop = ''
         self.success = False
         self.poisoned = False
@@ -89,11 +89,7 @@ class Meta_II_VM(object):
 
     # The instructions:
 
-    def EOF(self):
-        self.feed = self.feed.lstrip()
-        self.success = self.feed == ''
-
-    def TST(self, string):
+    def READ(self, string):
         self.feed = self.feed.lstrip()
         string = self.decode_literal(string)
         if self.feed.startswith(string):
@@ -101,7 +97,11 @@ class Meta_II_VM(object):
         else:
             self.success = False
 
-    def ID(self):
+    def READ_EOF(self):
+        self.feed = self.feed.lstrip()
+        self.success = self.feed == ''
+
+    def READ_ID(self):
         self.feed = self.feed.lstrip()
         if self.feed[:1].isalpha():
             n = 1
@@ -111,18 +111,7 @@ class Meta_II_VM(object):
         else:
             self.success = False
 
-    def NUM(self):
-        self.feed = self.feed.lstrip()
-        n = 0
-        while self.feed[n:n+1] in '0123456789.':
-            n += 1
-        if (n and self.feed[0] != '.' and self.feed[n-1] != '.'
-                and '..' not in self.feed[:n]):
-            self.eat(n)
-        else:
-            self.success = False
-
-    def SR(self):
+    def READ_SQUOTE(self):
         self.feed = self.feed.lstrip()
         if self.feed.startswith("'"):
             n = self.feed.find("'", 1)
@@ -131,58 +120,65 @@ class Meta_II_VM(object):
                 return
         self.success = False
 
-    def B(self, addr):
+    def READ_NUMBER(self):
+        self.feed = self.feed.lstrip()
+        n = 0
+        while self.feed[n:n+1].isdigit():
+            n += 1
+        if n:
+            self.eat(n)
+        else:
+            self.success = False
+
+    def GOTO(self, addr):
         self.pc = self.labels[addr]
 
-    def BT(self, addr):
+    def IF_WIN(self, addr):
         if self.success:
-            self.B(addr)
+            self.GOTO(addr)
 
-    def BTT(self, addr):
-        self.BT(addr)
+    def WIN_LOOP(self, addr):
+        self.IF_WIN(addr)
         self.success = True
 
-    def BF(self, addr):
+    def IF_LOSE(self, addr):
         if not self.success:
-            self.B(addr)
+            self.GOTO(addr)
 
-    def BE(self):
+    def WIN_OR_DIE(self):
         if not self.success:
             self.poisoned = True
 
-    def CLL(self, addr):
+    def CALL(self, addr):
         self.stack.extend((self.pc, addr, None, None))
-        self.B(addr)
+        self.GOTO(addr)
 
-    def R(self):
+    def RETURN(self):
         self.pc = self.stack[-4]
         del self.stack[-4:]
 
-    def GN1(self):
+    def WRITE(self, string):
+        self.poop += self.decode_literal(string)
+        self.success = True
+
+    def WRITE_IT(self):
+        self.poop += self.bite
+        self.success = True
+
+    def WRITE_LABEL1(self):
         if self.stack[-1] is None:
             self.stack[-1] = self.next_label()
-        self.turd += self.stack[-1]
+        self.poop += self.stack[-1]
+        self.success = True
         
-    def GN2(self):
+    def WRITE_LABEL2(self):
         if self.stack[-2] is None:
             self.stack[-2] = self.next_label()
-        self.turd += self.stack[-2]
+        self.poop += self.stack[-2]
+        self.success = True
 
-    def CQ(self):
-        self.turd += "'"
-
-    def CI(self):
-        self.turd += self.bite
-
-    def CL(self, string):
-        self.turd += self.decode_literal(string)
-
-    def LB(self):
-        self.turd = self.turd.lstrip()
-
-    def OUT(self):
-        self.poop += self.turd.rstrip() + '\n'
-        self.turd = '\t'
+    def WRITE_NL(self):
+        self.poop += '\n'
         self.success = True
 
     # Debugging/introspection.
