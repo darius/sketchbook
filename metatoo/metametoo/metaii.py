@@ -7,17 +7,17 @@ but it's been heavily hacked by Darius Bacon -- anything you dislike
 about this code is probably his fault.
 '''
 # Differences from Schorre's design:
+#   * Changed all the instruction names.
 #   * No ADR or END instructions. We start at address 0 and end by
 #     returning. Just s/ADR/B/ in your compiler.
-#   * Also no SET instruction; subsumed by new CQ and BTT instructions.
-#   * The OUT instruction sets the success flag.
-#   * A new EOF instruction.
+#   * Also no SET instruction; subsumed by new WRITE_Q and WIN_LOOP instructions.
+#   * The WRITE instructions set the success flag.
+#   * New READ_EOF and WRITE_Q instructions.
+#   * READ_DECIMAL (the old NUM) only matches integers now.
 #   * Stack frames are always 4 wide, including, for helpful
 #     backtrace on error, the destination label. Schorre focused
 #     on saving memory instead.
 #   * There's a tracing mode. TODO: add an instruction to turn it on or off.
-#   * XXX actually we changed all the names now
-#   * XXX etc.
 
 import itertools, sys
 
@@ -120,7 +120,7 @@ class Meta_II_VM(object):
                 return
         self.success = False
 
-    def READ_NUMBER(self):
+    def READ_DECIMAL(self):
         self.feed = self.feed.lstrip()
         n = 0
         while self.feed[n:n+1].isdigit():
@@ -159,6 +159,10 @@ class Meta_II_VM(object):
 
     def WRITE(self, string):
         self.poop += self.decode_literal(string)
+        self.success = True
+
+    def WRITE_Q(self):
+        self.poop += "'"
         self.success = True
 
     def WRITE_IT(self):
