@@ -165,6 +165,10 @@ class Meta_II_VM(object):
     def DO_GENSYM(self):
         self.stack.append(self.gensym())
 
+    def DO_SWAP(self):
+        y, z = self.stack[-2:]
+        self.stack[-2:] = [z, y]
+
     # Debugging/introspection.
 
     def inspect(self):
