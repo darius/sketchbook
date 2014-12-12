@@ -1,0 +1,64 @@
+session = *command
+          ?eof       :'   halt' :nl;
+
+command = (fun | let | expr);
+
+fun = 'fun'          :'   goto ' :label1 :nl
+      parameters ?id :it :nl
+      '=' expr       :'   return' :nl
+                     :label1 :nl;
+
+let = 'let' expr
+      'be' ?id       :'   define ' :it :nl;
+
+expr = e0;
+
+e0 = e1 ( ';'        :'   drop' :nl
+          e0
+        | '' );
+
+e1 = e3 *( ':>' ?id  :'   to ' :it :nl);
+
+e3 = e5 *( '&' e5    :'   and' :nl
+         | '|' e5    :'   or'  :nl
+         | '^' e5    :'   xor' :nl);
+
+e5 = e7 ( '<' e7     :'   lt' :nl
+        | '=' e7     :'   eq' :nl
+        | '' );
+
+e7 = e9 *( '+' e9    :'   add' :nl
+         | '-' e9    :'   sub' :nl);
+
+e9 = e11 *( '*' e11  :'   mul' :nl
+          | '/' e11  :'   div' :nl
+          | '%' e11  :'   mod' :nl);
+
+e11 = ?decimal       :'   push ' :it :nl
+    | ?qstring       :'   push_string ' :it :nl
+    | 'if' e0
+                     :'   if-false ' :label1 :nl
+      'then' e0
+                     :'   goto '     :label2 :nl
+                     :label1 :nl
+      'else' e0
+                     :label2 :nl
+    | '*' e11        :'   fetch' :nl
+    | '-' e11        :'   neg' :nl
+    | '(' e0 ')'
+    | arguments ?id  :'   call ' :it :nl
+    | ?id            :'   load ' :it :nl;
+
+parameters =
+   '['               :'   parameters'
+      ( ?id          :' ' :it
+         *(',' ?id   :' ' :it
+          )
+         | '')
+   ']'               :nl;
+
+arguments =
+   '[' ( e1
+         *(',' e1)
+         | '')
+   ']';
