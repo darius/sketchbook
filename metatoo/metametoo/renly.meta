@@ -1,14 +1,16 @@
-main = *(fun | let | expr)
-        ?eof         :'   halt' :nl;
+main = *cmd ?eof     :'   halt' :nl;
+
+cmd = (fun | let | expr) '.';
 
 fun = 'fun'          %gensym
                      :'   goto SKIP' :top :nl
-      parameters ?id :it :nl
+      ?id            :it :nl
+      parameters
       '=' expr       :'   return' :nl
                      :'SKIP' :pop :nl;
 
-let = 'let' expr
-      'be' ?id       :'   define ' :it :nl;
+let = 'let' ?id      %it
+      '=' expr       :'   define ' :pop :nl;
 
 expr = e0;
 
@@ -46,19 +48,20 @@ e6 = ?decimal        :'   push ' :it :nl
    | '*' e6          :'   fetch' :nl
    | '-' e6          :'   neg' :nl
    | '(' e0 ')'
-   | arguments ?id   :'   call ' :it :nl
-   | ?id             :'   load ' :it :nl;
+   | ?id %it
+     ( arguments     :'   call ' :pop :nl
+     | ''            :'   load ' :pop :nl);
 
 parameters =
-   '['               :'   parameters'
+   '('               :'   parameters'
       ( ?id          :' ' :it
          *(',' ?id   :' ' :it
           )
          | '')
-   ']'               :nl;
+   ')'               :nl;
 
 arguments =
-   '[' ( e1
+   '(' ( e1
          *(',' e1)
          | '')
-   ']';
+   ')';
