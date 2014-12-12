@@ -30,8 +30,10 @@ def main(argv):
         del argv[1]
     assert len(argv) == 3, "usage: %s [-trace] asm-file source-file" % argv[0]
     vm = Meta_II_VM(trace)
-    vm.load(open_for_read(argv[1]).read())
-    sys.stdout.write(vm.run(open_for_read(argv[2]).read()))
+    with open_for_read(argv[1]) as f:
+        vm.load(f.read())
+    with open_for_read(argv[2]) as f:
+        sys.stdout.write(vm.run(f.read()))
     sys.stdout.flush()
     if vm.poisoned:
         vm.inspect()
