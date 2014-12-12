@@ -6,13 +6,13 @@ diff -u meta.asm foo
 rm foo
 
 ./meta.sh infix.meta >infix.asm
-echo '(a+b)*c+d*d to c' | python meta.py infix.asm - >foo
+echo '(a+b)*c+d*d to c' | python meta.py infix.asm >foo
 echo ' a @ b @ + c @ * d @ d @ * + c !' >bar
 diff -u foo bar
 rm foo bar
 
 ./meta.sh renly.meta >renly.asm
-echo 'fun fib(n) = if n < 2 then 1 else fib(n-1) + fib(n-2). fib(5).' | python meta.py renly.asm - >fib.asm
+echo 'fun fib(n) = if n < 2 then 1 else fib(n-1) + fib(n-2). fib(5).' | python meta.py renly.asm >fib.asm
 diff -u - fib.asm <<EOF
    goto SKIP0
 fib

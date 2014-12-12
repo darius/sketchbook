@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 '''
-An interpreter inspired by Val Shorre's Meta II virtual machine.
+A virtual machine inspired by Val Shorre's Meta II.
 This began as Simon Forman's code at
 http://comments.gmane.org/gmane.comp.lang.smalltalk.fonc/3642
-but it's been heavily hacked by Darius Bacon -- anything you dislike
-about this code is probably his fault.
+but little of that is left.
 '''
 # Differences from Schorre's design:
 #   * Separate value and call stacks make it Forthier. The value
@@ -28,19 +27,24 @@ def main(argv):
     if argv[1:2] == ['-trace']:
         trace = True
         del argv[1]
-    assert len(argv) == 3, "usage: %s [-trace] asm-file source-file" % argv[0]
+    assert 2 <= len(argv), "usage: %s [-trace] asm-file [input-file...]" % argv[0]
+
     vm = Meta_II_VM(trace)
-    with open_for_read(argv[1]) as f:
+    with open(argv[1]) as f:
         vm.load(f.read())
-    with open_for_read(argv[2]) as f:
-        sys.stdout.write(vm.run(f.read()))
+    input_text = ''
+    if argv[2:]:
+        for filename in argv[2:]:
+            with open(filename) as f:
+                input_text += f.read()
+    else:
+        input_text += sys.stdin.read()
+
+    sys.stdout.write(vm.run(input_text))
     sys.stdout.flush()
     if vm.poisoned:
         vm.inspect()
     return vm.poisoned
-
-def open_for_read(filename):
-    return sys.stdin if filename == '-' else open(filename)
 
 class Meta_II_VM(object):
     def __init__(self, trace=False):
