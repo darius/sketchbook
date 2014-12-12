@@ -31,3 +31,18 @@ just didn't work out as significantly smaller unless everything
 touches the success flag.)
 
 Various other aspects got modernized or streamlined along the way.
+
+Differences from Schorre's design:
+  * Separate value and call stacks make it Forthier. The value
+    stack and its operations replace the LABEL1/LABEL2 instructions.
+  * The call stack includes, for helpful backtrace on error, the
+    destination label.
+  * Changed all the instruction names.
+  * No ADR or END instructions. We start at address 0 and end by
+    returning. Just s/ADR/GOTO/ in your compiler.
+  * Also no SET instruction; subsumed by new WRITE_Q and WIN_LOOP instructions.
+  * The WRITE instructions set the success flag.
+  * New READ_EOF and WRITE_Q instructions.
+  * READ_DECIMAL (the old NUM) only matches integers now.
+  * READ_ID allows underscores.
+  * There's a trace mode. TODO: add an instruction to turn it on or off.
