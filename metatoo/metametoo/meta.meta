@@ -1,0 +1,25 @@
+program = *st ?eof;
+
+st      = ?id            :it          :nl
+          '=' choice ';' :'   return' :nl;
+
+choice  = chain          %gensym
+          *('|'          :'   if_win W':top :nl
+                  chain) :'W':pop           :nl;
+
+chain   = surely tail
+        | maybe          :'   if_lose ' %gensym :'L':top :nl
+          tail           :'L':pop :nl;
+tail    = *( surely
+           | maybe       :'   win_or_die' :nl);
+
+surely  = ':' ( ?qstring :'   write ' :it :nl
+              | ?id      :'   write_' :it :nl)
+        | '%' ?id        :'   do_'    :it :nl
+        | '*'            %gensym :'S':top :nl
+          maybe          :'   win_loop S' :pop :nl;
+
+maybe   = ?qstring       :'   read ' :it :nl
+        | '?' ?id        :'   read_' :it :nl
+        | ?id            :'   call ' :it :nl
+        | '(' choice ')';
