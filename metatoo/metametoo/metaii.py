@@ -157,14 +157,12 @@ class Meta_II_VM(object):
     def WRITE_LABEL1(self):
         if self.stack[-1] is None:
             self.stack[-1] = self.next_label()
-        self.poop += self.stack[-1]
-        self.success = True
+        self.write(self.stack[-1])
         
     def WRITE_LABEL2(self):
         if self.stack[-2] is None:
             self.stack[-2] = self.next_label()
-        self.poop += self.stack[-2]
-        self.success = True
+        self.write(self.stack[-2])
 
     # Debugging/introspection.
 
