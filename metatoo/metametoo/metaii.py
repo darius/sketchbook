@@ -14,12 +14,13 @@ about this code is probably his fault.
 #   * The WRITE instructions set the success flag.
 #   * New READ_EOF and WRITE_Q instructions.
 #   * READ_DECIMAL (the old NUM) only matches integers now.
+#   * READ_ID allows underscores.
 #   * Stack frames are always 4 wide, including, for helpful
 #     backtrace on error, the destination label. Schorre focused
 #     on saving memory instead.
 #   * There's a trace mode. TODO: add an instruction to turn it on or off.
 
-import itertools, sys
+import itertools, re, sys
 
 def main(argv):
     trace = False
@@ -77,6 +78,14 @@ class Meta_II_VM(object):
                 self.print_instruction(cur_pc, '  ' + self.state_gist())
         return self.poop
 
+    def match(self, regex):
+        self.feed = self.feed.lstrip()
+        m = re.match(regex, self.feed)
+        if m:
+            self.eat(m.end())
+        else:
+            self.success = False
+
     def eat(self, nchars):
         self.success, self.bite, self.feed = True, self.feed[:nchars], self.feed[nchars:]
 
@@ -84,48 +93,27 @@ class Meta_II_VM(object):
         assert arg[:1] == arg[-1:] == "'"
         return arg[1:-1]
 
+    def write(self, string):
+        self.poop += string
+        self.success = True
+
     # The instructions:
 
     def READ(self, string):
-        self.feed = self.feed.lstrip()
-        string = self.decode_literal(string)
-        if self.feed.startswith(string):
-            self.eat(len(string))
-        else:
-            self.success = False
+        self.match(re.escape(self.decode_literal(string)))
 
     def READ_EOF(self):
         self.feed = self.feed.lstrip()
         self.success = self.feed == ''
 
     def READ_ID(self):
-        self.feed = self.feed.lstrip()
-        if self.feed[:1].isalpha():
-            i = 1
-            while self.feed[i:i+1].isalnum():
-                i += 1
-            self.eat(i)
-        else:
-            self.success = False
+        self.match(r'[a-zA-Z_]\w*')
 
     def READ_QSTRING(self):
-        self.feed = self.feed.lstrip()
-        if self.feed.startswith("'"):
-            i = self.feed.find("'", 1)
-            if i != -1:
-                self.eat(i+1)
-                return
-        self.success = False
+        self.match(r"'[^']*'")
 
     def READ_DECIMAL(self):
-        self.feed = self.feed.lstrip()
-        i = 0
-        while self.feed[i:i+1].isdigit():
-            i += 1
-        if i:
-            self.eat(i)
-        else:
-            self.success = False
+        self.match(r'\d+')
 
     def GOTO(self, addr):
         self.pc = self.labels[addr]
@@ -155,20 +143,16 @@ class Meta_II_VM(object):
         del self.stack[-4:]
 
     def WRITE(self, string):
-        self.poop += self.decode_literal(string)
-        self.success = True
+        self.write(self.decode_literal(string))
 
     def WRITE_Q(self):
-        self.poop += "'"
-        self.success = True
+        self.write("'")
 
     def WRITE_NL(self):
-        self.poop += '\n'
-        self.success = True
+        self.write('\n')
 
     def WRITE_IT(self):
-        self.poop += self.bite
-        self.success = True
+        self.write(self.bite)
 
     def WRITE_LABEL1(self):
         if self.stack[-1] is None:
