@@ -1,13 +1,11 @@
-session = *command
-          ?eof       :'   halt' :nl;
-
-command = (fun | let | expr);
+main = *(fun | let | expr)
+        ?eof         :'   halt' :nl;
 
 fun = 'fun'          %gensym
-                     :'   goto skip' :top :nl
+                     :'   goto SKIP' :top :nl
       parameters ?id :it :nl
       '=' expr       :'   return' :nl
-                     :'skip' :pop :nl;
+                     :'SKIP' :pop :nl;
 
 let = 'let' expr
       'be' ?id       :'   define ' :it :nl;
@@ -18,38 +16,38 @@ e0 = e1 ( ';'        :'   drop' :nl
           e0
         | '' );
 
-e1 = e3 *( ':>' ?id  :'   to ' :it :nl);
+e1 = e2 *( ':>' ?id  :'   to ' :it :nl);
 
-e3 = e5 *( '&' e5    :'   and' :nl
-         | '|' e5    :'   or'  :nl
-         | '^' e5    :'   xor' :nl);
+e2 = e3 *( '&' e3    :'   and' :nl
+         | '|' e3    :'   or'  :nl
+         | '^' e3    :'   xor' :nl);
 
-e5 = e7 ( '<' e7     :'   lt' :nl
-        | '=' e7     :'   eq' :nl
+e3 = e4 ( '<' e4     :'   lt' :nl
+        | '=' e4     :'   eq' :nl
         | '' );
 
-e7 = e9 *( '+' e9    :'   add' :nl
-         | '-' e9    :'   sub' :nl);
+e4 = e5 *( '+' e5    :'   add' :nl
+         | '-' e5    :'   sub' :nl);
 
-e9 = e11 *( '*' e11  :'   mul' :nl
-          | '/' e11  :'   div' :nl
-          | '%' e11  :'   mod' :nl);
+e5 = e6 *( '*' e6    :'   mul' :nl
+         | '/' e6    :'   div' :nl
+         | '%' e6    :'   mod' :nl);
 
-e11 = ?decimal       :'   push ' :it :nl
-    | ?qstring       :'   push_string ' :it :nl
-    | 'if' e0        %gensym
+e6 = ?decimal        :'   push ' :it :nl
+   | ?qstring        :'   push_string ' :it :nl
+   | 'if' e1         %gensym
                      :'   if-false F' :top :nl
-      'then' e0      %gensym
+     'then' e1       %gensym
                      :'   goto E' :top :nl
                      %swap
                      :'F' :pop :nl
-      'else' e0
+     'else' e1
                      :'E' :pop :nl
-    | '*' e11        :'   fetch' :nl
-    | '-' e11        :'   neg' :nl
-    | '(' e0 ')'
-    | arguments ?id  :'   call ' :it :nl
-    | ?id            :'   load ' :it :nl;
+   | '*' e6          :'   fetch' :nl
+   | '-' e6          :'   neg' :nl
+   | '(' e0 ')'
+   | arguments ?id   :'   call ' :it :nl
+   | ?id             :'   load ' :it :nl;
 
 parameters =
    '['               :'   parameters'
