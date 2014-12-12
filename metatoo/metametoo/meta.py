@@ -65,11 +65,11 @@ class Meta_II_VM(object):
         self.feed = input_text
         self.bite = None
         self.poop = ''
-        self.success = False
-        self.poisoned = False
-        self.gensym = (itertools.count()).next
-        self.calls = [-1, 'start']
+        self.win = False
         self.stack = []
+        self.calls = [-1, 'start']
+        self.gensym = itertools.count().next
+        self.poisoned = False
         self.pc = 0
         while not self.poisoned and 0 <= self.pc:
             cur_pc = self.pc
@@ -86,10 +86,10 @@ class Meta_II_VM(object):
         if m:
             self.eat(m.end())
         else:
-            self.success = False
+            self.win = False
 
     def eat(self, nchars):
-        self.success, self.bite, self.feed = True, self.feed[:nchars], self.feed[nchars:]
+        self.win, self.bite, self.feed = True, self.feed[:nchars], self.feed[nchars:]
 
     def decode_literal(self, arg):
         assert arg[:1] == arg[-1:] == "'"
@@ -97,7 +97,7 @@ class Meta_II_VM(object):
 
     def write(self, string):
         self.poop += string
-        self.success = True
+        self.win = True
 
     # The instructions:
 
@@ -106,7 +106,7 @@ class Meta_II_VM(object):
 
     def READ_EOF(self):
         self.feed = self.feed.lstrip()
-        self.success = self.feed == ''
+        self.win = self.feed == ''
 
     def READ_ID(self):
         self.match(r'[a-zA-Z_]\w*')
@@ -121,19 +121,19 @@ class Meta_II_VM(object):
         self.pc = self.labels[addr]
 
     def IF_WIN(self, addr):
-        if self.success:
+        if self.win:
             self.GOTO(addr)
 
     def WIN_LOOP(self, addr):
         self.IF_WIN(addr)
-        self.success = True
+        self.win = True
 
     def IF_LOSE(self, addr):
-        if not self.success:
+        if not self.win:
             self.GOTO(addr)
 
     def WIN_OR_DIE(self):
-        if not self.success:
+        if not self.win:
             self.poisoned = True
 
     def CALL(self, addr):
@@ -197,7 +197,7 @@ class Meta_II_VM(object):
     def state_gist(self):
         calls = ' '.join(self.calls[3::2])
         # TODO show the stack too -- how to format?
-        return '%s %-10r %s' % ('yn'[self.success], self.feed[:8], calls)
+        return '%s %-10r %s' % ('yn'[self.win], self.feed[:8], calls)
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
