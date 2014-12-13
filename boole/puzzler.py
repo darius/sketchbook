@@ -1,5 +1,6 @@
 """
 Solve logic puzzles.
+TODO: compare to http://www.eecs.berkeley.edu/~bh/v3ch2/math.html
 """
 
 from peglet import OneResult, Parser
