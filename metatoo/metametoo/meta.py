@@ -15,7 +15,7 @@ def main(argv):
         del argv[1]
     assert 2 <= len(argv), "usage: %s [-trace] asm-file [input-file...]" % argv[0]
 
-    vm = Meta_II_VM(trace)
+    vm = Meta_VM(trace)
     with open(argv[1]) as f:
         vm.load(f.read())
     input_text = ''
@@ -32,7 +32,7 @@ def main(argv):
         vm.inspect()
     return vm.poisoned
 
-class Meta_II_VM(object):
+class Meta_VM(object):
     def __init__(self, trace=False):
         self.code = []
         self.labels = {}
