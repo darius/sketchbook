@@ -26,6 +26,18 @@ default_prefix_ops = {
     '-':    (20,  lambda n: -n),
 }
 
+def make_parse_expr(scan, infix_ops, parse_primary):
+    def parse_expr(min_precedence):
+        """Parse a head of the scanner's stream as an infix expression whose
+        operators (unless in parentheses) all have lprec >= min_precedence."""
+        operand = parse_primary(scan, parse_expr, infix_ops)
+        while True:
+            lprec, rprec, op = infix_ops.get(scan.token, (-1, -1, None))
+            if lprec < min_precedence: return operand
+            scan()
+            operand = op(operand, parse_expr(rprec))
+    return parse_expr
+
 def make_parse_primary(parse_literal=int, prefix_ops=default_prefix_ops):
     """The infix parser calls on a 'primary' parser for its noninfix
     subexpressions. You can give it an arbitrary primary parser, but
@@ -49,18 +61,6 @@ def make_parse_primary(parse_literal=int, prefix_ops=default_prefix_ops):
         else:
             assert False, "Unexpected operator: %r" % scan.token
     return parse_primary
-
-def make_parse_expr(scan, infix_ops, parse_primary):
-    def parse_expr(min_precedence):
-        """Parse a head of the scanner's stream as an infix expression whose
-        operators (unless in parentheses) all have lprec >= min_precedence."""
-        operand = parse_primary(scan, parse_expr, infix_ops)
-        while True:
-            lprec, rprec, op = infix_ops.get(scan.token, (-1, -1, None))
-            if lprec < min_precedence: return operand
-            scan()
-            operand = op(operand, parse_expr(rprec))
-    return parse_expr
 
 def parse_infix(tokens,
                 infix_ops=default_infix_ops,
