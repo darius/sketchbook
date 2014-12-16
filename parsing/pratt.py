@@ -12,12 +12,13 @@ import re
 
 def parse(s):
     next = tokenize(s).next
-    token = Struct(_=next())
+    def my(): pass # A hack to express a nonlocal mutable variable in Python 2.
+    my.token = next()
     def parse_expression(rbp):
-        nud, token._ = token._.nud, next()
+        nud, my.token = my.token.nud, next()
         left = nud(parse_expression)
-        while rbp < token._.lbp:
-            led, token._ = token._.led, next()
+        while rbp < my.token.lbp:
+            led, my.token = my.token.led, next()
             left = led(left, parse_expression)
         return left
     return parse_expression(0)
@@ -44,7 +45,3 @@ class Token:
         self.nud = nud
     def __repr__(self):
         return repr(self.datum)
-
-class Struct:
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
