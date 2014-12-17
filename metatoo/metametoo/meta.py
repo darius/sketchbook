@@ -44,12 +44,12 @@ class Meta_VM(object):
             if not line:
                 pass
             elif line[0].isspace():
-                self.load_line(*line.split(None, 1))
+                self.load_instruction(*line.split(None, 1))
             else:
                 assert line not in self.labels, "Duplicate label: " + line
                 self.labels[line] = len(self.code)
             
-    def load_line(self, op, *args):
+    def load_instruction(self, op, *args):
         self.code.append((getattr(self, op.upper()), args))
 
     def run(self, input_text):
