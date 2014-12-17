@@ -17,7 +17,7 @@ def main(argv):
 
     vm = Meta_VM(trace)
     with open(argv[1]) as f:
-        vm.load(f.read())
+        vm.load(f)
     input_text = ''
     if argv[2:]:
         for filename in argv[2:]:
@@ -38,16 +38,16 @@ class Meta_VM(object):
         self.labels = {}
         self.trace = trace
 
-    def load(self, source_code):
-        for line in source_code.splitlines():
-            if not line or line.isspace():
+    def load(self, lines):
+        for line in lines:
+            line = line.rstrip()
+            if not line:
                 pass
             elif line[0].isspace():
                 self.load_line(*line.split(None, 1))
             else:
-                label = line.strip()
-                assert label not in self.labels, "Duplicate label: " + label
-                self.labels[label] = len(self.code)
+                assert line not in self.labels, "Duplicate label: " + line
+                self.labels[line] = len(self.code)
             
     def load_line(self, op, *args):
         self.code.append((getattr(self, op.upper()), args))
