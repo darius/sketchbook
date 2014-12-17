@@ -65,7 +65,7 @@ class Meta_VM(object):
         self.pc = 0
         while not self.poisoned and 0 <= self.pc:
             cur_pc = self.pc
-            op, args = self.code[self.pc]
+            op, args = self.code[cur_pc]
             self.pc += 1
             op(*args)
             if self.trace:
