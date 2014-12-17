@@ -156,13 +156,16 @@ class Meta_VM(object):
 
     def DO_GENSYM(self):
         self.stack.append(self.gensym())
+        self.win = True
 
     def DO_IT(self):
         self.stack.append(self.bite)
+        self.win = True
 
     def DO_SWAP(self):
         y, z = self.stack[-2:]
         self.stack[-2:] = [z, y]
+        self.win = True
 
     # Debugging/introspection.
 
