@@ -3,8 +3,8 @@ A SAT problem is a list of clauses. It's satisfied when all are true.
 
 A clause is a list of literals. It's true when at least one is true.
 
-A literal is a positive or negative integer denoting a variable
-or its complement. Its truth depends on the environment.
+A literal is a nonzero integer denoting a variable (if positive) or
+its complement (if negative). Its truth depends on the environment.
 
 An environment is a partial map from positive integer to boolean.
 """
