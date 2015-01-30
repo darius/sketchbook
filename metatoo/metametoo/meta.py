@@ -65,8 +65,8 @@ class Meta_VM(object):
         self.pc = 0
         while not self.poisoned and 0 <= self.pc:
             cur_pc = self.pc
-            op, args = self.code[cur_pc]
             self.pc += 1
+            op, args = self.code[cur_pc]
             op(*args)
             if self.trace:
                 self.print_instruction(cur_pc, '  ' + self.state_gist())
@@ -75,16 +75,12 @@ class Meta_VM(object):
     def match(self, regex):
         self.feed = self.feed.lstrip()
         m = re.match(regex, self.feed)
+        self.win = m is not None
         if m:
-            self.eat(m.end())
-        else:
-            self.win = False
-
-    def eat(self, nchars):
-        self.win, self.bite, self.feed = True, self.feed[:nchars], self.feed[nchars:]
+            self.bite, self.feed = self.feed[:m.end()], self.feed[m.end():]
 
     def decode_literal(self, arg):
-        assert arg[:1] == arg[-1:] == "'"
+        assert arg[:1] == "'" == arg[-1:]
         return arg[1:-1]
 
     def write(self, string):
