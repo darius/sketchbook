@@ -81,7 +81,7 @@ W14
 W16
    return
 surely
-   read ':'
+   read '.'
    if_lose L17
    read_qstring
    if_lose L18

@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu; IFS=$'\n\t'  # 'strict mode': e=errexit, u=nounset
 
 ./meta.sh meta.meta >foo
 diff -u meta.asm foo
