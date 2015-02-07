@@ -1,12 +1,12 @@
 program
 S0
-   call st
+   call rule
    win_loop S0
    read_eof
    win_or_die
 W1
    return
-st
+rule
    read_id
    if_lose L2
    write_it

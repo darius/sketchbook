@@ -1,6 +1,6 @@
-program = *st ?eof;
+program = *rule ?eof;
 
-st      = ?id            :it          :nl
+rule    = ?id            :it          :nl
           '=' choice ';' :'   return' :nl;
 
 choice  = chain          %gensym
