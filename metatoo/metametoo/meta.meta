@@ -16,7 +16,7 @@ tail    = *( surely
 surely  = ':' ( ?qstring :'   write ' :it :nl
               | ?id      :'   write_' :it :nl)
         | '%' ?id        :'   do_'    :it :nl
-        | '*'            %gensym :'S':top :nl
+        | '*'    %gensym :'S':top :nl
           maybe          :'   win_loop S' :pop :nl;
 
 maybe   = ?qstring       :'   read ' :it :nl
