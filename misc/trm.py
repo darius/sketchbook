@@ -57,7 +57,7 @@ def parse_insn(token):
     return insn_table[token.count('#')], token.count('1')
 
 def make_regs(*strings):
-    return dict((i+1, s) for i, s in enumerate(strings))
+    return dict(enumerate(strings, 1))
 
 def run(insns, regs, verbose=False):
     pc = 0
