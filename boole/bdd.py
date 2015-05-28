@@ -42,7 +42,7 @@ class Maker:
     def imp(self, a, b): return self.choice(R, a, b) 
     # TODO: first sort a, b by rank in the following?
     # N.B. min and max could have been named 'and' and 'or'
-    # (taking L  to represent False, and R for True).
+    # (taking L to represent False, and R for True).
     def min(self, a, b): return self.choice(L, a, b)
     def max(self, a, b): return self.choice(b, a, R)
     def eqv(self, a, b): return self.choice(self.neg(b), a, b)

@@ -148,3 +148,19 @@ bal = dict(start = [('(', 'cs', ')')],
 
 ## parse(bal, '((())..(.))')
 #. True
+
+"""
+<napping> Are you trying to construct a graph for each derivative, or just ignoring left-recursion entirely?
+<napping> because you can definitely get infinite cycles of contexts
+<napping> and then recognizing and sharing those through some kind of memoization or whatever is one of the things GLL does to get general parsing
+<napping> but, those epsilon transitions themselves should form a finite graph/regular paths
+<napping> so if you want you can probably generate some kind of regex representation of an infinite family of current states
+<napping> I wonder how those sets might be related to the LR table stuff?
+<darius> maybe if you took the right derivative instead of the left?
+<darius> (might be a completely bogus thought)
+<napping> I'm pretty sure that's completely different from LR, but might be interesting
+<napping> Brozozowski got some kind of minimization from reversing DFAs, right?
+<darius> yes
+<napping> Ah, the other thing I was thinking of was that in a traditional deterministic LR parser you can also calculate a regular expression for what the stack can possibly look like when you are in a particular state (this time not restricting to epislon edges)
+<napping> Doing the context like that is probably just a different way to represent the graph structured stack, but you might noticed something interesting that way
+"""
