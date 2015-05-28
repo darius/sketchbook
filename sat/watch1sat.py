@@ -21,7 +21,7 @@ def solve(problem):
 
 def solving(index, env, variables):
     "Try to extend a consistent assignment for problem to a satisfying one."
-    if index is 'contradiction':
+    if index == 'contradiction':
         return None
     if not variables:
         return env

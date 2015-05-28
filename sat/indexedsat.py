@@ -25,7 +25,7 @@ def solve(problem):
 
 def solving(index, env, variables, unit_literals):
     "Try to extend a consistent assignment for problem to a satisfying one."
-    if unit_literals is 'contradiction':
+    if unit_literals == 'contradiction':
         return None
     if not variables:
         return env

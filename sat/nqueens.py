@@ -10,13 +10,11 @@ from sat import conjoin, flatten, exactly_one, at_most_one
 
 ## queens(2)
 #. none
-#. 
 ## queens(4)
 #. . . Q .
 #. Q . . .
 #. . . . Q
 #. . Q . .
-#. 
 
 def queens(n):
     env = solver.solve(queens_problem(n))

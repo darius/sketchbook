@@ -21,12 +21,12 @@ from sat import assign
 def solve(problem):
     "Return a satisfying assignment for problem, or None if impossible."
     index, unit_literals = build_index(problem)
-    if index is 'contradiction': return None
+    if index == 'contradiction': return None
     return solving(index, {}, sat.problem_variables(problem), unit_literals)
 
 def solving(index, env, variables, unit_literals):
     "Try to extend a consistent assignment for problem to a satisfying one."
-    if unit_literals is 'contradiction':
+    if unit_literals == 'contradiction':
         return None
     if not variables:
         return env
