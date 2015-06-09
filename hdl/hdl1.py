@@ -14,6 +14,8 @@ def eval_hdl(text, env):
     `env` is a dict, for two purposes:
        * sequential-circuit state (and RAM)
        * I/O devices
+    (It's also used as a scratchpad for combinational-logic state;
+    no separation of that state is enforced here.)
     To use this for a particular machine, call eval_hdl() in a loop,
     once for each most-basic machine cycle, reading/writing the data
     of any special devices from/to env."""
