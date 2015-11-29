@@ -1,6 +1,8 @@
 """
 Let's see if I can reconstruct B+ trees from this draft post by Ezekiel:
 https://github.com/tehgeekmeister/dadabass/blob/b_plus_tree/notes/b_plus_tree.md
+I've now departed from that outline in a couple respects to do with the root:
+it can be a leaf, or as a branch it's not specially tagged as the root.
 
 A tree represents a map from keys to values. It's built of two node types,
 each represented by a 3-tuple:
@@ -43,7 +45,7 @@ def check_bpt(bpt):
     * For leaves, len(keys) == len(values)
     * The keys from all of the leaves together are all distinct.
 
-    So that search() can find a key, and insert() can put it where
+    So that search() can find a key, and insert() can leave it where
     search() will find it:
     * If the root is a branch, it has at least one kid.
     * For branches, len(keys) == len(kids)-1
