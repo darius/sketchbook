@@ -4,7 +4,7 @@ https://github.com/tehgeekmeister/dadabass/blob/b_plus_tree/notes/b_plus_tree.md
 I've now departed from that outline in a couple respects to do with the root:
 it can be a leaf, or as a branch it's not specially tagged as the root.
 
-A tree represents a map from keys to values. It's built of two node types,
+A B+ tree represents a map from keys to values. It's built of two node types,
 each represented by a 3-tuple:
 
   'branch', keys, kids    (Called either 'root' or 'internal node' in the post.)
@@ -47,7 +47,7 @@ def check_bpt(bpt):
 
     So that fetch() can find a key, and insert() can leave it where
     fetch() will find it:
-    * If the root is a branch, it has at least one kid.
+    * Each branch has at least one kid, so you eventually reach a leaf.
     * For branches, len(keys) == len(kids)-1
     * For both kinds of nodes, keys are sorted ascending:
       for i in range(len(keys)-1):
@@ -57,7 +57,7 @@ def check_bpt(bpt):
           all of kids[i] and descendants' keys < keys[i] <= all of kids[i+1] and descendants' keys
       Where the kid key is in a branch, the <= is strengthened to a <.
 
-    To keep nodes within their capacity:
+    To bound the size of nodes, for efficiency:
     * For both node kinds, len(keys) < capacity
 
     To ensure a balanced tree, for efficiency:
@@ -165,7 +165,7 @@ def really_insert(bpt, new_key, value):
     if len(keys) < capacity:
         return bpt
 
-    # Else split the now-overpacked leaf...
+    # Otherwise split the now-overpacked leaf...
     mid = capacity//2
     tween = keys[mid]
     left  = 'leaf', keys[:mid], xs[:mid]
@@ -200,7 +200,7 @@ def exercise_bpt(pairs):
     t = make_empty_bpt()
     for key, value in pairs:
         if value == 'lookup':
-            assert d.get(key, default) == fetch(t, key, default)
+            assert d.get(key, default) == fetch(t, key, default), "Wrong fetch result"
         else:
             d[key] = value
             t = insert(t, key, value)
