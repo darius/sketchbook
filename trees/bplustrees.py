@@ -171,6 +171,7 @@ def really_insert(bpt, new_key, value):
         kids[i:i+1] = [left, right]
         if len(keys) < N:
             return bpt
+        # Example (N=4, mid=2):
         #   [key0,key1,key2]         [key0]    key1   [key2]
         # [kid0,kid1,kid2,kid3] => [kid0,kid1]      [kid2,kid3]
         #                            (left)  (tween)  (right)
