@@ -220,7 +220,7 @@ def exercise_bpt(pairs):
 
 # Smoke test
 
-t = make_empty_bpt()
+## t = make_empty_bpt()
 ## t
 #. ('leaf', [], [])
 ## t = store(t, 'm', 5)
