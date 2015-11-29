@@ -45,8 +45,8 @@ def check_bpt(bpt):
     * For leaves, len(keys) == len(values)
     * The keys from all of the leaves together are all distinct.
 
-    So that search() can find a key, and insert() can leave it where
-    search() will find it:
+    So that fetch() can find a key, and insert() can leave it where
+    fetch() will find it:
     * If the root is a branch, it has at least one kid.
     * For branches, len(keys) == len(kids)-1
     * For both kinds of nodes, keys are sorted ascending:
@@ -104,7 +104,7 @@ def check_bpt(bpt):
 
     checking(bpt, 0, (), ())
 
-def search(bpt, needle_key, default=None):
+def fetch(bpt, needle_key, default=None):
     "Return bpt's value for needle_key, or default if absent."
     tag, keys, xs = bpt
     if not xs: return default
@@ -201,7 +201,7 @@ def exercise_bpt(pairs):
     t = make_empty_bpt()
     for key, value in pairs:
         if value == 'lookup':
-            assert d.get(key, default) == search(t, key, default)
+            assert d.get(key, default) == fetch(t, key, default)
         else:
             d[key] = value
             t = insert(t, key, value)
@@ -232,14 +232,14 @@ t = make_empty_bpt()
 ## t = insert(t, 'n', 1)
 ## t
 #. ('leaf', ['m', 'n'], [42, 1])
-## search(t, 'm')
+## fetch(t, 'm')
 #. 42
-## search(t, 'n')
+## fetch(t, 'n')
 #. 1
 ## t = insert(t, 'a', 8)
 ## t
 #. ('leaf', ['a', 'm', 'n'], [8, 42, 1])
-## search(t, ''), search(t, 'a'), search(t, 'b'), search(t, 'm'), search(t, 'n'), search(t, 'z')
+## fetch(t, ''), fetch(t, 'a'), fetch(t, 'b'), fetch(t, 'm'), fetch(t, 'n'), fetch(t, 'z')
 #. (None, 8, None, 42, 1, None)
 
 ## what_I_represent(t)
@@ -273,7 +273,7 @@ t = make_empty_bpt()
 ## sorted(what_I_represent(t).items())
 #. [('a', 8), ('m', 42), ('n', 1), ('o', 10), ('p', 11), ('q', 12), ('r', 13), ('s', 14), ('t', 15), ('u', 16), ('v', 17)]
 
-## for k in '-abcdefghijklmnopqrstuvw': print k, search(t, k)
+## for k in '-abcdefghijklmnopqrstuvw': print k, fetch(t, k)
 #. - None
 #. a 8
 #. b None
