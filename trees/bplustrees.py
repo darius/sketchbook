@@ -37,8 +37,7 @@ def check_bpt(bpt):
     """
     Check the representation invariant for our B+ tree type:
 
-    * The root (the top-level node) is a branch.
-        XXX why can't the root be a leaf instead?
+    * If the root is a branch, it has at least one kid.
     * The leaves are all at the same depth.
     * For all node kinds, len(keys) < N
     * For branches, len(keys) == len(kids)-1
@@ -57,13 +56,13 @@ def check_bpt(bpt):
           all of kids[i] and descendants' keys < keys[i] <= all of kids[i+1] and descendants' keys
       Where the kid key is in a branch, the <= is strengthened to a <.
     """
-    tag, _, kids = bpt
-    assert tag == 'branch'
+    tag, _, xs = bpt
+    assert tag == 'leaf' or xs
 
     # First compute the depth.
     depth = 0
-    while kids and tag == 'branch':
-        tag, _, kids = kids[0]
+    while tag == 'branch':
+        tag, _, xs = xs[0]
         depth += 1
 
     def checking(node, d, lo, hi):
@@ -96,7 +95,7 @@ def search(bpt, needle_key, default=None):
     "Return bpt's value for needle_key, or default if absent."
     tag, keys, xs = bpt
     if not xs: return default
-    while tag != 'leaf':
+    while tag == 'branch':
         for i, key_i in enumerate(keys):
             if needle_key < key_i:
                 break
@@ -109,7 +108,7 @@ def search(bpt, needle_key, default=None):
     return default
 
 def make_empty_bpt():
-    result = 'branch', [], []
+    result = 'leaf', [], []
     check_bpt(result)
     return result
 
@@ -123,14 +122,10 @@ def really_insert(bpt, new_key, value):
     new_key), and return the new root node."""
 
     tag, keys, xs = bpt
-    if not xs:
-        # The tree is completely empty; start populating it.
-        leaf = 'leaf', [new_key], [value]
-        return 'branch', [], [leaf]
 
     # Find the leaf node for new_key, and the path down to it.
     path = []
-    while tag != 'leaf':
+    while tag == 'branch':
         for i, key_i in enumerate(keys):
             if new_key < key_i:
                 break
@@ -212,23 +207,23 @@ def gen_small_tests(ntrials=10000):
 
 t = make_empty_bpt()
 ## t
-#. ('branch', [], [])
+#. ('leaf', [], [])
 ## t = insert(t, 'm', 5)
 ## t
-#. ('branch', [], [('leaf', ['m'], [5])])
+#. ('leaf', ['m'], [5])
 ## t = insert(t, 'm', 42)
 ## t
-#. ('branch', [], [('leaf', ['m'], [42])])
+#. ('leaf', ['m'], [42])
 ## t = insert(t, 'n', 1)
 ## t
-#. ('branch', [], [('leaf', ['m', 'n'], [42, 1])])
+#. ('leaf', ['m', 'n'], [42, 1])
 ## search(t, 'm')
 #. 42
 ## search(t, 'n')
 #. 1
 ## t = insert(t, 'a', 8)
 ## t
-#. ('branch', [], [('leaf', ['a', 'm', 'n'], [8, 42, 1])])
+#. ('leaf', ['a', 'm', 'n'], [8, 42, 1])
 ## search(t, ''), search(t, 'a'), search(t, 'b'), search(t, 'm'), search(t, 'n'), search(t, 'z')
 #. (None, 8, None, 42, 1, None)
 
