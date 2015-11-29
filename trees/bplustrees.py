@@ -9,7 +9,7 @@ each represented by a 3-tuple:
   'leaf', keys, values
 """
 
-import math
+import math, random
 
 def what_I_represent(bpt):
     "Abstraction function for our B+ tree type."
@@ -179,6 +179,33 @@ def really_insert(bpt, new_key, value):
 
     # If we got here, we need a new root.
     return 'branch', [tween], [left, right]
+
+
+# Testing
+
+def exercise_bpt(pairs):
+    """Check that a sequence of insertions and lookups produces the same
+    results for a dict and a bpt."""
+    default = ['missing']
+    d = {}
+    t = make_empty_bpt()
+    for key, value in pairs:
+        if value == 'lookup':
+            assert d.get(key, default) == search(t, key, default)
+        else:
+            d[key] = value
+            t = insert(t, key, value)
+            wir = what_I_represent(t)
+            assert d == wir, ("different", d, wir, t)
+
+def gen_small_tests(ntrials=10000):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    for trial in range(ntrials):
+        exercise_bpt((random.choice(alphabet),
+                      'lookup' if random.random() < 0.3 else value)
+                     for value in range(50))
+
+### gen_small_tests()
 
 
 # Smoke test
