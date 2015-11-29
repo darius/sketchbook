@@ -193,6 +193,13 @@ def really_store(bpt, new_key, value):
 
 import random
 
+def random_tests(ntrials=10000):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    for trial in range(ntrials):
+        exercise_bpt((random.choice(alphabet),
+                      'fetch' if random.random() < 0.3 else value)
+                     for value in range(50))
+
 def exercise_bpt(pairs):
     """Check that a sequence of stores and fetches produces the same
     results for a dict and a bpt."""
@@ -208,14 +215,7 @@ def exercise_bpt(pairs):
             wir = what_I_represent(t)
             assert d == wir, ("different", d, wir, t)
 
-def gen_small_tests(ntrials=10000):
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'
-    for trial in range(ntrials):
-        exercise_bpt((random.choice(alphabet),
-                      'fetch' if random.random() < 0.3 else value)
-                     for value in range(50))
-
-### gen_small_tests()
+### random_tests()
 
 
 # Smoke test
