@@ -63,11 +63,9 @@ def check_bpt(bpt):
     To ensure a balanced tree, for efficiency:
     * The leaves are all at the same depth.
     * For branches below the root, ceil(capacity//2) <= len(kids)
-    *   XXX Shouldn't there be a similar invariant for leaves?
-            Could we just have a common invariant on len(keys)?
-            Well, the first leaf starts out underpopulated,
-            so the actual invariant would be conditional, like "if there are
-            multiple leaves, then they're all at least half full."
+    * For leaves below the root,   ceil(capacity//2) <= len(values)
+      (This one does not affect asymptotics, but without it the
+      constant factor would suck.)
     """
     tag, _, xs = bpt
     assert tag == 'leaf' or xs
@@ -97,6 +95,7 @@ def check_bpt(bpt):
             assert d == depth, "Leaves at different depths"
             values = xs
             assert len(keys) == len(values), "keys and values don't correspond"
+            if 0 < d: assert math.ceil(capacity//2) <= len(values), "Underpopulated leaf"
             assert lo is () or lo[0] == keys[0]
             assert hi is () or keys[-1] < hi[0]
         else:
