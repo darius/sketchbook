@@ -111,7 +111,7 @@ def search(bpt, needle_key, default=None):
     return default
 
 def make_empty_bpt():
-    result = 'root', [], []       # XXX fails the "keys and kids correspond" assertion
+    result = 'root', [], []
     check_bpt(result)
     return result
 
