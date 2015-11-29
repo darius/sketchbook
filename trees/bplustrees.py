@@ -14,7 +14,7 @@ each represented by a 3-tuple:
 from math import ceil
 
 def what_I_represent(bpt):
-    "Abstraction function for our B+ tree type."
+    "Return a dict that represents the same mapping as the given B+ tree does."
     result = {}
     def walk(node):
         tag, keys, xs = node
