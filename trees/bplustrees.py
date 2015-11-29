@@ -2,15 +2,11 @@
 Let's see if I can reconstruct B+ trees from this draft post by Ezekiel:
 https://github.com/tehgeekmeister/dadabass/blob/b_plus_tree/notes/b_plus_tree.md
 
-A tree represents a map from keys to values. It's built of three node types,
+A tree represents a map from keys to values. It's built of two node types,
 each represented by a 3-tuple:
 
-  'root', keys, kids
-  'branch', keys, kids    (Called 'internal node' in the post.)
+  'branch', keys, kids    (Called either 'root' or 'internal node' in the post.)
   'leaf', keys, values
-
-(I think we could ditch the 'root' tag and just say that the branch we start with
-is the root.)
 """
 
 import math
@@ -20,7 +16,7 @@ def what_I_represent(bpt):
     result = {}
     def walk(node):
         tag, keys, xs = node
-        if tag in ('root','branch'):
+        if tag == 'branch':
             kids = xs
             for kid in kids:
                 walk(kid)
@@ -41,29 +37,32 @@ def check_bpt(bpt):
     """
     Check the representation invariant for our B+ tree type:
 
-    * There's exactly one root.
-        XXX why can't the root be a leaf instead of a branch?
+    * The root (the top-level node) is a branch.
+        XXX why can't the root be a leaf instead?
     * The leaves are all at the same depth.
     * For all node kinds, len(keys) < N
-    * For root and branches, len(keys) == len(kids)-1
+    * For branches, len(keys) == len(kids)-1
     * For leaves, len(keys) == len(values)
     * For branches, ceil(N//2) <= len(kids)
     *   XXX Shouldn't there be a similar invariant for leaves?
             Could we just have a common invariant on len(keys)?
-    * For all kinds, keys are distinct and sorted ascending:
+            Well, the first leaf starts out underpopulated,
+            so the actual invariant would be like "if there are
+            multiple leaves, then they're all at least half full."
+    * For both kinds, keys are distinct and sorted ascending:
       for i in range(len(keys)-1):
           keys[i] < keys[i+1]
-    * Root and branches have keys related to their kids':
+    * Branches have keys related to their kids':
       for i in range(len(keys)):
           all of kids[i] and descendants' keys < keys[i] <= all of kids[i+1] and descendants' keys
       Where the kid key is in a branch, the <= is strengthened to a <.
     """
     tag, _, kids = bpt
-    assert tag == 'root'
+    assert tag == 'branch'
 
     # First compute the depth.
     depth = 0
-    while kids and tag != 'leaf':
+    while kids and tag == 'branch':
         tag, _, kids = kids[0]
         depth += 1
 
@@ -72,11 +71,10 @@ def check_bpt(bpt):
         assert len(keys) < N, "Overflowed node capacity"
         for i in range(len(keys)-1):
             assert keys[i] < keys[i+1], "Disordered or duplicate key"
-        if tag in ('branch', 'root'):
-            if tag == 'root': assert d == 0, "More than one root"
+        if tag == 'branch':
             kids = xs
             assert not kids or len(keys) == len(kids)-1, "keys and kids don't correspond"
-            if tag == 'branch': math.ceil(N//2) <= len(kids)
+            if 0 < d: assert math.ceil(N//2) <= len(kids), "Underpopulated branch"
             assert lo is () or lo[0] < keys[0]
             assert hi is () or keys[-1] < hi[0]
             for i, kid_i in enumerate(kids):
@@ -111,7 +109,7 @@ def search(bpt, needle_key, default=None):
     return default
 
 def make_empty_bpt():
-    result = 'root', [], []
+    result = 'branch', [], []
     check_bpt(result)
     return result
 
@@ -128,7 +126,7 @@ def really_insert(bpt, new_key, value):
     if not xs:
         # The tree is completely empty; start populating it.
         leaf = 'leaf', [new_key], [value]
-        return 'root', [], [leaf]
+        return 'branch', [], [leaf]
 
     # Find the leaf node for new_key, and the path down to it.
     path = []
@@ -180,30 +178,30 @@ def really_insert(bpt, new_key, value):
         right = 'branch', keys[mid:], kids[mid:]
 
     # If we got here, we need a new root.
-    return 'root', [tween], [left, right]
+    return 'branch', [tween], [left, right]
 
 
 # Smoke test
 
 t = make_empty_bpt()
 ## t
-#. ('root', [], [])
+#. ('branch', [], [])
 ## t = insert(t, 'm', 5)
 ## t
-#. ('root', [], [('leaf', ['m'], [5])])
+#. ('branch', [], [('leaf', ['m'], [5])])
 ## t = insert(t, 'm', 42)
 ## t
-#. ('root', [], [('leaf', ['m'], [42])])
+#. ('branch', [], [('leaf', ['m'], [42])])
 ## t = insert(t, 'n', 1)
 ## t
-#. ('root', [], [('leaf', ['m', 'n'], [42, 1])])
+#. ('branch', [], [('leaf', ['m', 'n'], [42, 1])])
 ## search(t, 'm')
 #. 42
 ## search(t, 'n')
 #. 1
 ## t = insert(t, 'a', 8)
 ## t
-#. ('root', [], [('leaf', ['a', 'm', 'n'], [8, 42, 1])])
+#. ('branch', [], [('leaf', ['a', 'm', 'n'], [8, 42, 1])])
 ## search(t, ''), search(t, 'a'), search(t, 'b'), search(t, 'm'), search(t, 'n'), search(t, 'z')
 #. (None, 8, None, 42, 1, None)
 
@@ -212,28 +210,28 @@ t = make_empty_bpt()
 
 ## t = insert(t, 'o', 10)
 ## t
-#. ('root', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10])])
+#. ('branch', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10])])
 ## t = insert(t, 'p', 11)
 ## t
-#. ('root', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o', 'p'], [1, 10, 11])])
+#. ('branch', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o', 'p'], [1, 10, 11])])
 ## t = insert(t, 'q', 12)
 ## t
-#. ('root', ['n', 'p'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q'], [11, 12])])
+#. ('branch', ['n', 'p'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q'], [11, 12])])
 ## t = insert(t, 'r', 13)
 ## t
-#. ('root', ['n', 'p'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q', 'r'], [11, 12, 13])])
+#. ('branch', ['n', 'p'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q', 'r'], [11, 12, 13])])
 ## t = insert(t, 's', 14)
 ## t
-#. ('root', ['n', 'p', 'r'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's'], [13, 14])])
+#. ('branch', ['n', 'p', 'r'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's'], [13, 14])])
 ## t = insert(t, 't', 15)
 ## t
-#. ('root', ['n', 'p', 'r'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's', 't'], [13, 14, 15])])
+#. ('branch', ['n', 'p', 'r'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's', 't'], [13, 14, 15])])
 ## t = insert(t, 'u', 16)
 ## t
-#. ('root', ['p'], [('branch', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10])]), ('branch', ['r', 't'], [('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's'], [13, 14]), ('leaf', ['t', 'u'], [15, 16])])])
+#. ('branch', ['p'], [('branch', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10])]), ('branch', ['r', 't'], [('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's'], [13, 14]), ('leaf', ['t', 'u'], [15, 16])])])
 ## t = insert(t, 'v', 17)
 ## t
-#. ('root', ['p'], [('branch', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10])]), ('branch', ['r', 't'], [('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's'], [13, 14]), ('leaf', ['t', 'u', 'v'], [15, 16, 17])])])
+#. ('branch', ['p'], [('branch', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10])]), ('branch', ['r', 't'], [('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's'], [13, 14]), ('leaf', ['t', 'u', 'v'], [15, 16, 17])])])
 
 ## sorted(what_I_represent(t).items())
 #. [('a', 8), ('m', 42), ('n', 1), ('o', 10), ('p', 11), ('q', 12), ('r', 13), ('s', 14), ('t', 15), ('u', 16), ('v', 17)]
