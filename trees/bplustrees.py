@@ -43,11 +43,11 @@ def check_bpt(bpt):
     * For all node kinds, len(keys) < N
     * For branches, len(keys) == len(kids)-1
     * For leaves, len(keys) == len(values)
-    * For branches, ceil(N//2) <= len(kids)
+    * For branches below the root, ceil(N//2) <= len(kids)
     *   XXX Shouldn't there be a similar invariant for leaves?
             Could we just have a common invariant on len(keys)?
             Well, the first leaf starts out underpopulated,
-            so the actual invariant would be like "if there are
+            so the actual invariant would be conditional, like "if there are
             multiple leaves, then they're all at least half full."
     * For both kinds, keys are distinct and sorted ascending:
       for i in range(len(keys)-1):
