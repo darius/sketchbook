@@ -11,7 +11,7 @@ each represented by a 3-tuple:
   'leaf', keys, values
 """
 
-import math, random
+import math
 
 def what_I_represent(bpt):
     "Abstraction function for our B+ tree type."
@@ -191,6 +191,8 @@ def really_insert(bpt, new_key, value):
 
 
 # Testing
+
+import random
 
 def exercise_bpt(pairs):
     """Check that a sequence of insertions and lookups produces the same
