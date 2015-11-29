@@ -26,35 +26,46 @@ def what_I_represent(bpt):
     walk(bpt)
     return result
 
-N = 4 # Our node-size constant; pretty arbitrary. Here's a rather
+capacity = 4 # Our node-size constant; pretty arbitrary. Here's a rather
       # small value to make testing easier. (We should test with
-      # larger values as well, since N=4 happens to make the root
+      # larger values as well, since capacity=4 happens to make the root
       # and branch kinds more similar than in general, as Ezekiel
       # pointed out.)
-assert N%2 == 0  # TODO come back and see what if this is false
+assert capacity%2 == 0  # TODO come back and see what if this is false
 
 def check_bpt(bpt):
     """
-    Check the representation invariant for our B+ tree type:
+    Check the representation invariant for our B+ tree type. Since
+    there's a lot to this invariant, let's list it in parts.
 
-    * If the root is a branch, it has at least one kid.
-    * The leaves are all at the same depth.
-    * For all node kinds, len(keys) < N
-    * For branches, len(keys) == len(kids)-1
+    For what_I_represent() to be meaningful:
+    * We have a tree of the two node types, as explained above.
     * For leaves, len(keys) == len(values)
-    * For branches below the root, ceil(N//2) <= len(kids)
-    *   XXX Shouldn't there be a similar invariant for leaves?
-            Could we just have a common invariant on len(keys)?
-            Well, the first leaf starts out underpopulated,
-            so the actual invariant would be conditional, like "if there are
-            multiple leaves, then they're all at least half full."
-    * For both kinds, keys are distinct and sorted ascending:
+    * The keys from all of the leaves together are all distinct.
+
+    So that search() can find a key, and insert() can put it where
+    search() will find it:
+    * If the root is a branch, it has at least one kid.
+    * For branches, len(keys) == len(kids)-1
+    * For both kinds of nodes, keys are sorted ascending:
       for i in range(len(keys)-1):
           keys[i] < keys[i+1]
     * Branches have keys related to their kids':
       for i in range(len(keys)):
           all of kids[i] and descendants' keys < keys[i] <= all of kids[i+1] and descendants' keys
       Where the kid key is in a branch, the <= is strengthened to a <.
+
+    To keep nodes within their capacity:
+    * For both node kinds, len(keys) < capacity
+
+    To ensure a balanced tree, for efficiency:
+    * The leaves are all at the same depth.
+    * For branches below the root, ceil(capacity//2) <= len(kids)
+    *   XXX Shouldn't there be a similar invariant for leaves?
+            Could we just have a common invariant on len(keys)?
+            Well, the first leaf starts out underpopulated,
+            so the actual invariant would be conditional, like "if there are
+            multiple leaves, then they're all at least half full."
     """
     tag, _, xs = bpt
     assert tag == 'leaf' or xs
@@ -67,13 +78,13 @@ def check_bpt(bpt):
 
     def checking(node, d, lo, hi):
         tag, keys, xs = node
-        assert len(keys) < N, "Overflowed node capacity"
+        assert len(keys) < capacity, "Overflowed node capacity"
         for i in range(len(keys)-1):
             assert keys[i] < keys[i+1], "Disordered or duplicate key"
         if tag == 'branch':
             kids = xs
             assert not kids or len(keys) == len(kids)-1, "keys and kids don't correspond"
-            if 0 < d: assert math.ceil(N//2) <= len(kids), "Underpopulated branch"
+            if 0 < d: assert math.ceil(capacity//2) <= len(kids), "Underpopulated branch"
             assert lo is () or lo[0] < keys[0]
             assert hi is () or keys[-1] < hi[0]
             for i, kid_i in enumerate(kids):
@@ -148,11 +159,11 @@ def really_insert(bpt, new_key, value):
     # We'll have to insert it in the leaf at i. If there's room, just do it:
     keys.insert(i, new_key)
     xs.insert(i, value)
-    if len(keys) < N:
+    if len(keys) < capacity:
         return bpt
 
     # Else split the now-overpacked leaf...
-    mid = N//2
+    mid = capacity//2
     tween = keys[mid]
     left  = 'leaf', keys[:mid], xs[:mid]
     right = 'leaf', keys[mid:], xs[mid:]
@@ -162,9 +173,9 @@ def really_insert(bpt, new_key, value):
         tag, keys, kids, i = path.pop()
         keys.insert(i, tween)
         kids[i:i+1] = [left, right]
-        if len(keys) < N:
+        if len(keys) < capacity:
             return bpt
-        # Example (N=4, mid=2):
+        # Example (capacity=4, mid=2):
         #   [key0,key1,key2,key3]         [key0]    key1   [key2,key3]
         # [kid0,kid1,kid2,kid3,kid4] => [kid0,kid1]      [kid2,kid3,kid4]
         #                                 (left)   (tween)  (right)
