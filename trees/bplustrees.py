@@ -166,17 +166,17 @@ def really_insert(bpt, new_key, value):
 
     # ...and propagate the split back up the path.
     while path:
-        tag, keys, xs, i = path.pop()
+        tag, keys, kids, i = path.pop()
         keys.insert(i, tween)
-        xs[i:i+1] = [left, right]
+        kids[i:i+1] = [left, right]
         if len(keys) < N:
             return bpt
         #    (x0 k0 x1 k1 x2 k2 x3)       as ([k0,k1,k2] [x0,x1,x2,x3])
         # => ([x0 k0 x1]) k1 ([x2 k2 x3]) as ([k0] [x0,x1]) k1 ([k2] [x2,x3])
         #       (left)   tween  (right)         (left)     tween   (right)
         tween = keys[mid-1]
-        left  = 'branch', keys[:mid-1], xs[:mid]
-        right = 'branch', keys[mid:], xs[mid:]
+        left  = 'branch', keys[:mid-1], kids[:mid]
+        right = 'branch', keys[mid:], kids[mid:]
 
     # If we got here, we need a new root.
     return 'root', [tween], [left, right]
