@@ -199,7 +199,7 @@ def really_store(bpt, new_key, value):
 import random
 
 def random_tests(ntrials=10000):
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEF'
     for trial in range(ntrials):
         exercise_bpt((random.choice(alphabet),
                       'fetch' if random.random() < 0.3 else value)
