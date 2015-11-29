@@ -116,6 +116,8 @@ def search(bpt, needle_key, default=None):
     for i, key_i in enumerate(keys):
         if needle_key == key_i:
             return xs[i]
+        elif needle_key < key_i:
+            break # (just to finish quicker; not needed for correctness)
     return default
 
 def make_empty_bpt():
