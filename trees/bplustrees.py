@@ -45,7 +45,7 @@ def check_bpt(bpt):
     * For leaves, len(keys) == len(values)
     * The keys from all of the leaves together are all distinct.
 
-    So that fetch() can find a key, and insert() can leave it where
+    So that fetch() can find a key, and store() can leave it where
     fetch() will find it:
     * Each branch has at least one kid, so you eventually reach a leaf.
     * For branches, len(keys) == len(kids)-1
@@ -125,12 +125,12 @@ def make_empty_bpt():
     check_bpt(result)
     return result
 
-def insert(bpt, new_key, value):
-    result = really_insert(bpt, new_key, value)
+def store(bpt, new_key, value):
+    result = really_store(bpt, new_key, value)
     check_bpt(result)
     return result
 
-def really_insert(bpt, new_key, value):
+def really_store(bpt, new_key, value):
     """Mutate bpt to add (new_key,value) (replacing any current value for
     new_key), and return the new root node."""
 
@@ -194,17 +194,17 @@ def really_insert(bpt, new_key, value):
 import random
 
 def exercise_bpt(pairs):
-    """Check that a sequence of insertions and lookups produces the same
+    """Check that a sequence of stores and fetches produces the same
     results for a dict and a bpt."""
     default = ['missing']
     d = {}
     t = make_empty_bpt()
     for key, value in pairs:
-        if value == 'lookup':
+        if value == 'fetch':
             assert d.get(key, default) == fetch(t, key, default), "Wrong fetch result"
         else:
             d[key] = value
-            t = insert(t, key, value)
+            t = store(t, key, value)
             wir = what_I_represent(t)
             assert d == wir, ("different", d, wir, t)
 
@@ -212,7 +212,7 @@ def gen_small_tests(ntrials=10000):
     alphabet = 'abcdefghijklmnopqrstuvwxyz'
     for trial in range(ntrials):
         exercise_bpt((random.choice(alphabet),
-                      'lookup' if random.random() < 0.3 else value)
+                      'fetch' if random.random() < 0.3 else value)
                      for value in range(50))
 
 ### gen_small_tests()
@@ -223,20 +223,20 @@ def gen_small_tests(ntrials=10000):
 t = make_empty_bpt()
 ## t
 #. ('leaf', [], [])
-## t = insert(t, 'm', 5)
+## t = store(t, 'm', 5)
 ## t
 #. ('leaf', ['m'], [5])
-## t = insert(t, 'm', 42)
+## t = store(t, 'm', 42)
 ## t
 #. ('leaf', ['m'], [42])
-## t = insert(t, 'n', 1)
+## t = store(t, 'n', 1)
 ## t
 #. ('leaf', ['m', 'n'], [42, 1])
 ## fetch(t, 'm')
 #. 42
 ## fetch(t, 'n')
 #. 1
-## t = insert(t, 'a', 8)
+## t = store(t, 'a', 8)
 ## t
 #. ('leaf', ['a', 'm', 'n'], [8, 42, 1])
 ## fetch(t, ''), fetch(t, 'a'), fetch(t, 'b'), fetch(t, 'm'), fetch(t, 'n'), fetch(t, 'z')
@@ -245,28 +245,28 @@ t = make_empty_bpt()
 ## what_I_represent(t)
 #. {'a': 8, 'm': 42, 'n': 1}
 
-## t = insert(t, 'o', 10)
+## t = store(t, 'o', 10)
 ## t
 #. ('branch', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10])])
-## t = insert(t, 'p', 11)
+## t = store(t, 'p', 11)
 ## t
 #. ('branch', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o', 'p'], [1, 10, 11])])
-## t = insert(t, 'q', 12)
+## t = store(t, 'q', 12)
 ## t
 #. ('branch', ['n', 'p'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q'], [11, 12])])
-## t = insert(t, 'r', 13)
+## t = store(t, 'r', 13)
 ## t
 #. ('branch', ['n', 'p'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q', 'r'], [11, 12, 13])])
-## t = insert(t, 's', 14)
+## t = store(t, 's', 14)
 ## t
 #. ('branch', ['n', 'p', 'r'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's'], [13, 14])])
-## t = insert(t, 't', 15)
+## t = store(t, 't', 15)
 ## t
 #. ('branch', ['n', 'p', 'r'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10]), ('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's', 't'], [13, 14, 15])])
-## t = insert(t, 'u', 16)
+## t = store(t, 'u', 16)
 ## t
 #. ('branch', ['p'], [('branch', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10])]), ('branch', ['r', 't'], [('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's'], [13, 14]), ('leaf', ['t', 'u'], [15, 16])])])
-## t = insert(t, 'v', 17)
+## t = store(t, 'v', 17)
 ## t
 #. ('branch', ['p'], [('branch', ['n'], [('leaf', ['a', 'm'], [8, 42]), ('leaf', ['n', 'o'], [1, 10])]), ('branch', ['r', 't'], [('leaf', ['p', 'q'], [11, 12]), ('leaf', ['r', 's'], [13, 14]), ('leaf', ['t', 'u', 'v'], [15, 16, 17])])])
 
