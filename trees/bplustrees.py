@@ -106,7 +106,6 @@ def check_bpt(bpt):
 def fetch(bpt, needle_key, default=None):
     "Return bpt's value for needle_key, or default if absent."
     tag, keys, xs = bpt
-    if not xs: return default
     while tag == 'branch':
         for i, key_i in enumerate(keys):
             if needle_key < key_i:
