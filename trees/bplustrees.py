@@ -55,6 +55,7 @@ def check_bpt(bpt):
     * Branches have keys related to their kids':
       for i in range(len(keys)):
           all of kids[i] and descendants' keys < keys[i] <= all of kids[i+1] and descendants' keys
+      (except where i+1 is out of bounds, of course).
       Where the kid key is in a branch, the <= is strengthened to a <.
 
     To bound the size of nodes, for efficiency:
