@@ -77,6 +77,11 @@ def check_bpt(bpt):
         depth += 1
 
     def checking(node, d, lo, hi):
+        """Check node (which is at depth d) and its descendants. Besides the
+        noncontextual invariants, check that keys are in range between
+        lo[0] and hi[0] (except for lo or hi being (), meaning
+        unbounded). The lo bound on leaf keys is inclusive; the others
+        are exclusive."""
         tag, keys, xs = node
         assert len(keys) < capacity, "Overflowed node capacity"
         for i in range(len(keys)-1):
