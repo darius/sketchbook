@@ -11,7 +11,7 @@ each represented by a 3-tuple:
   'leaf', keys, values
 """
 
-import math
+from math import ceil
 
 def what_I_represent(bpt):
     "Abstraction function for our B+ tree type."
@@ -84,7 +84,7 @@ def check_bpt(bpt):
         if tag == 'branch':
             kids = xs
             assert not kids or len(keys) == len(kids)-1, "keys and kids don't correspond"
-            if 0 < d: assert math.ceil(capacity//2) <= len(kids), "Underpopulated branch"
+            if 0 < d: assert ceil(capacity//2) <= len(kids), "Underpopulated branch"
             assert lo is () or lo[0] < keys[0]
             assert hi is () or keys[-1] < hi[0]
             for i, kid_i in enumerate(kids):
@@ -95,7 +95,7 @@ def check_bpt(bpt):
             assert d == depth, "Leaves at different depths"
             values = xs
             assert len(keys) == len(values), "keys and values don't correspond"
-            if 0 < d: assert math.ceil(capacity//2) <= len(values), "Underpopulated leaf"
+            if 0 < d: assert ceil(capacity//2) <= len(values), "Underpopulated leaf"
             assert lo is () or lo[0] == keys[0]
             assert hi is () or keys[-1] < hi[0]
         else:
