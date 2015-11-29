@@ -175,6 +175,8 @@ def really_insert(bpt, new_key, value):
         #   [key0,key1,key2]         [key0]    key1   [key2]
         # [kid0,kid1,kid2,kid3] => [kid0,kid1]      [kid2,kid3]
         #                            (left)  (tween)  (right)
+        # XXX above example is of just *short* of overflow.
+        #  It's surprising the code below seems to work anyway. Come back to this.
         tween = keys[mid-1]
         left  = 'branch', keys[:mid-1], kids[:mid]
         right = 'branch', keys[mid:], kids[mid:]
