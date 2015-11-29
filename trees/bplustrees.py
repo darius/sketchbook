@@ -62,6 +62,7 @@ def check_bpt(bpt):
 
     To ensure a balanced tree, for efficiency:
     * The leaves are all at the same depth.
+    * If the root is a branch, it has at least two kids.
     * For branches below the root, ceil(capacity//2) <= len(kids)
     * For leaves below the root,   ceil(capacity//2) <= len(values)
       (This one does not affect asymptotics, but without it the
@@ -88,8 +89,11 @@ def check_bpt(bpt):
             assert keys[i] < keys[i+1], "Disordered or duplicate key"
         if tag == 'branch':
             kids = xs
-            assert not kids or len(keys) == len(kids)-1, "keys and kids don't correspond"
-            if 0 < d: assert ceil(capacity//2) <= len(kids), "Underpopulated branch"
+            if d == 0:
+                assert 2 <= len(kids), "Underpopulated root"
+            else:
+                assert ceil(capacity//2) <= len(kids), "Underpopulated branch"
+            assert len(keys) == len(kids)-1, "keys and kids don't correspond"
             assert lo is () or lo[0] < keys[0]
             assert hi is () or keys[-1] < hi[0]
             for i, kid_i in enumerate(kids):
@@ -100,7 +104,8 @@ def check_bpt(bpt):
             assert d == depth, "Leaves at different depths"
             values = xs
             assert len(keys) == len(values), "keys and values don't correspond"
-            if 0 < d: assert ceil(capacity//2) <= len(values), "Underpopulated leaf"
+            if 0 < d:
+                assert ceil(capacity//2) <= len(values), "Underpopulated leaf"
             assert lo is () or lo[0] == keys[0]
             assert hi is () or keys[-1] < hi[0]
         else:
