@@ -50,7 +50,7 @@ def check_bpt(bpt):
     * For both kinds of nodes, keys are sorted ascending.
     * For branches, len(keys)+1 == len(kids)
       (This implies at least one kid, so you eventually reach a leaf.)
-    * Branches have keys related to their kids':
+    * Branches' keys partition their descendants by key:
       for i in range(len(keys)):
           all of kids[i] and descendants' keys < keys[i] <= all of kids[i+1] and descendants' keys
 
