@@ -49,14 +49,11 @@ def check_bpt(bpt):
     fetch() will find it:
     * Each branch has at least one kid, so you eventually reach a leaf.
     * For branches, len(keys) == len(kids)-1
-    * For both kinds of nodes, keys are sorted ascending:
-      for i in range(len(keys)-1):
-          keys[i] < keys[i+1]
+    * For both kinds of nodes, keys are sorted ascending.
     * Branches have keys related to their kids':
       for i in range(len(keys)):
           all of kids[i] and descendants' keys < keys[i] <= all of kids[i+1] and descendants' keys
-      (except where i+1 is out of bounds, of course).
-      Where the kid key is in a branch, the <= is strengthened to a <.
+      (except of course where i+1 is out of bounds).
 
     To bound the size of nodes, for efficiency:
     * For both node kinds, len(keys) < capacity
@@ -82,12 +79,13 @@ def check_bpt(bpt):
         """Check node (which is at depth d) and its descendants. Besides the
         noncontextual invariants, check that keys are in range between
         lo[0] and hi[0] (except for lo or hi being (), meaning
-        unbounded). The lo bound on leaf keys is inclusive; the others
-        are exclusive."""
+        unbounded). The lo bound is inclusive, the hi exclusive."""
         tag, keys, xs = node
         assert len(keys) < capacity, "Overflowed node capacity"
         for i in range(len(keys)-1):
             assert keys[i] < keys[i+1], "Disordered or duplicate key"
+        assert lo is () or lo[0] <= keys[0]
+        assert hi is () or keys[-1] < hi[0]
         if tag == 'branch':
             kids = xs
             if d == 0:
@@ -95,8 +93,6 @@ def check_bpt(bpt):
             else:
                 assert ceil(capacity//2) <= len(kids), "Underpopulated branch"
             assert len(keys) == len(kids)-1, "keys and kids don't correspond"
-            assert lo is () or lo[0] < keys[0]
-            assert hi is () or keys[-1] < hi[0]
             for i, kid_i in enumerate(kids):
                 checking(kid_i, d+1,
                          lo if i == 0 else (keys[i-1],),
@@ -107,8 +103,6 @@ def check_bpt(bpt):
             assert len(keys) == len(values), "keys and values don't correspond"
             if 0 < d:
                 assert ceil(capacity//2) <= len(values), "Underpopulated leaf"
-            assert lo is () or lo[0] == keys[0]
-            assert hi is () or keys[-1] < hi[0]
         else:
             assert False, "Bad tag"
 
