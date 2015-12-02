@@ -48,11 +48,12 @@ def check_bpt(bpt):
     So that fetch() can find a key, and store() can leave it where
     fetch() will find it:
     * For both kinds of nodes, keys are sorted ascending.
-    * For branches, len(keys)+1 == len(kids)
-      (This implies at least one kid, so you eventually reach a leaf.)
     * Branches' keys partition their descendants by key:
       for i in range(len(keys)):
           all of kids[i] and descendants' keys < keys[i] <= all of kids[i+1] and descendants' keys
+    * For branches, len(keys)+1 == len(kids)
+      This is needed for the above partitioning invariant to be meaningful.
+      (It also implies at least one kid, so you eventually reach a leaf.)
 
     To bound the size of nodes, for efficiency:
     * For both node kinds, len(keys) < capacity
