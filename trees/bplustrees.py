@@ -33,13 +33,13 @@ capacity = 4 # Our node-size constant; pretty arbitrary. Here's a rather
       # larger values as well, since capacity=4 happens to make the root
       # and branch kinds more similar than in general, as Ezekiel
       # pointed out.)
-assert capacity%2 == 0  # TODO come back and see what if this is false
+assert capacity % 2 == 0  # TODO come back and see what if this is false
 
 def check_bpt(bpt):
     """
-    Check the representation invariant for our B+ tree type. Return it
-    if it's OK, else raise an error. Since there's a lot to this
-    invariant, let's list it in parts.
+    Check the representation invariant for our B+ tree type. Return
+    the tree if it's OK, else raise an error. Since there's a lot to
+    this invariant, here it is in parts:
 
     For what_I_represent() to be meaningful:
     * We have a tree of the two node types, as explained above.
