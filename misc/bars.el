@@ -14,4 +14,4 @@ fraction)."
 (defconst barchart--bar-chars
   [32 #x258f #x258e #x258d #x258c #x258b #x258a #x2589 #x2588])
 
-;; E.g. (barchart-make-bar 10 0.3)
+;; E.g. (barchart-make-bar 10 0.333)
