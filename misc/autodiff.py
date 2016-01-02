@@ -1,5 +1,5 @@
 """
-A basic demo of automatic differentiation.
+A basic demo of automatic differentiation. (Almost untested.)
 """
 from __future__ import division
 
