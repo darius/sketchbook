@@ -23,10 +23,10 @@ class DualNumber(object):
         other = promote(other)
         return DualNumber(self.v / other.v,
                           (self.d * other.v - self.v * other.d) / other.v**2)
-    def __radd__(self, other): return Scalar(other) + self
-    def __rsub__(self, other): return Scalar(other) - self
-    def __rmul__(self, other): return Scalar(other) * self
-    def __rdiv__(self, other): return Scalar(other) / self
+    def __radd__(self, other): return Constant(other) + self
+    def __rsub__(self, other): return Constant(other) - self
+    def __rmul__(self, other): return Constant(other) * self
+    def __rdiv__(self, other): return Constant(other) / self
 
     def __repr__(self):
         if self.d == 0:
@@ -35,9 +35,9 @@ class DualNumber(object):
             return '(%r, %r)' % (self.v, self.d)
 
 def promote(value):
-    return value if isinstance(value, DualNumber) else Scalar(value)
+    return value if isinstance(value, DualNumber) else Constant(value)
 
-def Scalar(c):
+def Constant(c):
     return DualNumber(c, 0)
 
 def Variable(value):
