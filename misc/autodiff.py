@@ -1,12 +1,13 @@
 """
 A basic demo of automatic differentiation. (Almost untested.)
+Forward mode, and for simplicity supporting only one variable.
 """
 from __future__ import division
 
 class DualNumber(object):
     def __init__(self, v, d):
-        self.v = v
-        self.d = d
+        self.v = v              # The value
+        self.d = d              # The derivative
     def __neg__(self):
         return DualNumber(-self.v, -self.d)
     def __add__(self, other):
