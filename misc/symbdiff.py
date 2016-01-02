@@ -49,7 +49,7 @@ def mul(e1, e2):
     else:
         return Mul(e1, e2)
 
-def div(e1, e2):
+def div_(e1, e2):
     return Div(e1, e2)   # Yeah, I'm getting tired of this.
 
 class Add(Formula):

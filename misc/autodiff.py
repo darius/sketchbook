@@ -22,7 +22,7 @@ class DualNumber(object):
     def __div__(self, other):
         other = promote(other)
         return DualNumber(self.v / other.v,
-                          (self.d * other.v - self.v * other.d) / other.v**2)
+                          (self.d * other.v - self.v * other.d) / (other.v * other.v))
     def __radd__(self, other): return Constant(other) + self
     def __rsub__(self, other): return Constant(other) - self
     def __rmul__(self, other): return Constant(other) * self
