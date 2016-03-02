@@ -1,9 +1,7 @@
 """
 Hopfield network.
-https://en.wikipedia.org/wiki/Hopfield_network is pretty bad;
-what's a better source?
-
-Code is obviously not working.
+http://www.comp.leeds.ac.uk/ai23/reading/Hopfield.pdf
+(https://en.wikipedia.org/wiki/Hopfield_network is pretty bad)
 """
 
 import random
@@ -11,7 +9,7 @@ import random
 class Net(object):
     def __init__(self, N):
         self.N = N
-        self.s = [1] * N                     # acivations
+        self.x = [1] * N                     # acivations
         self.w = [[0] * N for _ in range(N)] # weights
 
     def batch_learn(self, vectors):
@@ -20,7 +18,7 @@ class Net(object):
                 if i == j:
                     self.w[i][j] = 0
                 else:
-                    self.w[i][j] = sum(v[i]*v[j] for v in vectors) / float(len(vectors))
+                    self.w[i][j] = sum(v[i]*v[j] for v in vectors) / float(self.N)
         for i in range(self.N):
             for j in range(self.N):
                 assert self.w[i][j] == self.w[j][i]
@@ -28,47 +26,60 @@ class Net(object):
     def fetch(self, vector):
         self.set(vector)
         self.run()
-        return self.s
+        return self.x
 
     def set(self, values):
-        self.s = list(values)
-        assert len(self.s) == self.N
+        self.x = list(values)
+        assert len(self.x) == self.N
     
     def run(self):
         while True:
-            prev = list(self.s)
+            prev = list(self.x)
             self.step()
-            if self.s == prev: break
+            if self.x == prev: break
 
     def step(self):
         units = list(range(self.N))
         random.shuffle(units)
         for i in units:
-            # (assuming all thresholds are 0)
-            p = sum(self.w[i][j] * self.s[j] for j in range(self.N))
-            self.s[i] = 1 if 0 <= p else -1
+            p = sum(self.w[i][j] * self.x[j] for j in range(self.N))
+            self.x[i] = 1 if 0 <= p else -1
 
     def energy(self):
-        # (leaving out threshold term, assuming they're 0)
-        return -0.5 * sum(self.w[i][j] * self.s[i] * self.s[j]
+        return -0.5 * sum(self.w[i][j] * self.x[i] * self.x[j]
                           for i in range(self.N)
                           for j in range(self.N))
     
 
-n = Net(20)
-n.set((0,1,)* 10)
-print(n.energy())
-n.run()
-print(n.s)
-print(n.energy())
+## n = Net(20)
+## n.set((0,1,)* 10)
+## n.energy()
+#. -0.0
+## n.run()
+## n.x
+#. [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+## n.energy()
+#. -0.0
 
-n.batch_learn([(0,)*20, (0,1,1,0,)*5])
-print(n.fetch((0,)*20))
-print(n.fetch((0,1,1,0,)*5))
-print(n.energy())
-#. -0.0
+## n.batch_learn([(0,)*20, (0,1,1,0,)*5])
+## n.fetch((0,)*20)
 #. [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-#. -0.0
+## n.fetch((0,1,1,0,)*5)
 #. [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-#. [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-#. -22.5
+## n.energy()
+#. -2.249999999999996
+
+## t = Net(2)
+## t.w = [[0,-1],[-1,0]]
+## t.x
+#. [1, 1]
+## t.run()
+## t.x
+#. [1, -1]
+
+## u = Net(4)
+## u.batch_learn([[1,-1,1,1]])
+## u.fetch([-1,-1,-1,-1])
+#. [-1, 1, -1, -1]
+## u.fetch([1,1,1,1])
+#. [1, -1, 1, 1]
