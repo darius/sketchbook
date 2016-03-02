@@ -1,6 +1,7 @@
 """
 A basic demo of automatic differentiation. (Almost untested.)
 Forward mode, and for simplicity supporting only one variable.
+to do: compare https://github.com/masonium/cl-autodiff/blob/master/autodiff.lisp
 """
 from __future__ import division
 
