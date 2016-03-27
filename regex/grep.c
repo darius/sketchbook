@@ -36,6 +36,7 @@ static int match(unsigned start, const char *input) {
     memset(visited, 0, ninsns);
     spread(start, agenda);
     for (; *input; ++input) {
+        if (agenda[0]) return 1;
         memset(next, 0, ninsns);
         memset(visited, 0, ninsns);
         for (unsigned pc = 1; pc < ninsns; ++pc)
@@ -97,13 +98,16 @@ static unsigned parse(const char *string) {
 }
 
 int main(int argc, char **argv) {
+    int matched = 0;
     if (argc != 2) error("Usage: grep pattern");
     unsigned start_state = parse(argv[1]);
     char line[9999];
     while (fgets(line, sizeof line, stdin)) {
         line[strlen(line) - 1] = '\0';
-        if (match(start_state, line))
+        if (match(start_state, line)) {
             puts(line);
+            matched |= 1;
+        }
     }
-    return 0;
+    return matched ? 0 : 1;
 }
