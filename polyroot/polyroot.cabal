@@ -3,7 +3,7 @@ version:             0.1.0.0
 synopsis:            Compute roots of polynomials
 description:         Please see README.md
 homepage:            https://github.com/darius/sketchbook/tree/master/polyroot
-license:             GPLv3
+license:             GPL-3
 license-file:        LICENSE
 author:              Darius Bacon <darius@wry.me>
 maintainer:          Darius Bacon <darius@wry.me>
@@ -12,6 +12,13 @@ category:            fun
 build-type:          Simple
 cabal-version:       >=1.10
 
+library
+  exposed-modules:     Polyroot
+  hs-source-dirs:      src
+  build-depends:       base >= 4.7 && < 5
+                     , ieee754
+  default-language:    Haskell2010
+
 test-suite hooray
   type:                exitcode-stdio-1.0
   hs-source-dirs:      src, test
@@ -19,6 +26,7 @@ test-suite hooray
   build-depends:       base >= 4.7 && < 5
                      , ieee754
                      , QuickCheck
+  default-language:    Haskell2010
 
 executable polyroot
   hs-source-dirs:      src
@@ -26,3 +34,4 @@ executable polyroot
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
                      , ieee754
+  default-language:    Haskell2010

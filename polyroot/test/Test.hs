@@ -1,15 +1,15 @@
 import Test.QuickCheck
+import Polyroot
 
-propYay = True
+instance Arbitrary Polynomial where
+  arbitrary = do
+    coeffs <- arbitrary
+    return $ Polynomial coeffs
 
-propBoo = False
+prop_derivativeHasLowerDegree :: Polynomial -> Bool
+prop_derivativeHasLowerDegree p =
+    degree p == 0 || degree p == degree (derivative p) + 1
+      where degree (Polynomial coeffs) = 0 `max` (length coeffs - 1)
 
-runSuite = mapM runTest 
-
-runTest (name, test) = do
-  putStrLn name
-  quickCheck test
-
-main = 
-  runSuite [("yay", propYay),
-            ("boo", propBoo)]
+main = do
+  putStrLn "prop_derivativeHasLowerDegree"; quickCheck prop_derivativeHasLowerDegree
