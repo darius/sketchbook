@@ -15,14 +15,16 @@ cabal-version:       >=1.10
 library
   exposed-modules:     Polyroot
   hs-source-dirs:      src
+  ghc-options:         -Wall -fwarn-tabs
   build-depends:       base >= 4.7 && < 5
                      , ieee754
   default-language:    Haskell2010
 
 test-suite hooray
   type:                exitcode-stdio-1.0
-  hs-source-dirs:      src, test
+  hs-source-dirs:      test, src
   main-is:             Test.hs
+  other-modules:       Polyroot
   build-depends:       base >= 4.7 && < 5
                      , ieee754
                      , QuickCheck
