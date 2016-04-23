@@ -15,9 +15,9 @@ cabal-version:       >=1.10
 library
   exposed-modules:     Polyroot
   hs-source-dirs:      src
-  ghc-options:         -Wall -fwarn-tabs
   build-depends:       base >= 4.7 && < 5
                      , ieee754
+  ghc-options:         -Wall -fwarn-tabs
   default-language:    Haskell2010
 
 test-suite hooray
@@ -28,6 +28,7 @@ test-suite hooray
   build-depends:       base >= 4.7 && < 5
                      , ieee754
                      , QuickCheck
+  ghc-options:         -Wall -fwarn-tabs
   default-language:    Haskell2010
 
 executable polyroot
@@ -35,4 +36,5 @@ executable polyroot
   main-is:             Main.hs
   build-depends:       base >= 4.7 && < 5
                      , ieee754
+  ghc-options:         -Wall -fwarn-tabs
   default-language:    Haskell2010
