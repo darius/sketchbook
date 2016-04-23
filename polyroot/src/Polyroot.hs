@@ -5,7 +5,7 @@ import Data.Complex
 
 type Value = Complex Double
 data Polynomial = Polynomial [Value] -- coefficients in decreasing order of degree
-  deriving Show
+  deriving (Eq, Show)
 
 -- Evaluate a polynomial at a point z. Uses Horner's rule.
 value :: Polynomial -> Value -> Value
@@ -15,15 +15,10 @@ value (Polynomial coeffs) z = foldl step 0 coeffs
 -- The rate of change of a polynomial is a polynomial of next-lower
 -- degree.
 derivative :: Polynomial -> Polynomial
-oldderivative (Polynomial coeffs) = Polynomial (deriv coeffs)
-  where deriv [] = []
-        deriv [_] = []
-        deriv (c:cs) = (c * fromIntegral (length cs)) : deriv cs     -- XXX inefficient
-
 derivative (Polynomial coeffs) = Polynomial deriv
   where deriv = case reverse coeffs of
                   [] -> []
-                  _:rc -> reverse $ zipWith (*) rc (map fromIntegral [1..])  -- XXX untested
+                  _:rc -> reverse $ zipWith (*) rc (map fromIntegral [1..])
 
 -- Successive approximations to a root by Newton's method, taking the
 -- starting guess from the last argument.
