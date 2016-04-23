@@ -17,7 +17,7 @@ value (Polynomial coeffs) z = foldl step 0 coeffs
 derivative :: Polynomial -> Polynomial
 oldderivative (Polynomial coeffs) = Polynomial (deriv coeffs)
   where deriv [] = []
-        deriv [c] = []
+        deriv [_] = []
         deriv (c:cs) = (c * fromIntegral (length cs)) : deriv cs     -- XXX inefficient
 
 derivative (Polynomial coeffs) = Polynomial deriv
@@ -41,6 +41,7 @@ findFixpoint (z0:z1:zs) = if z0 ~== z1
 -- A value z' near the z'' where value p z'' would be 0 if we were
 -- using infinite-precision real numbers. (For some inputs the current
 -- implementation won't terminate, even though z'' would exist.)
+findRoot :: Polynomial -> Value -> Value
 findRoot p z = findFixpoint (newton p z)
 
 -- TODO:
