@@ -5,9 +5,9 @@ A minimal version, minus the jargon:
 
   * Facts are 3-tuples of atoms.
   * Patterns are 3-tuples of atoms with variables.
-  * Guards are conjunctions of patterns. (Variables scope over the
+  * Guards are conjunctions of patterns.
+  * Rules pair a guard with an action. (Variables scope over the
     whole rule.)
-  * Rules pair a guard with an action.
   * An action can add facts or do other stuff Rete is not concerned
     with (beyond supplying the variable bindings from the guard).
 
@@ -141,6 +141,9 @@ Stream databases?
 ----------------------------------------------------
 https://github.com/hraberg/mimir
 has some refs that might be worth a look.
+
+also
+http://www.drdobbs.com/architecture-and-design/the-rete-matching-algorithm/184405218
 
 ----------------------------------------------------
 @Johnicholas

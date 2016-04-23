@@ -40,7 +40,7 @@ def LengthMatcher(length, match_eater, nonmatch_eater):
 
 def Matcher(position, atom, match_eater, nonmatch_eater):
     def eat(agenda, fact):
-        if position < len(fact) and atom == fact[position]:
+        if position < len(fact) and atom == fact[position]: # XXX I think the length test is redundant here
             match_eater(agenda, fact)
         else:
             nonmatch_eater(agenda, fact)
@@ -62,10 +62,7 @@ def Firer(fillers):
     # XXX what about fresh vars?
     def eat(agenda, join):
         for filler in fillers:
-            fact = []
-            for adder in filler:
-                fact.append(adder(join))
-            agenda.append(fact)
+            agenda.append([adder(join) for adder in filler])
     return eat
 
 def AtomAdder(atom):
@@ -77,14 +74,24 @@ def VariableAdder(fact_num, slot_num):
 
 # Smoke test: sample_rules from production.py
 
-on_mom_foo, mom_facts = Store([])  # XXX
-mom_rule = Firer([[AtomAdder('parent'),
+on_mom_add, mom_facts = Store([]) # XXX not needed, right? ditto for joiner.
+mom_fire = Firer([[AtomAdder('parent'),
                    VariableAdder(0, 1),
                    VariableAdder(0, 2)]])
-on_mom_match, on_mom_join = Joiner([], mom_facts, empty_join_store, [mom_rule])
-on_mom = on_mom_match
+on_mom, on_mom_join = Joiner([], mom_facts, empty_join_store, [mom_fire])
 
-on_dad = dropper                # XXX
+on_dad_add, dad_facts = Store([])
+dad_fire = mom_fire
+on_dad, on_dad_join = Joiner([], dad_facts, empty_join_store, [dad_fire])
+# N.B. on_dad == on_mom except for the separate store
+
+on_parent_add, parent_facts = Store([])
+parent_fire = Firer([[AtomAdder('grandparent'),
+                      VariableAdder(0, 1), # XXX
+                      VariableAdder(0, 2)]])
+on_parent, on_parent_join = Joiner([(1, 0, 2)],
+                                   parent_facts, empty_join_store, [parent_fire])
+
 on_parent = dropper             # XXX
 
 root = LengthMatcher(3, Matcher(0, 'mom', on_mom,
@@ -93,5 +100,6 @@ root = LengthMatcher(3, Matcher(0, 'mom', on_mom,
                                                 dropper))),
                      dropper)
 
-## list(run(root, [['dad', 'tywin', 'cersei'], ['mom', 'cersei', 'myrcella']]))
-#. [['parent', 'cersei', 'myrcella']]
+## for fact in run(root, [['dad', 'tywin', 'cersei'], ['mom', 'cersei', 'myrcella']]): print fact
+#. ['parent', 'tywin', 'cersei']
+#. ['parent', 'cersei', 'myrcella']
