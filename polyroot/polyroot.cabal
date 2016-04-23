@@ -12,6 +12,14 @@ category:            fun
 build-type:          Simple
 cabal-version:       >=1.10
 
+test-suite hooray
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      src, test
+  main-is:             Test.hs
+  build-depends:       base >= 4.7 && < 5
+                     , ieee754
+                     , QuickCheck
+
 executable polyroot
   hs-source-dirs:      src
   main-is:             Main.hs
