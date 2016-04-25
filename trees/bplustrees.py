@@ -4,6 +4,8 @@ https://github.com/tehgeekmeister/dadabass/blob/b_plus_tree/notes/b_plus_tree.md
 I've now departed from that outline in a couple respects to do with the root:
 it can be a leaf, or as a branch it's not specially tagged as the root.
 
+https://github.com/vhf/bplustree is a more featureful descendant by Victor Felder.
+
 A B+ tree represents a map from keys to values. It's built of two node types,
 each represented by a 3-tuple:
 
