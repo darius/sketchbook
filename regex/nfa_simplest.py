@@ -1,6 +1,5 @@
 """
-Like nfa.hs. This version has some clarity advantages over the original
-nfa.py. Yes, I'm drowning in versions here.
+Like nfa.hs after the further edits to remove the 'fork' state constructors.
 """
 
 def match(re, chars):
