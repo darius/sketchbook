@@ -8,7 +8,7 @@ def match(re, chars):
         states = set(sum((state(c) for state in states), []))
     return accept in states
 
-def accept(c):      return []
+accept = lambda c: []
 def expect(ch, ks): return lambda c: ks if ch == c else []
 
 empty = lambda ks: ks
