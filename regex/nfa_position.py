@@ -9,8 +9,7 @@ def match(re, s): return run(prepare(re), s)
 
 def run((states, f), s):
     for c in s:
-        states = set.union(set(),
-                           *[f[state] for state in states if state[0] == c])
+        states = set().union(*[f[state] for state in states if state[0] == c])
     return (None, 1) in states  # (None, 1) is the accepting state (a hack)
 
 # re: (n: nullable, a: first, z: last, f: follows)
@@ -23,7 +22,7 @@ empty = (True, set(), set(), {})
 
 p = count(1)
 def lit(c):
-    cp = set([(c, p.next())])
+    cp = set([(c, next(p))])
     return (False, cp, cp, {})
 
 def alt((n1, a1, z1, f1), (n2, a2, z2, f2)):
