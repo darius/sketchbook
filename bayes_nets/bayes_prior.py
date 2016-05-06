@@ -6,7 +6,7 @@ import random
 
 # Let's simplify by assuming there's just one Bayes net. This will
 # list its variables, parents preceding children:
-all_vars = []
+all_variables = []
 
 class Variable:
     "A binary (True/False) random variable."
@@ -14,7 +14,7 @@ class Variable:
     def __init__(self, parents, cpt):
         self.parents = parents  # The variables that I depend on.
         self.cpt = cpt          # The conditional probability that I'm true, for each combo of the parents' values.
-        all_vars.append(self)
+        all_variables.append(self)
 
     def p_true(self, e):
         """Return my conditional probability of being True, given that my
@@ -24,7 +24,7 @@ class Variable:
 def prior_sample():
     "Return a random sample from the full joint distribution."
     x = {}
-    for Xi in all_vars:  # N.B. this depends on the order of variables (parents before children).
+    for Xi in all_variables:  # N.B. this depends on the order of variables (parents before children).
         x[Xi] = random.random() < Xi.p_true(x)
     return x
 

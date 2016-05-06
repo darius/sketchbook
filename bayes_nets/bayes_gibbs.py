@@ -7,7 +7,7 @@ import operator, random
 
 # Let's simplify by assuming there's just one Bayes net. This will
 # list its variables, parents preceding children:
-all_vars = []
+all_variables = []
 
 class Variable:
     "A binary (True/False) random variable."
@@ -17,7 +17,7 @@ class Variable:
         self.cpt = cpt          # Conditional prob. that I'm true, for each combo of the parents' values.
         self.children = []      # The variables that depend on me (to be filled in).
         for parent in parents: parent.children.append(self)
-        all_vars.append(self)
+        all_variables.append(self)
 
     def p(self, value, e):
         """Return my conditional probability of being the value, given that
@@ -45,7 +45,7 @@ def gibbs_ask(X, e, N):
     """Estimate P(X|e): the probability that variable X is true, given
     event e. Use a Markov-chain sampling of length proportional to N."""
     assert X not in e, "Query variable must be distinct from evidence"
-    Z = [var for var in all_vars if var not in e]
+    Z = [var for var in all_variables if var not in e]
     state = dict(e)
     for Zi in Z: state[Zi] = random.choice([True, False])
     counts = {True: 0, False: 0}
