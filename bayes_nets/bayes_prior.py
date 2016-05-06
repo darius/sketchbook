@@ -25,11 +25,8 @@ def prior_sample():
     "Return a random sample from the full joint distribution."
     x = {}
     for Xi in all_vars:  # N.B. this depends on the order of variables (parents before children).
-        x[Xi] = binary_sample(Xi.p_true(x))
+        x[Xi] = random.random() < Xi.p_true(x)
     return x
-
-def binary_sample(p):
-    return True if random.random() < p else False
 
 
 # Burglary example [AIMA figure 14.2]
