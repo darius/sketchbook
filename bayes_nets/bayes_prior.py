@@ -4,8 +4,8 @@ Artifical Intelligence: A Modern Approach (3rd ed.) p. 531
 
 import random
 
-# Let's simplify by assuming there's just one Bayes net, and this will
-# list its variables, with parents preceding children:
+# Let's simplify by assuming there's just one Bayes net. This will
+# list its variables, parents preceding children:
 all_vars = []
 
 class Variable:
