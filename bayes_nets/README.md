@@ -10,9 +10,9 @@ mechanics of representing a Bayes net in Python code, and, as an
 example of computing with it, samples from the full joint
 distribution.
 
-[bayes_gibbs.py](../bayes_nets/bayes_gibbs.py) performs
-inference: it estimates the conditional probability of a variable,
-given that some of the other variables have some set values.
+[bayes_gibbs.py](../bayes_nets/bayes_gibbs.py) does inference: it
+estimates the conditional probability of a variable, given that some
+of the other variables have some set values.
 
 (These modules are independent of each other -- I've duplicated code
 so you can read each in isolation.)
