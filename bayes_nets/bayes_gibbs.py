@@ -72,7 +72,7 @@ mary_calls = Variable((alarm,), {(T,): 0.70, (F,): 0.01})
 ## gibbs_ask(burglary, {john_calls:T, mary_calls:T}, 1000)
 #. 0.262
 
-# Try again a couple times, to get an idea of how much it varies:
+# Try it a couple more times, to get an idea how much it varies:
 ## gibbs_ask(burglary, {john_calls:T, mary_calls:T}, 1000)
 #. 0.278
 ## gibbs_ask(burglary, {john_calls:T, mary_calls:T}, 1000)
