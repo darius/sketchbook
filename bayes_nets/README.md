@@ -26,4 +26,6 @@ one](http://aima.cs.berkeley.edu/3e-figures/burglary2.eps).)
 
 [probability.py](https://github.com/aimacode/aima-python/blob/master/probability.py)
 in [aima-python](https://github.com/aimacode/aima-python) extends this
-to exact inference by variable elimination.
+to exact inference by variable elimination. (Also it adds a `BayesNet`
+class so you're not limited to just one network, and covers some other
+topics from the same chapter of AIMA.)
