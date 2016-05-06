@@ -17,8 +17,8 @@ class Variable:
         all_vars.append(self)
 
     def p_true(self, e):
-        """Return my probability of being True, given that my parents
-        have the values specified by e."""
+        """Return my conditional probability of being True, given that my
+        parents have the values specified by e."""
         return self.cpt[tuple(e[var] for var in self.parents)]
 
 def prior_sample():

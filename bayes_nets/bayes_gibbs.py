@@ -20,14 +20,14 @@ class Variable:
         all_vars.append(self)
 
     def p(self, value, e):
-        """Return my probability of having the value, given that my parents
-        have their value from e."""
+        """Return my conditional probability of being the value, given that
+        my parents have the values specified by e."""
         ptrue = self.cpt[tuple(e[var] for var in self.parents)]
         return ptrue if value else 1-ptrue
 
     def markov_blanket_sample(self, e):
-        """Return a sample from P(self | others) where others denotes that all
-        other variables take their values from event e."""
+        """Return a random sample from P(self | others) where 'others' denotes
+        that all other variables take their values from event e."""
         # Only my 'Markov blanket' is relevant: that is, my parents,
         # children, and children's other parents. I'm conditionally
         # independent of all other variables, given my Markov blanket.
