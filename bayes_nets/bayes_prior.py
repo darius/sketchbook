@@ -1,5 +1,5 @@
 """
-AIMA p. 531
+Artifical Intelligence: A Modern Approach (3rd ed.) p. 531
 """
 
 import random
@@ -49,6 +49,7 @@ def simulate(n_trials):
         x = prior_sample()
         print ''.join('.*'[x[var]] for var in [burglary, earthquake, alarm, john_calls, mary_calls])
 
+# In 100 random trials, John calls 3 times, Mary calls once -- all false alarms:
 ## random.seed(1017)
 ## simulate(100)
 #. BEAJM

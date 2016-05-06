@@ -1,5 +1,5 @@
 """
-Based on http://code.google.com/p/aima-python/source/browse/trunk/probability.py
+Based on https://github.com/aimacode/aima-python/blob/master/probability.py
 """
 
 from __future__ import division
@@ -67,6 +67,7 @@ alarm      = Variable((burglary, earthquake),
 john_calls = Variable((alarm,), {(T,): 0.90, (F,): 0.05})
 mary_calls = Variable((alarm,), {(T,): 0.70, (F,): 0.01})
 
+# What's the probability there's a burglary, given that John and Mary both call?
 ## random.seed(1017)
 ## gibbs_ask(burglary, {john_calls:T, mary_calls:T}, 1000)
 #. 0.262
