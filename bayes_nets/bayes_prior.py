@@ -46,7 +46,7 @@ def simulate(n_trials):
         x = prior_sample()
         print ''.join('.*'[x[var]] for var in [burglary, earthquake, alarm, john_calls, mary_calls])
 
-# In 100 random trials, John calls 3 times, Mary calls once -- all false alarms:
+# In 100 random trials, John calls 4 times, Mary calls once -- all false alarms:
 ## random.seed(1017)
 ## simulate(100)
 #. BEAJM
