@@ -14,7 +14,7 @@ distribution.
 estimates the conditional probability of a variable, given that some
 of the other variables have some set values.
 
-[full_join.py](../bayes_nets/full_joint.py) performs the same
+[full_joint.py](../bayes_nets/full_joint.py) performs the same
 inference exactly but inefficiently.
 
 (These modules are independent of each other -- I've duplicated code
