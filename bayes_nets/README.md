@@ -32,6 +32,10 @@ to exact inference by variable elimination. (Also it adds a `BayesNet`
 class so you're not limited to just one network, and covers some other
 topics from the same chapter of AIMA.)
 
+Generalizing to n-way discrete variables is straightforward. I haven't
+dealt with continuous variables so far; see Gwern below for an example
+of that.
+
 There's a Coursera course on [probabilistic graphical
 models](https://www.coursera.org/course/pgm) and the course textbook
 is in the RC library. (At the moment I have it checked out.)
