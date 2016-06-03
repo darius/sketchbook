@@ -24,8 +24,18 @@ figures](http://aima.cs.berkeley.edu/all-figures.pdf) from
 files, the figure by itself is [this
 one](http://aima.cs.berkeley.edu/3e-figures/burglary2.eps).)
 
+## To learn more
+
 [probability.py](https://github.com/aimacode/aima-python/blob/master/probability.py)
 in [aima-python](https://github.com/aimacode/aima-python) extends this
 to exact inference by variable elimination. (Also it adds a `BayesNet`
 class so you're not limited to just one network, and covers some other
 topics from the same chapter of AIMA.)
+
+There's a Coursera course on [probabilistic graphical
+models](https://www.coursera.org/course/pgm) and the course textbook
+is in the RC library. (At the moment I have it checked out.)
+
+Here's an example of [Gwern analyzing some real
+data](https://www.gwern.net/Statistical%20notes#bayes-nets) with Bayes
+nets.
