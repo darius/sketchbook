@@ -1,5 +1,5 @@
 """
-Convert from Roman numeral to int. Two versions.
+Convert between Roman numeral and int. A few variants.
 """
 
 def int_from_roman1(string):
