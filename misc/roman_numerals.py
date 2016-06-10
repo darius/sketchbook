@@ -15,15 +15,26 @@ def int_from_roman2(string):
     acc = prev = 0
     for c in reversed(string):
         v = values[c]
-        if prev < v: acc += v
-        else:        acc -= v
+        if prev <= v: acc += v
+        else:         acc -= v
         prev = v
     return acc
+
+# After Dave Long's version of the above.
+def int_from_roman3(string):
+    v = [values[c] for c in string]
+    return sum(digit * positively(peek <= digit)
+               for digit, peek in zip(v, v[1:]+[0]))
+
+def positively(flag):
+    return 1 if flag else -1
 
 ## int_from_roman1('MCMLXXIX')
 #. 1979
 ## int_from_roman2('MCMLXXIX')
-#. 1959
+#. 1979
+## int_from_roman3('MCMLXXIX')
+#. 1979
 
 """
 And the converse. Disappointing to use different tables.
