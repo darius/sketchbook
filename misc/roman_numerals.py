@@ -37,7 +37,7 @@ def positively(flag):
 #. 1979
 
 """
-And the converse. Disappointing to use different tables.
+And the inverse. Disappointing to use different tables.
 """
 
 def roman_from_int(n):
