@@ -26,7 +26,7 @@ def exprs_over(nums):
         yield nums[0]
     elif 1 < len(nums):
         for L, R in splits(nums):
-            if not L or not R: continue  # Just a shortcut.
+            if not L or not R: continue
             for x, y in product(exprs_over(L), exprs_over(R)):
                 for op in both_ops:
                     yield '(%s %s %s)' % (x, op, y)
