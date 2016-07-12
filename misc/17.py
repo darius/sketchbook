@@ -5,10 +5,11 @@ a, b, c, and d with arithmetic operations (+, -, *, and /) to get e.
 """
 
 from __future__ import division
+from fractions import Fraction
 from itertools import product
 
 def puzzle(target, nums):
-    for e in exprs_over(tuple(nums)):
+    for e in exprs_over(tuple(Fraction(n, 1) for n in nums)):
         try:
             v = eval(e)
         except ZeroDivisionError:
