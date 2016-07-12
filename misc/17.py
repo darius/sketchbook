@@ -8,8 +8,7 @@ from __future__ import division
 from itertools import product
 
 def puzzle(target, nums):
-    nums = tuple(nums)
-    for e in exprs_over(nums):
+    for e in exprs_over(tuple(nums)):
         try:
             v = eval(e)
         except ZeroDivisionError:
