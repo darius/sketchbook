@@ -9,7 +9,7 @@ from fractions import Fraction
 from itertools import product
 
 def puzzle(target, nums):
-    for e in exprs_over(tuple(Fraction(n, 1) for n in nums)):
+    for e in exprs_over(tuple(map(Fraction, nums))):
         try:
             v = eval(e)
         except ZeroDivisionError:
