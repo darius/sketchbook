@@ -20,7 +20,7 @@ def puzzle(target, nums):
 
 commutative_ops    = ('+', '*')
 noncommutative_ops = ('-', '/')
-both_ops = commutative_ops + noncommutative_ops
+all_ops = commutative_ops + noncommutative_ops
 
 def exprs_over(nums):
     if len(nums) == 1:
@@ -29,7 +29,7 @@ def exprs_over(nums):
         for L, R in splits(nums):
             if not L or not R: continue
             for x, y in product(exprs_over(L), exprs_over(R)):
-                for op in both_ops:
+                for op in all_ops:
                     yield '(%s %s %s)' % (x, op, y)
                 for op in noncommutative_ops:
                     yield '(%s %s %s)' % (y, op, x)
