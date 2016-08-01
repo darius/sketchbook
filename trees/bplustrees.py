@@ -64,8 +64,8 @@ def check_bpt(bpt):
     To ensure a balanced tree, for efficiency:
     * The leaves are all at the same depth.
     * If the root is a branch, it has at least two kids.
-    * For branches below the root, ceil(capacity//2) <= len(kids)
-    * For leaves below the root,   ceil(capacity//2) <= len(values)
+    * For branches below the root, ceil(capacity/2) <= len(kids)
+    * For leaves below the root,   ceil(capacity/2) <= len(values)
       (This one does not affect asymptotics, but without it the
       constant factor would suck.)
     """
@@ -94,7 +94,7 @@ def check_bpt(bpt):
             if d == 0:
                 assert 2 <= len(kids), "Underpopulated root"
             else:
-                assert ceil(capacity//2) <= len(kids), "Underpopulated branch"
+                assert ceil(capacity/2) <= len(kids), "Underpopulated branch"
             assert len(keys) == len(kids)-1, "keys and kids don't correspond"
             for i, kid_i in enumerate(kids):
                 checking(kid_i, d+1,
@@ -105,7 +105,7 @@ def check_bpt(bpt):
             values = xs
             assert len(keys) == len(values), "keys and values don't correspond"
             if 0 < d:
-                assert ceil(capacity//2) <= len(values), "Underpopulated leaf"
+                assert ceil(capacity/2) <= len(values), "Underpopulated leaf"
         else:
             assert False, "Bad tag"
 
