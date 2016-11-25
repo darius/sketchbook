@@ -5,7 +5,12 @@ http://comments.gmane.org/gmane.comp.lang.smalltalk.fonc/3642
 There were some minor bugs in that code: erroring on trying to match
 tokens at the end-of-input.
 
-There was a bug in the compiler/VM design. Consider this grammar:
+There was a bug in the compiler/VM design. (Update: I think I was
+confused about the original design. It has a .EMPTY directive for you
+to use in rules like the below. I'm leaving the following remarks
+alone until I get around to figuring out how I misunderstood. If I
+ever do -- now the starting code linked above seems to be gone.)
+Consider this grammar:
 
     THING = FAILURE | .OUT('hey') | .OUT('should not happen') .,
     FAILURE = 'a rule I expect to fail' .,
