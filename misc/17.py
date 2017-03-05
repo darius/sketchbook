@@ -66,3 +66,7 @@ def splits(xs):
 #. (6 * ((5 / 6) + 2))
 #. (6 * (2 + (5 / 6)))
 #. (6 * (2 + (5 / 6)))
+
+# XXX This was wrong: splits() misses some possibilities.
+# See http://blog.plover.com/math/24-puzzle.html
+## puzzle(24, [3,3,8,8])
