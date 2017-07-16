@@ -10,13 +10,13 @@ sys.setrecursionlimit(5000)
 import indexedsat as solver
 from sat import flatten, exactly_one, at_most_one
 
-## unconstrained_sudoku(2)
+## solve(make_sudoku_grid(2))
 #. 4 3 | 2 1
 #. 2 1 | 4 3
 #. ---------
 #. 3 4 | 1 2
 #. 1 2 | 3 4
-## unconstrained_sudoku(3)
+## solve(make_sudoku_grid(3))
 #. 9 8 7 | 6 5 4 | 3 2 1
 #. 6 5 4 | 3 2 1 | 9 8 7
 #. 3 2 1 | 9 8 7 | 6 5 4
@@ -34,7 +34,7 @@ hard1 = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2....
 hardestsudokuinworld = \
         '85...24..72......9..4.........1.7..23.5...9...4...........8..7..17..........36.4.'
 
-## solve(easy1)
+## solve(read_sudoku_problem(easy1))
 #. 4 8 3 | 9 2 1 | 6 5 7
 #. 9 6 7 | 3 4 5 | 8 2 1
 #. 2 5 1 | 8 7 6 | 4 9 3
@@ -47,13 +47,7 @@ hardestsudokuinworld = \
 #. 8 1 4 | 2 5 3 | 7 6 9
 #. 6 9 5 | 4 1 7 | 3 8 2
 
-def unconstrained_sudoku(n):
-    rows, problem = make_sudoku_grid(n)
-    model = solver.solve(problem)
-    print_sudoku_solution(rows, model)
-
-def solve(form):
-    rows, problem = read_sudoku_problem(form)
+def solve((rows, problem)):
     model = solver.solve(problem)
     print_sudoku_solution(rows, model)
 
