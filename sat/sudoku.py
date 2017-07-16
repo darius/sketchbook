@@ -16,7 +16,6 @@ from sat import flatten, exactly_one, at_most_one
 #. ---------
 #. 3 4 | 1 2
 #. 1 2 | 3 4
-#. 
 ## unconstrained_sudoku(3)
 #. 9 8 7 | 6 5 4 | 3 2 1
 #. 6 5 4 | 3 2 1 | 9 8 7
@@ -29,7 +28,6 @@ from sat import flatten, exactly_one, at_most_one
 #. 5 7 9 | 4 6 8 | 1 3 2
 #. 4 6 8 | 1 3 2 | 5 7 9
 #. 1 3 2 | 5 7 9 | 4 6 8
-#. 
 
 easy1 = '..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..'
 hard1 = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
@@ -48,7 +46,6 @@ hardestsudokuinworld = \
 #. 3 7 2 | 6 8 9 | 5 1 4
 #. 8 1 4 | 2 5 3 | 7 6 9
 #. 6 9 5 | 4 1 7 | 3 8 2
-#. 
 
 def unconstrained_sudoku(n):
     rows, problem = make_sudoku_grid(n)
