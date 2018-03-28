@@ -43,6 +43,15 @@ def many(r):
 ## match(seq(many(many(lit('a'))), lit('b')), 'aaab')
 #. True
 
+# (a*)*b
+# (a?|b)**
+## match(many(many(alt(lit('b'), alt(lit('a'), empty)))), 'aabab')
+#. True
+
+# (a*b*)*
+## match(many(seq(many(lit('a')), many(lit('b')))), 'aaabba')
+#. False
+
 ## match(empty, '')
 #. True
 ## match(empty, 'A')
