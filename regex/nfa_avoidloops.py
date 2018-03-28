@@ -3,13 +3,16 @@ Regular-expression matching by the Thompson construction.
 Explained in C at http://swtch.com/~rsc/regexp/regexp1.html
 
 Avoid epsilon-loops by construction.
+XXX I'm not sure the representation of 'empty' is good in general, because
+I might be assuming the 're' part of (null, re) is always nonempty, and for 'empty' it's not.
+But I guess alt_node makes sure we don't end up with multiple representations of 'empty'?
 """
 
 def match(re, s): return run(prepare(re), s)
 
 def run(states, s):
     for c in s:
-        states = set.union(*[state(c) for state in states])
+        states = set().union(*[state(c) for state in states])
     return accepting_state in states
 
 def accepting_state(c): return set()
@@ -52,6 +55,9 @@ def seq((null1, re1), (null2, re2)):
         ore1 = optionalize((null1, re1))
         ore2 = optionalize((null2, re2))
         return False, lambda k: ore1(ore2(k))
+
+## match(many(seq(many(lit('a')), many(lit('b')))), 'aaabba')
+#. True
 
 
 ## match(empty, '')
@@ -112,3 +118,10 @@ def seq((null1, re1), (null2, re2)):
 #. False
 ## match(seq(empty, lit('x')), 'x')
 #. True
+
+## match(many(seq(many(lit('x')), many(lit('y')))), 'xxxxyxy')
+#. True
+## match(many(seq(empty, empty)), '')
+#. True
+## match(many(seq(empty, empty)), 'x')
+#. False
