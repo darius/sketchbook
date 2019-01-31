@@ -55,10 +55,6 @@ misc_names, misc_codes = _enum("""
   c-push c-drop c-set c-depth""")
 
 
-class HaltException(Exception):
-    """Raised when we hit a HALT syscall."""
-
-
 class VM(object):
 
     def __init__(self, c_list):
