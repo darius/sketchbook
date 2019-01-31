@@ -1,0 +1,48 @@
+32 bits
+16 regs? (including IP, SP, accum)
+16 cap regs?
+N.B. the more regs, the costlier context-switch
+should be possible to run from ROM, using regs only
+position-independent libraries would be nice
+maybe insns are byte-encoded, op:4, arg:4
+or say 16-bit insns, op:8 args:8
+
+op:
+
+load r1 <- r2
+
+@ [r+i] -> acc
+! acc -> [r+i]
+b@ [r+i] -> acc
+b! acc -> [r+i]
+
++= acc, r, i -> acc
++ r1, r2 -> acc     more useful?
+- r1, r2 -> acc
+<< r1, r2 -> acc
+>> r1, r2 -> acc
+>>> r1, r2 -> acc
+and r1, r2 -> acc
+or r1, r2 -> acc
+xor r1, r2 -> acc
+
+* r1, acc -> r2, acc
+u* r1, acc -> r2, acc
+*/mod r1, r2, acc -> r1, r2, acc
+u*/mod r1, r2, acc -> r1, r2, acc
+
+jump r+i -> pc
+
+
+not 8-bit ops, I guess 4 bits instead:
+
+load arg -> acc
+xload arg -> acc             for the remaining bits
+jump arg -> pc               or pc += arg
+call acc = pc+2; pc = arg    or pc += arg
+(I guess long-distance targets must be 16-byte aligned?)
+
+if r == acc then pc += arg   or r == i?
+if r < acc then pc += arg    or acc < r?
+if r u< acc then pc += arg
+

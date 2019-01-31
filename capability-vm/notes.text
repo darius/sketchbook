@@ -1,0 +1,113 @@
+The general idea: I wanted to try making a machine/language combo
+something like Tusl, but with just one stack and with capabilities.
+Hoping to end up with a simpler combo that's still usable. Then extend
+it into a toy capability OS.
+
+I'm somewhat dubious about this working out nicely, but let's try, as
+a step towards finding a good spot in the design space.
+
+Currently there's no source language like Tusl -- you assemble code
+directly with Python expressions.
+
+Shortcomings of Tusl:
+
+* The memory organization, consisting of two stacks + code/data +
+  headers/strings, makes memory allocation wasteful or constraining.
+* Grabbing locals is somewhat costly (moving them to the return stack).
+  It makes the VM a poor target for other languages.
+* Nested scope of locals is ugly: you have to reestablish the outers.
+  Also, at the source level you don't have a way to drop the current
+  locals (iirc).
+* I never ended up using given/;will. Would like to try something like
+  dictionary-allocated closures/objects using nested scopes.
+* There's too much C code; I wasn't trying to minimize that in favor
+  of Tusl code. (How fixable is this within the design?) Relatedly,
+  there are a few too many token types.
+* No capability support. Maybe we could make Forth programming a
+  bit safer/higher-level while we're adding that. (cf Parable)
+* Debugging could be nicer.
+* If we want capabilities for security, we probably want a safer
+  language too! Forth style is not safe.
+
+All that seems tolerable. But kinda disappointing. Back to the new
+straw man:
+
+The stack is chunked in frames. Along with the stack pointer, there's
+a hardware frame pointer pointing to the start of the current frame. A
+nontail call saves the current frame pointer (plus return address) and
+sets up a new one. A return pops the frame pointer and return address,
+and squashes the top N values (where N is an argument of the return
+instruction) from the current frame onto the top of the restored
+frame.
+
+# A stack frame looks like this, growing downwards in memory:
+#      bp[4]:    old bp  (this is also where the return value will go)
+#      bp[0]:    return address
+#      bp[-4]:   leftmost argument
+#      ...
+#      bp[-4*n]: rightmost argument (where n is the number of arguments)
+#      ...temporaries...
+#      sp[0]:    'topmost' temporary
+
+XXX explain parameter passing and tailcalls
+XXX explain locals
+XXX explain capabilities
+TODO try porting some tusl code. See *.doe in alph in particular.
+
+
+Some notions to consider:
+
+
+Idea -1:
+
+Since we're gonna have multiple processes, how about changing how
+Tusl's eval/compile staging works: what used to be the eval mode is
+now run in a builder process with write access to the new code
+segment. The dictionary is not necessarily stored in the same memory
+space as the code.
+
+
+architecture idea 0:
+
+what if we introduced a return-address register? this might fix the
+annoyance of clean tail-call support. the annoyance is, it's ugly
+unless we push the return address *before* the arguments, but then
+we're pushing it long before we get around to the actual call
+instruction. if there's a special register for the current return
+address, then it doesn't have to go on the stack at all except for
+nontail calls.
+
+
+architecture idea 1:
+
+ registers: pc sp bp acc
+
+ acc holds the top of the stack; but the return instruction doesn't
+ touch it; instead it takes an offset and pops down that many slots to
+ get to the return address.
+
+ there's no call instruction; instead there are 'enframe' and 'jump'.
+ jump does double duty as tailcall.
+
+ hm, we may want another instruction to rearrange the stack-frame for
+ a tailcall, though...
+
+
+# some suggested extensions:
+# extend1 extend2 signed-extend1 signed-extend2
+# not 0= 2/ 2* negate
+# compact negative literals
+# dup swap multidrop
+# mixed-precision arithmetic
+# branch-unless
+# capability stuff instead of generic syscall
+# branch on particular conditions instead of on a flag
+# assign to local var
+# direct calls and tailcalls (we have indirect by default)
+# floating point
+# from MMIX: multiple-or multiplex and-not or-not *2+ *4+ *8+ *16+ 
+#            byte-difference odd? even? sideways-add 
+# debugging support
+# stuff from Machine Forth
+# compare to Wren
+# immediate addition, etc (TOS += n, etc.)
