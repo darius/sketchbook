@@ -1,3 +1,6 @@
+(This is probably pretty cryptic unless you're familiar with Tusl;
+i.e., you're me.)
+
 The general idea: I wanted to try making a machine/language combo
 something like Tusl, but with just one stack and with capabilities.
 Hoping to end up with a simpler combo that's still usable. Then extend

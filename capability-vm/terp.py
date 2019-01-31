@@ -1,3 +1,9 @@
+"""
+An example program in the nameless Forth dialect.
+It's a port of an example from Ichbins which prints
+a Lisp list.
+"""
+
 import cap
 import compiling as c
 import stepper

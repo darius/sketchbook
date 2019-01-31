@@ -1,3 +1,7 @@
+"""
+Another example program in the nameless Forth dialect.
+"""
+
 import cap
 import compiling as c
 
