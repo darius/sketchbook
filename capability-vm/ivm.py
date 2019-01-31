@@ -97,16 +97,15 @@ class VM(object):
         elif op == 'jump':
             self.pc += arg        # TODO: arg + 1
 # A stack frame looks like this, growing downwards in memory:
-#      bp[4]:    old bp  (this is also where the return value will go)
+#      bp[4]:    old bp  (to be replaced eventually by any return values, upon 'ret')
 #      bp[0]:    return address
 #      bp[-4]:   leftmost argument
 #      ...
 #      bp[-4*n]: rightmost argument (where n is the number of arguments)
 #      ...temporaries...
 #      sp[0]:    'topmost' temporary
-# When we first enter the function, there are no temporaries; when we're
-# ready to execute ';', there's only one temporary left, the return
-# value.
+# When we first enter the function, there are no temporaries; by the time of exit,
+# there should be at least as many values in the frame as the 'ret' instruction consumes.
         elif op == 'local':
             self.push(self.getw(self.bp - 4 * (arg+1)))
         elif op == 'arity':
