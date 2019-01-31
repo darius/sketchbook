@@ -70,18 +70,18 @@ segment. The dictionary is not necessarily stored in the same memory
 space as the code.
 
 
-architecture idea 0:
+Architecture idea 0:
 
-what if we introduced a return-address register? this might fix the
-annoyance of clean tail-call support. the annoyance is, it's ugly
+What if we introduced a return-address register? This might fix the
+annoyance of clean tail-call support. The annoyance currently is, it's ugly
 unless we push the return address *before* the arguments, but then
 we're pushing it long before we get around to the actual call
-instruction. if there's a special register for the current return
+instruction. If there's a special register for the current return
 address, then it doesn't have to go on the stack at all except for
 nontail calls.
 
 
-architecture idea 1:
+Architecture idea 1:
 
  registers: pc sp bp acc
 
@@ -89,10 +89,10 @@ architecture idea 1:
  touch it; instead it takes an offset and pops down that many slots to
  get to the return address.
 
- there's no call instruction; instead there are 'enframe' and 'jump'.
+ There's no call instruction; instead there are 'enframe' and 'jump'.
  jump does double duty as tailcall.
 
- hm, we may want another instruction to rearrange the stack-frame for
+ Hm, we may want another instruction to rearrange the stack-frame for
  a tailcall, though...
 
 
