@@ -2,8 +2,6 @@
 sketch of minimal PEG demo
 """
 
-from parson import Grammar
-
 def parse(g, start, s):
     for _, vals in g[start](g, s, (0, ())):
         return vals
@@ -30,9 +28,10 @@ def Call(name):
         return [(i, (((name,)+vals),)) for i, vals in g[name](g, s, st)]
     return call
 
+from parson import Grammar
 pegging = Grammar(r"""rule* :end.
 
-rule: name '<-' pe :hug.
+rule: name '<-' pe ';' :hug.
 pe: e1 ('/' pe :Either)?.
 e1: e2 (e1 :Chain)?.
 e2: name :Call
@@ -43,9 +42,8 @@ literal: /'([^']*)'/.
 FNORD:   /\s+/?.
 """)(**globals())
 
-## 'b'.startswith('b', 0)
-#. True
-eg1 = dict(pegging(" a <- 'b' / 'c' "))
-## parse(eg1, 'a', 'b')
-#. ('b',)
-## parse(eg1, 'a', 'd')
+eg1 = dict(pegging("d <- '0'/'1';  n <- d n / d;"))
+## parse(eg1, 'n', '0')
+#. (('d', '0'),)
+## parse(eg1, 'n', '101')
+#. (('n', ('n', ('d', ('d', ('d', '1'), '0'), '1'))),)
