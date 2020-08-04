@@ -36,7 +36,6 @@ def many(re):
         return loop
     return re_star
 
-
 ## match(empty, '')
 #. True
 ## match(empty, 'A')

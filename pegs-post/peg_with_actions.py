@@ -17,10 +17,10 @@ def Chain(p, q):
         return [st3 for st2 in p(g, s, st1) for st3 in q(g, s, st2)]
     return chain
 
-def Literal(string):
+def Literal(lit):
     def literal(g, s, st):
         i, vals = st
-        return ([(i+len(string), vals+(string,))] if s.startswith(string, i)
+        return ([(i+len(lit), vals+(lit,))] if s.startswith(lit, i)
                 else [])
     return literal
 

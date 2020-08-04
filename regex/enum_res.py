@@ -46,7 +46,6 @@ def gen_res(maker, alphabet, size):
 #. seq('1', '0')
 #. alt('1', '1')
 #. seq('1', '1')
-#. 
 
 ## for size in range(9): print 2, size, len(gen_res(TreeMaker(), '01', size))
 #. 2 0 0
@@ -58,7 +57,6 @@ def gen_res(maker, alphabet, size):
 #. 2 6 1263
 #. 2 7 6753
 #. 2 8 30621
-#. 
 
 ## for size in range(9): print 3, size, len(gen_res(TreeMaker(), '012', size))
 #. 3 0 0
@@ -70,5 +68,3 @@ def gen_res(maker, alphabet, size):
 #. 3 6 2884
 #. 3 7 18404
 #. 3 8 90276
-#. 
-

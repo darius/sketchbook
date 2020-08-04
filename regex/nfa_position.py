@@ -53,6 +53,9 @@ accepting = lit(None)
 ## accepting
 #. (False, set([(None, 1)]), set([(None, 1)]), {})
 
+## match(many(seq(lit('a'), many(empty))), 'aa')
+#. True
+
 ## match(empty, '')
 #. True
 ## match(empty, 'A')
@@ -100,7 +103,7 @@ accepting = lit(None)
 ## match(complicated, 'ababaxyaxz')
 #. False
 
-# N.B. infinite recursion, like Thompson's original code:
+# originally had infinite recursion, like Thompson's original code:
 ## match(many(many(lit('x'))), 'xxxx')
 #. True
 ## match(many(many(lit('x'))), 'xxxxy')

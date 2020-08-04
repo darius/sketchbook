@@ -22,6 +22,12 @@ def many(r):
         return ks
     return rstar
 
+## match(many(seq(lit('a'), many(empty))), 'aa')
+#. False
+# XXX!!!!
+## match(many(many(alt(lit('a'), empty))), 'aa')
+#. True
+
 ## match(seq(many(lit('a')), lit('b')), 'aaab')
 #. True
 ## match(seq(many(many(lit('a'))), lit('b')), 'aaab')
@@ -60,6 +66,7 @@ def many(r):
 ## match(many(lit('a')), 'ax')
 #. False
 
+# (ab|axy)*z
 ## complicated = seq(many(alt(seq(lit('a'), lit('b')), seq(lit('a'), seq(lit('x'), lit('y'))))), lit('z'))
 ## match(complicated, '')
 #. False
