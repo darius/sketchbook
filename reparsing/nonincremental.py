@@ -73,9 +73,9 @@ cyclic = object()
 
 # Example
 
-from semantics import ast_semantics
-from eg_calc import Calc, calc_semantics
-calc = Calc(Grammar)
+## from semantics import ast_semantics
+## from eg_calc import Calc, calc_semantics
+## calc = Calc(Grammar)
 
 ## calc('(2-3)*4')
 #. -4
