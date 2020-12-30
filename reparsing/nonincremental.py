@@ -185,7 +185,7 @@ class Parsing(object):
         return self.subject[lo:hi]
 
     def replace(self, lo, hi, replacement):
-        assert lo <= hi
+        assert lo <= hi <= len(self.subject)
         self.subject = self.subject[:lo] + replacement + self.subject[hi:]
         self.chart = [{} for _ in range(len(self.subject)+1)]
 
