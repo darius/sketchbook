@@ -189,8 +189,10 @@ class Parsing(object):
 
     def replace(self, lo, hi, replacement):
         assert lo <= hi <= len(self.subject)
+        # TODO notice if the replacement leaves some of it unchanged
         self.subject = self.subject[:lo] + replacement + self.subject[hi:]
         self.chart[lo:hi] = [{} for _ in xrange(len(replacement))]
+        self.far_bounds[lo:hi] = [0] * len(replacement)
         # Invalidate all the chart entries that looked at subject[lo:hi]:
         for i in xrange(lo):
             if lo < i + self.far_bounds[i]:
@@ -323,8 +325,8 @@ def calc(s):
 ## parsing = calc_grammar.parsing(s0)
 ## parsing.interpret(parse, ast_semantics)
 #. (('sub', ('mul', ('int', '2'), ('int', '8')), ('truediv', ('int', '5'), ('int', '2'))),)
-## parsing.replace(1, 2, '0')
+## parsing.replace(1, 2, '/2*')
 ## parsing.text(0, len(parsing.subject))
-#. '208-5/2'
+#. '2/2*8-5/2'
 ## parsing.interpret(parsing.parse(), calc_semantics)
-#. (205.5,)
+#. (5.5,)
