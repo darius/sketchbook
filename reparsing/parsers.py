@@ -37,10 +37,7 @@ class Range(object):
         self.lo, self.hi = lo, hi
     def __call__(self, parsing, i):
         ch = parsing.text(i, i+1)
-        if ch == '':
-            return None, 0, ()
-        else:
-            return (1 if self.lo <= ch <= self.hi else None), 1, ()
+        return (1 if self.lo <= ch <= self.hi else None), 1, ()
 
 class Nix(object):
     def __init__(self, p):
