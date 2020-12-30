@@ -73,29 +73,9 @@ cyclic = object()
 
 # Example
 
-from semantics import *
-import operator
-
-calc = r"""
-start =  exp0.
-exp0  :  exp1 ( '+'  exp1 :add
-              | '-'  exp1 :sub )*.
-exp1  :  exp2 ( '*'  exp2 :mul
-              | '//' exp2 :div
-              | '/'  exp2 :truediv
-              | '%'  exp2 :mod )*.
-exp2  :  exp3 ( '^'  exp2 :pow )?.
-exp3  :  '(' exp0 ')'
-      |  '-' exp1 :neg
-      |  {digit+} :int.
-digit =  '0'..'9'.
-"""
-calc_grammar = Grammar(calc)
-calc_semantics = ComboSemantics(base_semantics, ModuleSemantics(operator))
-
-def calc(s):
-    parser = calc_grammar.parsing(s)
-    return parser.interpret(parser.parse(), calc_semantics)[0]
+from semantics import ast_semantics
+from eg_calc import Calc, calc_semantics
+calc = Calc(Grammar)
 
 ## calc('(2-3)*4')
 #. -4
@@ -104,11 +84,11 @@ def calc(s):
 ## calc(s0)
 #. 13.5
 
-## parsing = calc_grammar.parsing(s0)
+## parsing = calc.grammar.parsing(s0)
 ## parse = parsing.parse()
 ## parsing.interpret(parse, calc_semantics)
 #. (13.5,)
-## parsing = calc_grammar.parsing(s0)
+## parsing = calc.grammar.parsing(s0)
 ## parsing.interpret(parse, ast_semantics)
 #. (('sub', ('mul', ('int', '2'), ('int', '8')), ('truediv', ('int', '5'), ('int', '2'))),)
 ## parsing.replace(1, 2, '0')
