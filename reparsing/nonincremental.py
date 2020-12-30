@@ -3,7 +3,6 @@ Baseline, not yet incremental.
 """
 
 from metagrammar import parser_peg
-from semantics import *
 
 # Top level
 
@@ -74,6 +73,7 @@ cyclic = object()
 
 # Example
 
+from semantics import *
 import operator
 
 calc = r"""

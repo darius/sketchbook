@@ -3,7 +3,6 @@ Tweak nonincremental.py to incremental reparsing.
 """
 
 from metagrammar import parser_peg
-from semantics import *
 
 # Top level
 
@@ -89,6 +88,7 @@ cyclic = object()
 
 # Example
 
+from semantics import *
 import operator
 
 calc = r"""
