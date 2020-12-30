@@ -182,7 +182,7 @@ class Parsing(object):
         # Memo tables for each position in subject:
         self.chart = [{} for _ in xrange(len(subject_str)+1)]
         # Max of 'far' value from each memo table:
-        self.far_bounds = [None] * (len(subject_str)+1)
+        self.far_bounds = [0] * (len(subject_str)+1)
 
     def text(self, lo, hi):
         return self.subject[lo:hi]
@@ -193,11 +193,10 @@ class Parsing(object):
         self.chart[lo:hi] = [{} for _ in xrange(len(replacement))]
         # Invalidate all the chart entries that looked at subject[lo:hi]:
         for i in xrange(lo):
-            if lo < i + (self.far_bounds[i] or 0):
-                new_bounds = None
+            if lo < i + self.far_bounds[i]:
+                new_bounds = 0
                 memos = self.chart[i]
-                for rule, memo in memos.items():
-                    di, far, ops = memo
+                for rule, (di, far, ops) in memos.items():
                     if lo < i + far: del memos[rule]
                     else:            new_bounds = max(new_bounds, far)
                 self.far_bounds[i] = new_bounds
@@ -240,7 +239,7 @@ class Parsing(object):
         if memo is None:
             column[rule] = cyclic
             column[rule] = memo = self.grammar[rule](self, i)
-            self.far_bounds[i] = max(self.far_bounds[i], memo[1]) # N.B. max(None, n) == n
+            self.far_bounds[i] = max(self.far_bounds[i], memo[1])
         elif memo is cyclic:
             raise Exception("Left-recursive rule", rule)
         return memo
