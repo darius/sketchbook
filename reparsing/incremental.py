@@ -8,13 +8,13 @@ from metagrammar import parser_peg
 
 class Grammar(object):
     def __init__(self, grammar_str):
-        self.grammar = dict(parser_peg(grammar_str))
+        self.rules = dict(parser_peg(grammar_str))
     def parsing(self, subject_str):
-        return Parsing(self.grammar, subject_str)
+        return Parsing(self.rules, subject_str)
     
 class Parsing(object):
-    def __init__(self, grammar, subject_str):
-        self.grammar = grammar
+    def __init__(self, rules, subject_str):
+        self.rules = rules
         self.subject = subject_str
         # Memo tables for each position in subject:
         self.chart = [{} for _ in xrange(len(subject_str)+1)]
@@ -77,7 +77,7 @@ class Parsing(object):
         memo = column.get(rule)
         if memo is None:
             column[rule] = cyclic
-            column[rule] = memo = self.grammar[rule](self, i)
+            column[rule] = memo = self.rules[rule](self, i)
             self.far_bounds[i] = max(self.far_bounds[i], memo[1])
         elif memo is cyclic:
             raise Exception("Left-recursive rule", rule)
