@@ -2,16 +2,8 @@
 Tweak nonincremental.py to incremental reparsing.
 """
 
-from metagrammar import parser_peg
+from parse_outcome import ParseOutcome
 
-# Top level
-
-class Grammar(object):
-    def __init__(self, grammar_str):
-        self.rules = dict(parser_peg(grammar_str))
-    def parsing(self, subject_str):
-        return Parsing(self.rules, subject_str)
-    
 class Parsing(object):
     def __init__(self, rules, subject_str):
         self.rules = rules
@@ -28,9 +20,7 @@ class Parsing(object):
         assert lo <= hi <= len(self.subject)
         # TODO notice if the replacement leaves some of it unchanged
         self.subject = self.subject[:lo] + replacement + self.subject[hi:]
-        self.chart[lo:hi] = [{} for _ in xrange(len(replacement))]
-        self.far_bounds[lo:hi] = [0] * len(replacement)
-        # Invalidate all the chart entries that looked at subject[lo:hi]:
+        # Delete all the preceding chart entries that looked at subject[lo:hi]:
         for i in xrange(lo):
             if lo < i + self.far_bounds[i]:
                 new_bounds = 0
@@ -39,37 +29,13 @@ class Parsing(object):
                     if lo < i + far: del memos[rule]
                     else:            new_bounds = max(new_bounds, far)
                 self.far_bounds[i] = new_bounds
+        # And replace the directly affected columns:
+        self.chart[lo:hi] = [{} for _ in xrange(len(replacement))]
+        self.far_bounds[lo:hi] = [0] * len(replacement)
 
-    def parse(self, rule='start'):
-        di, far, ops = self.call(0, rule)
-        if di is None:
-            raise Exception("Unparsable", far, self.subject)
-        if di != len(self.subject):
-            raise Exception("Incomplete parse", far, self.subject)
-        return ops
-
-    def interpret(self, ops, semantics):
-        stack = []
-        frame = []
-        for insn in ops:
-            op = insn[0]
-            if op == '[':
-                stack.append(frame)
-                frame = []
-            elif op == ']':
-                parent = stack.pop()
-                parent.extend(frame)
-                frame = parent
-            elif op == 'do':
-                fn = semantics[insn[1]]
-                frame[:] = [fn(*frame)]
-            elif op == 'grab':
-                i, di = insn[1:]
-                frame.append(self.subject[i:i+di])
-            else:
-                assert 0
-        assert not stack
-        return tuple(frame)
+    def parse_outcome(self, rule=None): # TODO naming
+        if rule is None: rule = 'start'
+        return ParseOutcome(self, rule, self.call(0, rule))
 
     # Used by parsers, not by clients:
     def call(self, i, rule):
@@ -85,29 +51,127 @@ class Parsing(object):
 
 cyclic = object()
 
-
 # Example
-
-## from semantics import ast_semantics
 ## from eg_calc import Calc, calc_semantics
-## calc = Calc(Grammar)
+## from semantics import ast_semantics
 
-## calc('(2-3)*4')
-#. -4
+## calc = Calc(Parsing)
+
+## parsing = calc.grammar.parsing('-2')
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('neg', ('int', '2')),)
+
+## parsing.replace(0, 0, '3')
+## parsing.subject
+#. '3-2'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('sub', ('int', '3'), ('int', '2')),)
+## parsing.parse_outcome().memo[2]
+#. (('[',), ('[',), ('[',), ('[',), ('lit', '3'), ('do', 'int'), (']',), (']',), (']',), ('[',), ('[',), ('[',), ('lit', '2'), ('do', 'int'), (']',), (']',), (']',), ('do', 'sub'), (']',))
+
+
+
+## calc('-3*4')
+#. -12
+
+
+## parsing = calc.grammar.parsing('3-2')
+## parsing.subject
+#. '3-2'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('sub', ('int', '3'), ('int', '2')),)
+
+## parsing.replace(1, 1, '/3')
+## parsing.subject
+#. '3/3-2'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('sub', ('truediv', ('int', '3'), ('int', '3')), ('int', '2')),)
+
+
+
+## parsing = calc.grammar.parsing('')
+## parsing.subject
+#. ''
+## parsing.parse_outcome()
+#. start<None,1,()>
+
+## parsing.replace(0, 0, '5')
+## parsing.subject
+#. '5'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('int', '5'),)
+
+## parsing.replace(0, 0, '3')
+## parsing.subject
+#. '35'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('int', '35'),)
+
+## parsing.replace(1, 2, '')
+## parsing.subject
+#. '3'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('int', '3'),)
+
+## parsing.replace(1, 1, '-2')
+## parsing.subject
+#. '3-2'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('sub', ('int', '3'), ('int', '2')),)
+
+## parsing.replace(1, 1, '/3')  # XXX trouble!
+## parsing.subject
+#. '3/3-2'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('sub', ('truediv', ('int', '3'), ('int', '3')), ('int', '2')),)
+
+## parsing.replace(2, 3, '5*4')
+## parsing.subject
+#. '3/5*4-2'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('sub', ('mul', ('truediv', ('int', '3'), ('int', '5')), ('int', '4')), ('int', '2')),)
+
+## parsing.replace(0, 3, '6/3')
+## parsing.subject
+#. '6/3*4-2'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('sub', ('mul', ('truediv', ('int', '6'), ('int', '3')), ('int', '4')), ('int', '2')),)
+
+
 
 ## s0 = '2*8-5/2'
-## calc(s0)
-#. 13.5
+
 
 ## parsing = calc.grammar.parsing(s0)
-## parse = parsing.parse()
-## parsing.interpret(parse, calc_semantics)
+## parsing.subject
+#. '2*8-5/2'
+## outcome = parsing.parse_outcome()
+## outcome.interpret(calc_semantics)
 #. (13.5,)
-## parsing = calc.grammar.parsing(s0)
-## parsing.interpret(parse, ast_semantics)
+## outcome.interpret(ast_semantics)
 #. (('sub', ('mul', ('int', '2'), ('int', '8')), ('truediv', ('int', '5'), ('int', '2'))),)
-## parsing.replace(1, 2, '/2*')
-## parsing.text(0, len(parsing.subject))
+
+## parsing.replace(1, 1, '/2')
+## parsing.subject
 #. '2/2*8-5/2'
-## parsing.interpret(parsing.parse(), calc_semantics)
-#. (5.5,)
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('sub', ('mul', ('truediv', ('int', '2'), ('int', '2')), ('int', '8')), ('truediv', ('int', '5'), ('int', '2'))),)
+
+## parsing.subject[4:4+1]
+#. '8'
+
+
+## parsing = calc.grammar.parsing(s0)
+## parsing.replace(1, 2, '/2*')
+## parsing.subject
+#. '2/2*8-5/2'
+## parsing.parse_outcome().interpret(ast_semantics)
+#. (('sub', ('mul', ('truediv', ('int', '2'), ('int', '2')), ('int', '8')), ('truediv', ('int', '5'), ('int', '2'))),)
+
+
+## parsing = calc.grammar.parsing(s0)
+## parsing.replace(1, 2, '')
+## parsing.text(0, len(parsing.subject))
+#. '28-5/2'
+## parsing.parse_outcome().interpret(calc_semantics)
+#. (25.5,)

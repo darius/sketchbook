@@ -2,6 +2,7 @@
 The obligatory calculator example
 """
 
+import toplevel
 from semantics import base_semantics, ModuleSemantics, ComboSemantics
 import operator
 
@@ -21,9 +22,8 @@ digit =  '0'..'9'.
 """
 calc_semantics = ComboSemantics(base_semantics, ModuleSemantics(operator))
 
-def Calc(make_grammar):
+def Calc(make_parsing):
     def calc(s):
-        parser = calc.grammar.parsing(s)
-        return parser.interpret(parser.parse(), calc_semantics)[0]
-    calc.grammar = make_grammar(calc_source)
+        return calc.grammar.parse(s).interpret(calc_semantics)[0]
+    calc.grammar = toplevel.Grammar(calc_source, make_parsing)
     return calc

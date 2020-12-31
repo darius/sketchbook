@@ -54,7 +54,7 @@ class Grab(object):
         if di is None:
             return result
         else:
-            return di, far, ops + (('grab',i,di),)
+            return di, far, ops + (('lit', parsing.subject[i:i+di]),)
 
 class Seclude(object):
     def __init__(self, p):
