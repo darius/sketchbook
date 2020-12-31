@@ -33,7 +33,7 @@ class Parsing(object):
         self.chart[lo:hi] = [{} for _ in xrange(len(replacement))]
         self.far_bounds[lo:hi] = [0] * len(replacement)
 
-    def parse_outcome(self, rule=None): # TODO naming
+    def parse(self, rule=None):
         if rule is None: rule = 'start'
         return ParseOutcome(self, rule, self.call(0, rule))
 
@@ -58,15 +58,15 @@ cyclic = object()
 ## calc = Calc(Parsing)
 
 ## parsing = calc.grammar.parsing('-2')
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('neg', ('int', '2')),)
 
 ## parsing.replace(0, 0, '3')
 ## parsing.subject
 #. '3-2'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('sub', ('int', '3'), ('int', '2')),)
-## parsing.parse_outcome().memo[2]
+## parsing.parse().memo[2]
 #. (('[',), ('[',), ('[',), ('[',), ('lit', '3'), ('do', 'int'), (']',), (']',), (']',), ('[',), ('[',), ('[',), ('lit', '2'), ('do', 'int'), (']',), (']',), (']',), ('do', 'sub'), (']',))
 
 
@@ -78,13 +78,13 @@ cyclic = object()
 ## parsing = calc.grammar.parsing('3-2')
 ## parsing.subject
 #. '3-2'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('sub', ('int', '3'), ('int', '2')),)
 
 ## parsing.replace(1, 1, '/3')
 ## parsing.subject
 #. '3/3-2'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('sub', ('truediv', ('int', '3'), ('int', '3')), ('int', '2')),)
 
 
@@ -92,49 +92,49 @@ cyclic = object()
 ## parsing = calc.grammar.parsing('')
 ## parsing.subject
 #. ''
-## parsing.parse_outcome()
+## parsing.parse()
 #. start<None,1,()>
 
 ## parsing.replace(0, 0, '5')
 ## parsing.subject
 #. '5'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('int', '5'),)
 
 ## parsing.replace(0, 0, '3')
 ## parsing.subject
 #. '35'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('int', '35'),)
 
 ## parsing.replace(1, 2, '')
 ## parsing.subject
 #. '3'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('int', '3'),)
 
 ## parsing.replace(1, 1, '-2')
 ## parsing.subject
 #. '3-2'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('sub', ('int', '3'), ('int', '2')),)
 
 ## parsing.replace(1, 1, '/3')  # XXX trouble!
 ## parsing.subject
 #. '3/3-2'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('sub', ('truediv', ('int', '3'), ('int', '3')), ('int', '2')),)
 
 ## parsing.replace(2, 3, '5*4')
 ## parsing.subject
 #. '3/5*4-2'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('sub', ('mul', ('truediv', ('int', '3'), ('int', '5')), ('int', '4')), ('int', '2')),)
 
 ## parsing.replace(0, 3, '6/3')
 ## parsing.subject
 #. '6/3*4-2'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('sub', ('mul', ('truediv', ('int', '6'), ('int', '3')), ('int', '4')), ('int', '2')),)
 
 
@@ -145,7 +145,7 @@ cyclic = object()
 ## parsing = calc.grammar.parsing(s0)
 ## parsing.subject
 #. '2*8-5/2'
-## outcome = parsing.parse_outcome()
+## outcome = parsing.parse()
 ## outcome.interpret(calc_semantics)
 #. (13.5,)
 ## outcome.interpret(ast_semantics)
@@ -154,7 +154,7 @@ cyclic = object()
 ## parsing.replace(1, 1, '/2')
 ## parsing.subject
 #. '2/2*8-5/2'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('sub', ('mul', ('truediv', ('int', '2'), ('int', '2')), ('int', '8')), ('truediv', ('int', '5'), ('int', '2'))),)
 
 ## parsing.subject[4:4+1]
@@ -165,7 +165,7 @@ cyclic = object()
 ## parsing.replace(1, 2, '/2*')
 ## parsing.subject
 #. '2/2*8-5/2'
-## parsing.parse_outcome().interpret(ast_semantics)
+## parsing.parse().interpret(ast_semantics)
 #. (('sub', ('mul', ('truediv', ('int', '2'), ('int', '2')), ('int', '8')), ('truediv', ('int', '5'), ('int', '2'))),)
 
 
@@ -173,5 +173,5 @@ cyclic = object()
 ## parsing.replace(1, 2, '')
 ## parsing.text(0, len(parsing.subject))
 #. '28-5/2'
-## parsing.parse_outcome().interpret(calc_semantics)
+## parsing.parse().interpret(calc_semantics)
 #. (25.5,)

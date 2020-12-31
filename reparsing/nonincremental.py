@@ -18,7 +18,7 @@ class Parsing(object):
         self.subject = self.subject[:lo] + replacement + self.subject[hi:]
         self.chart = [{} for _ in xrange(len(self.subject)+1)]
 
-    def parse_outcome(self, rule=None): # TODO naming
+    def parse(self, rule=None):
         if rule is None: rule = 'start'
         return ParseOutcome(self, rule, self.call(0, rule))
 
@@ -51,7 +51,7 @@ cyclic = object()
 #. 13.5
 
 ## parsing = calc.grammar.parsing(s0)
-## outcome = parsing.parse_outcome()
+## outcome = parsing.parse()
 ## outcome.interpret(calc_semantics)
 #. (13.5,)
 ## outcome.interpret(ast_semantics)
@@ -59,5 +59,5 @@ cyclic = object()
 ## parsing.replace(1, 2, '0')
 ## parsing.text(0, len(parsing.subject))
 #. '208-5/2'
-## parsing.parse_outcome().interpret(calc_semantics)
+## parsing.parse().interpret(calc_semantics)
 #. (205.5,)

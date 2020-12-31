@@ -10,7 +10,7 @@ class Grammar(object):
         self.make_parsing = make_parsing
 
     def parse(self, subject_str, rule=None):
-        return self.parsing(subject_str).parse_outcome(rule)
+        return self.parsing(subject_str).parse(rule)
     
     def parsing(self, subject_str):
         return self.make_parsing(self.rules, subject_str)
@@ -33,13 +33,13 @@ class Grammar(object):
 #. 13.5
 
 ## parsing = calc.grammar.parsing(s0)
-## outcome = parsing.parse_outcome()
+## outcome = parsing.parse()
 ## outcome.interpret(calc_semantics)
 #. (13.5,)
 ## outcome.interpret(ast_semantics)
 #. (('sub', ('mul', ('int', '2'), ('int', '8')), ('truediv', ('int', '5'), ('int', '2'))),)
 ## parsing.replace(1, 2, '0')
-## parsing.text(0, len(parsing.subject))
+## parsing.subject
 #. '208-5/2'
-## parsing.parse_outcome().interpret(calc_semantics)
+## parsing.parse().interpret(calc_semantics)
 #. (205.5,)
