@@ -2,11 +2,11 @@
 Tie things together, with a choice of different `parsing` implementations.
 """
 
-from metagrammar import parser_peg
+from metagrammar import parser_parser
 
 class Grammar(object):
     def __init__(self, grammar_str, make_parsing):
-        self.rules = dict(parser_peg(grammar_str))
+        self.rules = dict(parser_parser(grammar_str))
         self.make_parsing = make_parsing
 
     def parse(self, subject_str, rule=None):

@@ -36,4 +36,4 @@ whitespace  ~:  /(?:\s|#.*)+/.
 qstring     ~:  /'/  quoted_char* /'/ FNORD :join.
 quoted_char ~:  /\\(.)/ | /([^'])/.
 """
-parser_peg = Grammar(meta_grammar).bind(parsers)
+parser_parser = Grammar(meta_grammar).bind(parsers)
