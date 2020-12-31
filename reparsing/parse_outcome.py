@@ -4,9 +4,9 @@ What to do with the result of a parse.
 
 class ParseOutcome(object):
     def __init__(self, parsing, rule, memo):
-        # We remember the rule for the sake of debugging support, TBD
-        self.parsing, self.rule, self.memo = parsing, rule, memo
-        self.subject = self.parsing.subject
+        self.memo = memo
+        # We remember the parsing and rule for the sake of debugging support, TBD
+        self.parsing, self.rule = parsing, rule
 
     def __nonzero__(self):   # N.B. in py3 this'd be __bool__
         "Did the parse succeed and reach the end?"
@@ -30,7 +30,6 @@ class ParseOutcome(object):
     
     def interpret(self, semantics):
         self.surely_full()      # TODO but it's legitimate to interpret a prefix parse...
-        assert self.subject == self.parsing.subject
         stack = []
         frame = []
         ops = self.memo[2]

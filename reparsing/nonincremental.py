@@ -57,7 +57,7 @@ cyclic = object()
 ## outcome.interpret(ast_semantics)
 #. (('sub', ('mul', ('int', '2'), ('int', '8')), ('truediv', ('int', '5'), ('int', '2'))),)
 ## parsing.replace(1, 2, '0')
-## parsing.text(0, len(parsing.subject))
+## parsing.subject
 #. '208-5/2'
 ## parsing.parse().interpret(calc_semantics)
 #. (205.5,)
