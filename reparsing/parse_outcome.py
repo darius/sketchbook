@@ -8,6 +8,10 @@ class ParseOutcome(object):
         self.parsing, self.rule, self.memo = parsing, rule, memo
         self.subject = self.parsing.subject
 
+    def __nonzero__(self):   # N.B. in py3 this'd be __bool__
+        "Did the parse succeed and reach the end?"
+        return self.is_full()
+
     def is_full(self):          # TODO naming
         return self.prefix() == len(self.parsing.subject)
 

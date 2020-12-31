@@ -43,3 +43,8 @@ class Grammar(object):
 #. '208-5/2'
 ## parsing.parse().interpret(calc_semantics)
 #. (205.5,)
+
+## bool(calc.grammar.parse(s0))
+#. True
+## bool(calc.grammar.parse('xyz'))
+#. False
