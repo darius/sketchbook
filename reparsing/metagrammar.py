@@ -23,7 +23,7 @@ factor       :  '!' factor                 :Nix
 primary      :  '(' pe ')'
              |  '[' pe ']'                 :Seclude
              |  '{' pe '}'                 :Grab
-             |  qstring ('..' qstring :Range
+             |  qstring ('..' qstring :Range    # TODO replace this with /[x-y]/ or something
                         |             :Literal)
              |  ':'~name                   :Do
              |  name                       :Call.
@@ -34,6 +34,6 @@ FNORD       ~:  whitespace?.
 whitespace  ~:  /(?:\s|#.*)+/.
 
 qstring     ~:  /'/  quoted_char* /'/ FNORD :join.
-quoted_char ~:  /\\(.)/ | /([^'])/.
+quoted_char ~:  /\\(.)/ | /([^'])/.        # TODO screen and interpret escapes
 """
 parser_parser = Grammar(meta_grammar).bind(parsers)
