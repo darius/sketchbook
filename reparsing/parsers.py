@@ -75,7 +75,7 @@ class Either(object):
         di, far2, ops = self.q(parsing, i)
         return di, max(far1, far2), ops
 
-class Chain(object):
+class Then(object):
     def __init__(self, p, q):
         self.p, self.q = p, q
     def __call__(self, parsing, i):
@@ -100,17 +100,34 @@ class Repeat(object):
             ops += ops2
     
 
+# Helpers
+
+def foldr(f, z, xs):
+    for x in reversed(xs):
+        z = f(x, z)
+    return z
+
+
 # Derived parsers
 
+def Chain(*ps):  return foldr(Chain2, empty, ps)
+def Choice(*ps): return foldr(Choice2, fail, ps)
+
+def Chain2(p, q):
+    if p is empty: return q
+    if q is empty: return p
+    return Then(p, q)
+
+def Choice2(p, q):
+    if p is fail: return q
+    if q is fail: return p
+    return Either(p, q)
+
 def Literal(s):
-    result = empty
-    for ch in reversed(s):
-        parser = Range(ch, ch)
-        result = parser if result is empty else Chain(parser, result)
-    return result
+    return Chain(*[Range(ch, ch) for ch in s])
 
 def Maybe(p):
-    return Either(p, empty)
+    return Choice(p, empty)
 
 def Plus(p, separator=None):
     if separator is None:

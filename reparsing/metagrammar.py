@@ -11,7 +11,7 @@ rule         :  name ('='             pe
                      |':'~whitespace [pe :Seclude])
                 '.'                        :hug.
 
-pe           :  term ('|' pe :Either)?
+pe           :  term ('|' pe :Choice)?
              |                             :Empty.
 term         :  factor (term :Chain)?.
 factor       :  '!' factor                 :Nix
