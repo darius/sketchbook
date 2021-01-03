@@ -1,16 +1,23 @@
+"""
+A template language, similar to templite by Ned Batchelder.
+https://github.com/aosabook/500lines/tree/master/template-engine
+(Still missing a few features.)
+Ported from Parson.
+"""
+
 import toplevel
 from nonincremental import Parsing
 from semantics import ast_semantics
 
 grammar_source = r"""
-start:     block.
+start:     _ block.      # XXX why is _ needed?
 block:     chunk* :hug :Block.
 
 chunk:     '{#' (!'#}' /./)* '#}'
         |  '{{'_ expr '}}'                                                  :Expr
         |  '{%'_ 'if'_ expr '%}'                block '{%'_ 'endif'_  '%}'  :If
         |  '{%'_ 'for'_ ident _ 'in'_ expr '%}' block '{%'_ 'endfor'_ '%}'  :For
-        |  (!/{[#{%]/ {/./})+ :join                                         :Literal.
+        |  {(!/{[#{%]/ /./)+}                                               :Literal.
 
 expr:      access ('|' function :Call)* _ .
 access:    ident :VarRef ('.' ident :Access)*.
@@ -32,10 +39,10 @@ def parse(text, rule=None):
 #. (('Block', ('hug',)),)
 
 ## parse('a')
-#. (('Block', ('hug', ('Literal', ('join', 'a')))),)
+#. (('Block', ('hug', ('Literal', 'a'))),)
 
 ## parse('hello {{world}} yay')
-#. (('Block', ('hug', ('Literal', ('join', 'h', 'e', 'l', 'l', 'o', ' ')), ('Expr', ('VarRef', 'world')), ('Literal', ('join', ' ', 'y', 'a', 'y')))),)
+#. (('Block', ('hug', ('Literal', 'hello '), ('Expr', ('VarRef', 'world')), ('Literal', ' yay'))),)
 
 ## parse('world', 'block')
-#. (('Block', ('hug', ('Literal', ('join', 'w', 'o', 'r', 'l', 'd')))),)
+#. (('Block', ('hug', ('Literal', 'world'))),)
