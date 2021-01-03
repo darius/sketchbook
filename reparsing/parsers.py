@@ -17,16 +17,19 @@ class Call(object):
     def __call__(self, parsing, i):
         return parsing.call(i, self.rule)
 
-class Fail(object):
+class FailParser(object):
     def __call__(self, parsing, i):
         return None, 0, ()
 
-class Empty(object):
+class EmptyParser(object):
     def __call__(self, parsing, i):
         return 0, 0, ()
 
-fail = Fail()
-empty = Empty()
+fail = FailParser()
+def Fail(): return fail
+
+empty = EmptyParser()
+def Empty(): return empty
 
 class Do(object):
     def __init__(self, name):
