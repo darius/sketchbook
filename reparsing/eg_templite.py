@@ -17,9 +17,7 @@ chunk:     '{#' (!'#}' %any)* '#}'
         |  '{{'_ expr '}}'                                                  :Expr
         |  '{%'_ 'if'_ expr '%}'                block '{%'_ 'endif'_  '%}'  :If
         |  '{%'_ 'for'_ ident _ 'in'_ expr '%}' block '{%'_ 'endfor'_ '%}'  :For
-        |  literal.
-
-literal:   {(!/{[#{%]/ %any)+}                                              :Literal.
+        |  {(!/{[#{%]/ %any)+}                                              :Literal.
 
 expr:      access ('|' function :Call)* _ .
 access:    ident :VarRef ('.' ident :Access)*.
