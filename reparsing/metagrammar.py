@@ -27,6 +27,7 @@ primary      :  '(' pe ')'
                         |             :Literal)
              |  ':'~name                   :Do
              |  regex
+             |  "%any"                     :Any
              |  name                       :Call.
 
 name         :  /([A-Za-z_]\w*)/.

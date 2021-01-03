@@ -37,6 +37,11 @@ class Do(object):
     def __call__(self, parsing, i):
         return 0, 0, self.ops
 
+class Any(object):
+    def __call__(self, parsing, i):
+        ch = parsing.text(i, i+1)
+        return (1 if ch else None), 1, ()
+
 class Range(object):
     def __init__(self, lo, hi):
         self.lo, self.hi = lo, hi

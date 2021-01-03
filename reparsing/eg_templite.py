@@ -13,13 +13,13 @@ grammar_source = r"""
 start:     block.      # XXX why is _ needed?
 block:     chunk* :hug :Block.
 
-chunk:     '{#' (!'#}' /./)* '#}'
+chunk:     '{#' (!'#}' %any)* '#}'
         |  '{{'_ expr '}}'                                                  :Expr
         |  '{%'_ 'if'_ expr '%}'                block '{%'_ 'endif'_  '%}'  :If
         |  '{%'_ 'for'_ ident _ 'in'_ expr '%}' block '{%'_ 'endfor'_ '%}'  :For
         |  literal.
 
-literal:   {(!/{[#{%]/ /./)+}                                               :Literal.
+literal:   {(!/{[#{%]/ %any)+}                                              :Literal.
 
 expr:      access ('|' function :Call)* _ .
 access:    ident :VarRef ('.' ident :Access)*.
@@ -40,8 +40,8 @@ def parse(text, rule=None):
 ## parse('')
 #. (('Block', ('hug',)),)
 
-# XXX can't use /./ for a newline
 ## parse('\n', rule='chunk')
+#. (('Literal', '\n'),)
 
 ## parse('a')
 #. (('Block', ('hug', ('Literal', 'a'))),)
@@ -52,14 +52,8 @@ def parse(text, rule=None):
 ## parse('world', 'block')
 #. (('Block', ('hug', ('Literal', 'world'))),)
 
-with open('/home/darius/g/aima-python/README.md') as f:
-    big = f.read()
+## with open('/home/darius/g/aima-python/README.md') as f: big = f.read()
 ## len(big)
 #. 19377
-## wtf = big[:1]
-## wtf
-#. '\n'
 ## grammar.parse(big).prefix()
-#. 0
-## big[:231]
-#. '\n\n# `aima-python` [![Build Status](https://travis-ci.org/aimacode/aima-python.svg?branch=master)](https://travis-ci.org/aimacode/aima-python) [![Binder](http://mybinder.org/badge.svg)](http://mybinder.org/repo/aimacode/aima-python)'
+#. 19377
