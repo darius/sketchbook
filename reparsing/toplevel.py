@@ -4,9 +4,12 @@ Tie things together, with a choice of different `parsing` implementations.
 
 from metagrammar import parser_parser
 
-class Grammar(object):
-    def __init__(self, grammar_str, make_parsing):
-        self.rules = dict(parser_parser(grammar_str))
+def Grammar(grammar_str, make_parsing):
+    return GrammarParser(dict(parser_parser(grammar_str)), make_parsing)
+
+class GrammarParser(object):
+    def __init__(self, rules, make_parsing):
+        self.rules = rules
         self.make_parsing = make_parsing
 
     def parse(self, subject_str, rule=None):
@@ -14,7 +17,7 @@ class Grammar(object):
     
     def parsing(self, subject_str):
         return self.make_parsing(self.rules, subject_str)
-    
+
 
 # Example
 

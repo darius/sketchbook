@@ -2,6 +2,8 @@
 Parser objects
 """
 
+import re
+
 # You call a parser p by p(parsing, i) and get back di, far, ops.
 # parsing: a Parsing object -- holds the input and the chart (the memo table)
 # i: what input offset to start parsing p from
@@ -38,6 +40,18 @@ class Range(object):
     def __call__(self, parsing, i):
         ch = parsing.text(i, i+1)
         return (1 if self.lo <= ch <= self.hi else None), 1, ()
+
+class Match1(object):
+    # Pre: regex match length is always 1 on success
+    def __init__(self, regex):
+        self.re = re.compile(regex)
+        self.source = regex
+    def __call__(self, parsing, i):
+        m = self.re.match(parsing.subject, i)
+        if not m: return None, 1, ()
+        assert i+1 == m.end()
+        assert not m.groups()
+        return 1, 1, ()
 
 class Nix(object):
     def __init__(self, p):
@@ -123,8 +137,14 @@ def Choice2(p, q):
     if q is fail: return p
     return Either(p, q)
 
+def Literal1(ch):
+    return Range(ch, ch)
+
 def Literal(s):
-    return Chain(*[Range(ch, ch) for ch in s])
+    return Chain(*[Literal1(ch) for ch in s])
+
+def MatchN(*regexes):
+    return Chain(*[Match1(r) for r in regexes])
 
 def Maybe(p):
     return Choice(p, empty)
