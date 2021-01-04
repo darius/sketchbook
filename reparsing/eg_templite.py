@@ -11,8 +11,7 @@ from semantics import ast_semantics
 
 grammar_source = r"""
 start:     block.
-block:     chunk* :hug :Block.
-
+block:     chunk* :Block.
 chunk:     '{#' (!'#}' %any)* '#}'
         |  '{{'_ expr '}}'                                                  :Expr
         |  '{%'_ 'if'_ expr '%}'                block '{%'_ 'endif'_  '%}'  :If
@@ -33,25 +32,41 @@ grammar = toplevel.Grammar(grammar_source, Parsing)
 def parse(text, rule=None):
     p = grammar.parse(text, rule)
     if p:
-        return p.interpret(ast_semantics)
+        for x in p.interpret(ast_semantics)[0]:
+            print x
 
 ## parse('')
-#. (('Block', ('hug',)),)
-
-## parse('\n', rule='chunk')
-#. (('Literal', '\n'),)
+#. Block
 
 ## parse('a')
-#. (('Block', ('hug', ('Literal', 'a'))),)
+#. Block
+#. ('Literal', 'a')
 
 ## parse('hello {{world}} yay')
-#. (('Block', ('hug', ('Literal', 'hello '), ('Expr', ('VarRef', 'world')), ('Literal', ' yay'))),)
-
-## parse('world', 'block')
-#. (('Block', ('hug', ('Literal', 'world'))),)
+#. Block
+#. ('Literal', 'hello ')
+#. ('Expr', ('VarRef', 'world'))
+#. ('Literal', ' yay')
 
 ## with open('/home/darius/g/aima-python/README.md') as f: big = f.read()
 ## len(big)
 #. 19377
-## grammar.parse(big).prefix()
-#. 19377
+## bool(grammar.parse(big))
+#. True
+
+## parse('{% if foo.bar %} {% for x in xs|ok %} {{x}} {% endfor %} yay {% endif %}')
+#. Block
+#. ('If', ('Access', ('VarRef', 'foo'), 'bar'), ('Block', ('Literal', ' '), ('For', 'x', ('Call', ('VarRef', 'xs'), 'ok'), ('Block', ('Literal', ' '), ('Expr', ('VarRef', 'x')), ('Literal', ' '))), ('Literal', ' yay ')))
+
+## parse('hello {%for x in xs%} whee{{x}} {% endfor %} yay')
+#. Block
+#. ('Literal', 'hello ')
+#. ('For', 'x', ('VarRef', 'xs'), ('Block', ('Literal', ' whee'), ('Expr', ('VarRef', 'x')), ('Literal', ' ')))
+#. ('Literal', ' yay')
+
+## parse(' {%if x%} whee{{x}} {% endif %} yay {%if y%} ok{{y}} {% endif %}')
+#. Block
+#. ('Literal', ' ')
+#. ('If', ('VarRef', 'x'), ('Block', ('Literal', ' whee'), ('Expr', ('VarRef', 'x')), ('Literal', ' ')))
+#. ('Literal', ' yay ')
+#. ('If', ('VarRef', 'y'), ('Block', ('Literal', ' ok'), ('Expr', ('VarRef', 'y')), ('Literal', ' ')))
