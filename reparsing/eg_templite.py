@@ -10,7 +10,7 @@ from nonincremental import Parsing
 from semantics import ast_semantics
 
 grammar_source = r"""
-start:     block.      # XXX why is _ needed?
+start:     block.
 block:     chunk* :hug :Block.
 
 chunk:     '{#' (!'#}' %any)* '#}'
