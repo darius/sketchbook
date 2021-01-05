@@ -17,19 +17,13 @@ class Call(object):
     def __call__(self, parsing, i):
         return parsing.call(i, self.rule)
 
-class FailParser(object):
-    def __call__(self, parsing, i):
-        return None, 0, ()
-
-class EmptyParser(object):
-    def __call__(self, parsing, i):
-        return 0, 0, ()
-
-fail = FailParser()
 def Fail(): return fail
+def fail(parsing, i):
+    return None, 0, ()
 
-empty = EmptyParser()
 def Empty(): return empty
+def empty(parsing, i):
+    return 0, 0, ()
 
 class Do(object):
     def __init__(self, name):
@@ -37,10 +31,10 @@ class Do(object):
     def __call__(self, parsing, i):
         return 0, 0, self.ops
 
-class Any(object):
-    def __call__(self, parsing, i):
-        ch = parsing.text(i, i+1)
-        return (1 if ch else None), 1, ()
+def Any(): return any_
+def any_(parsing, i):
+    ch = parsing.text(i, i+1)
+    return (1 if ch else None), 1, ()
 
 class Range(object):
     def __init__(self, lo, hi):
