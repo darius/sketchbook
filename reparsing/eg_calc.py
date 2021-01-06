@@ -18,7 +18,7 @@ exp2  :  exp3 ( '^'  exp2 :pow )?.
 exp3  :  '(' exp0 ')'
       |  '-' exp1 :neg
       |  {digit+} :int.
-digit =  '0'..'9'.
+digit =  /\d/.
 """
 calc_semantics = ComboSemantics(base_semantics, ModuleSemantics(operator))
 

@@ -23,8 +23,7 @@ factor       :  '!' factor                 :Nix
 primary      :  '(' pe ')'
              |  '[' pe ']'                 :Seclude
              |  '{' pe '}'                 :Grab
-             |  qstring ('..' qstring :Range    # TODO replace this with /[x-y]/ or something
-                        |             :Literal)
+             |  qstring                    :Literal
              |  ':'~name                   :Do
              |  regex
              |  "%any"                     :Any

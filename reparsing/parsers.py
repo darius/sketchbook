@@ -36,13 +36,6 @@ def any_(parsing, i):
     ch = parsing.text(i, i+1)
     return (1 if ch else None), 1, ()
 
-class Range(object):
-    def __init__(self, lo, hi):
-        self.lo, self.hi = lo, hi
-    def __call__(self, parsing, i):
-        ch = parsing.text(i, i+1)
-        return (1 if self.lo <= ch <= self.hi else None), 1, ()
-
 class Match1(object):
     # Pre: regex match length is always 1 on success
     def __init__(self, regex):
@@ -140,7 +133,7 @@ def Choice2(p, q):
     return Either(p, q)
 
 def Literal1(ch):
-    return Range(ch, ch)
+    return Match1(re.escape(ch))
 
 def Literal(s):
     return Chain(*[Literal1(ch) for ch in s])
