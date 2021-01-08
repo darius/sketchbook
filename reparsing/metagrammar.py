@@ -24,9 +24,10 @@ primary      :  '(' pe ')'
              |  '[' pe ']'                 :Seclude
              |  '{' pe '}'                 :Grab
              |  qstring                    :Literal
-             |  ':'~name                   :Do
              |  regex
              |  "%any"                     :Any
+             |  ':'~( name                 :Do
+                    | qstring              :Push)
              |  name                       :Call.
 
 name         :  /([A-Za-z_]\w*)/.
@@ -47,7 +48,7 @@ regchunk    ~:  escseq
 # XXX probably not the same :Range though
 anyof       ~:  atom ('-' atom)?.  
 atom        ~:  escseq
-             |  /[^*+?$()\/[\]]/.   # XXX crude, blacklist of special chars
+             |  /[^\/\]]/.   # XXX crude, blacklist of special chars
 
 escseq      ~:  '\\' /./.   # XXX crude
 """

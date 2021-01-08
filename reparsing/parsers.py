@@ -17,19 +17,18 @@ class Call(object):
     def __call__(self, parsing, i):
         return parsing.call(i, self.rule)
 
+class Ops(object):
+    def __init__(self, ops):
+        self.ops = ops
+    def __call__(self, parsing, i):
+        return 0, 0, self.ops
+
 def Fail(): return fail
 def fail(parsing, i):
     return None, 0, ()
 
 def Empty(): return empty
-def empty(parsing, i):
-    return 0, 0, ()
-
-class Do(object):
-    def __init__(self, name):
-        self.ops = (('do',name),)
-    def __call__(self, parsing, i):
-        return 0, 0, self.ops
+empty = Ops(())
 
 def Any(): return any_
 def any_(parsing, i):
@@ -118,6 +117,9 @@ def foldr(f, z, xs):
 
 
 # Derived parsers
+
+def Do(name):      return Ops((('do',name),))
+def Push(literal): return Ops((('lit',literal),))
 
 def Chain(*ps):  return foldr(Chain2, empty, ps)
 def Choice(*ps): return foldr(Choice2, fail, ps)
