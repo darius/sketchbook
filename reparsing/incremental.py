@@ -10,8 +10,8 @@ class Parsing(object):
         self.subject = subject_str
         # Memo tables for each position in subject:
         self.chart = [{} for _ in xrange(len(subject_str)+1)]
-        # Max of 'far' value from each memo table:
-        self.far_bounds = [0] * (len(subject_str)+1)
+        # Max of 'peek' value from each memo table:
+        self.max_peek = [0] * (len(subject_str)+1)
 
     def text(self, lo, hi):
         return self.subject[lo:hi]
@@ -20,18 +20,18 @@ class Parsing(object):
         assert lo <= hi <= len(self.subject)
         # TODO notice if the replacement leaves some of it unchanged
         self.subject = self.subject[:lo] + replacement + self.subject[hi:]
-        # Delete all the preceding chart entries that looked at subject[lo:hi]:
+        # Delete all the preceding chart entries that peeked at subject[lo:hi]:
         for i in xrange(lo):
-            if lo < i + self.far_bounds[i]:
+            if lo < i + self.max_peek[i]:
                 new_bounds = 0
                 memos = self.chart[i]
-                for rule, (di, far, ops) in memos.items():
-                    if lo < i + far: del memos[rule]
-                    else:            new_bounds = max(new_bounds, far)
-                self.far_bounds[i] = new_bounds
+                for rule, (hop, peek, ops) in memos.items():
+                    if lo < i + peek: del memos[rule]
+                    else:             new_bounds = max(new_bounds, peek)
+                self.max_peek[i] = new_bounds
         # And replace the directly affected columns:
         self.chart[lo:hi] = [{} for _ in xrange(len(replacement))]
-        self.far_bounds[lo:hi] = [0] * len(replacement)
+        self.max_peek[lo:hi] = [0] * len(replacement)
 
     def parse(self, rule=None):
         if rule is None: rule = 'start'
@@ -44,7 +44,7 @@ class Parsing(object):
         if memo is None:
             column[rule] = cyclic
             column[rule] = memo = self.rules[rule](self, i)
-            self.far_bounds[i] = max(self.far_bounds[i], memo[1])
+            self.max_peek[i] = max(self.max_peek[i], memo[1])
         elif memo is cyclic:
             raise Exception("Left-recursive rule", rule)
         return memo

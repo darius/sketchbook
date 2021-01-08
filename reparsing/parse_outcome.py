@@ -22,11 +22,12 @@ class ParseOutcome(object):
         return self.memo[1]
 
     def surely_full(self):
-        di, far, ops = self.memo
-        if di is None:
-            raise Exception("Unparsable", far, self.parsing.subject)
-        if di != len(self.parsing.subject):
-            raise Exception("Incomplete parse", di, far, self.parsing.subject)
+        if not self.is_full():
+            hop, peek, ops = self.memo
+            if hop is None:
+                raise Exception("Unparsable", peek, self.parsing.subject)
+            else:
+                raise Exception("Incomplete parse", hop, peek, self.parsing.subject)
     
     def interpret(self, semantics):
         self.surely_full()      # TODO but it's legitimate to interpret a prefix parse...
