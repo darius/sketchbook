@@ -92,7 +92,7 @@ class Then(object):
         hop2, peek2, ops2 = self.q(parsing, i+hop1)
         peek = max(peek1, hop1+peek2)
         if hop2 is None: return None, peek, ()
-        else:           return hop1+hop2, peek, ops1+ops2
+        else:            return hop1+hop2, peek, ops1+ops2
 
 class Repeat(object):
     def __init__(self, p):
