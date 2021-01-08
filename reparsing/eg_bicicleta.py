@@ -2,7 +2,7 @@
 Ported from the Parson example
 """
 
-import toplevel
+import grammars
 from semantics import ast_semantics
 
 grammar_source = r"""
@@ -45,7 +45,7 @@ _           : blank*.
 def Bicicleta(make_parsing):
     def parse(s):
         return parse.grammar.parse(s).interpret(ast_semantics)[0]
-    parse.grammar = toplevel.Grammar(grammar_source, make_parsing)
+    parse.grammar = grammars.Grammar(grammar_source, make_parsing)
     return parse
 
 ## from nonincremental import Parsing

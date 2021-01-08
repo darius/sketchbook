@@ -5,7 +5,7 @@ https://github.com/aosabook/500lines/tree/master/template-engine
 Ported from Parson.
 """
 
-import toplevel
+import grammars
 from nonincremental import Parsing
 from semantics import ast_semantics
 
@@ -27,7 +27,7 @@ ident:     {/[A-Za-z_]/ /[A-Za-z_0-9]/*}.
 _:         /\s/*.
 """
 
-grammar = toplevel.Grammar(grammar_source, Parsing)
+grammar = grammars.Grammar(grammar_source, Parsing)
 
 def parse(text, rule=None):
     p = grammar.parse(text, rule)
