@@ -1,5 +1,5 @@
 """
-The obligatory calculator example
+Ported from the Parson example
 """
 
 import toplevel
