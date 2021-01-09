@@ -104,6 +104,7 @@ class Repeat(object):
             peek = max(peek, hop+peek2)
             if hop2 is None:
                 return hop, peek, ops
+            if hop2 == 0: raise Exception("Stuck on repeat", parsing, i)
             hop += hop2
             ops += ops2
     
