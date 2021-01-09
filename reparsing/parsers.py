@@ -138,10 +138,10 @@ def Literal1(ch):
     return Match1(re.escape(ch))
 
 def Literal(s):
-    return Chain(*[Literal1(ch) for ch in s])
+    return Chain(*map(Literal1, s))
 
 def MatchN(*regexes):
-    return Chain(*[Match1(r) for r in regexes])
+    return Chain(*map(Match1, regexes))
 
 def Maybe(p):
     return Choice(p, empty)
