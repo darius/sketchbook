@@ -39,8 +39,10 @@ primary      :  '(' pe ')'
              |  '[' pe ']'                 :Seclude
              |  '{' pe '}'                 :Grab
              |  qstring                    :Literal
+             |  dqstring                   :Keyword
              |  regex
              |  "%any"                     :Any
+             |  "%eol"                     :Eol
              |  ':'~( name                 :Do
                     | qstring              :Push)
              |  name                       :Call.
@@ -50,8 +52,10 @@ name         :  /([A-Za-z_]\w*)/.
 FNORD       ~:  whitespace?.
 whitespace  ~:  /(?:\s|#.*)+/.
 
+dqstring    ~:  '"' dquoted_char* '"' FNORD :join.
 qstring     ~:  /'/  quoted_char* /'/ FNORD :join.
-quoted_char ~:  /\\(.)/ | /([^'])/.        # TODO screen and interpret escapes
+dquoted_char~:  /\\(.)/ | /([^"])/.        # TODO screen and interpret escapes
+quoted_char ~:  /\\(.)/ | /([^'])/.
 
 # Just a subset of regexes: ones matching with a statically-apparent length.
 regex       ~:  '/' {regchunk}* '/' FNORD  :MatchN.

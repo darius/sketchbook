@@ -47,6 +47,15 @@ class Match1(object):
         assert not m.groups()
         return 1, 1, ()
 
+# XXX not generally correct when edits are allowed, because
+# if doesn't peek only forward, but backward too. I'm using
+# this anyway because I only realized this while typing it in,
+# and I'll probably get away with it for a while. Tempting fate.
+def word_boundary(parsing, i):
+    m = word_boundary_pat.match(parsing.subject, i)
+    return (0 if m else None), 1, ()
+word_boundary_pat = re.compile(r'\b')
+
 class Nix(object):
     def __init__(self, p):
         self.p = p
@@ -144,6 +153,9 @@ def Literal(s):
 def MatchN(*regexes):
     return Chain(*map(Match1, regexes))
 
+def Keyword(s):
+    return Chain(Literal(s), word_boundary)
+
 def Maybe(p):
     return Choice(p, empty)
 
@@ -158,3 +170,9 @@ def Star(p, separator=None):
         return Repeat(p)
     else:
         return Maybe(Plus(p, separator))
+
+# (commented out to not conflict with Parson's `end`)
+# end = Nix(Any)
+
+eol = Choice(Literal1('\n'), Nix(any_))
+def Eol(): return eol
