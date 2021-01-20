@@ -34,7 +34,7 @@ writes    :  ';'_        printing
           |       :newline.
 
 display   :  exp :write
-          |  '"' {qchar}* :quote '"'_.
+          |  '"' {qchar*} :quote '"'_.
 qchar     :  '"' '"'  # Two consecutive double-quotes mean '"'.
           |  /[^"]/.  # Any other character just means itself.
 
@@ -82,3 +82,6 @@ def Basic(make_parsing):
 
 ## parse("run")
 #. ('run',)
+
+## parse('''10 print "the answer is", 42;''')
+#. ('numbered', ('int', '10'), ('print', ('quote', 'the answer is'), ('space',), ('write', ('int', '42'))))
