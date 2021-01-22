@@ -31,27 +31,27 @@ class ParseOutcome(object):
     
     def interpret(self, semantics):
         self.surely_full()      # TODO but it's legitimate to interpret a prefix parse...
-        stack = []
-        frame = []
+        frames = []
+        values = []
         ops = self.memo[2]
         for insn in ops:
             op = insn[0]
             if op == '[':
-                stack.append(frame)
-                frame = []
+                frames.append(values)
+                values = []
             elif op == ']':
-                parent = stack.pop()
-                parent.extend(frame)
-                frame = parent
+                parent = frames.pop()
+                parent.extend(values)
+                values = parent
             elif op == 'do':
                 fn = semantics[insn[1]]
-                frame[:] = [fn(*frame)]
+                values[:] = [fn(*values)]
             elif op == 'lit':
-                frame.append(insn[1])
+                values.append(insn[1])
             else:
                 assert 0
-        assert not stack
-        return tuple(frame)
+        assert not frames
+        return tuple(values)
 
     def __repr__(self):
         return '%s<%r,%r,%r>' % ((self.rule,) + self.memo)
