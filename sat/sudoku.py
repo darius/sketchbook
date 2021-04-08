@@ -107,3 +107,12 @@ def make_sudoku_grid(n):
 
 def transpose(grid):
     return zip(*grid)
+
+
+if __name__ == '__main__':
+    from sys import argv as args
+    if len(args) == 3:
+        solver = __import__(args.pop())
+    if len(args) == 2:
+        problem = {'easy': easy1, 'hard': hard1, 'hardest': hardestsudokuinworld}[args[1]]
+        solve(read_sudoku_problem(problem))
