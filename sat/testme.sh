@@ -1,7 +1,9 @@
 #!/bin/bash
 
 try_it () {
-    mod=$1; param=$2; solver=$3
+    local mod=$1
+    local param=$2
+    local solver=$3
     echo $mod $param $solver
     time python $mod.py $param $solver
 }
