@@ -4,6 +4,7 @@ try_it () {
     local mod=$1
     local param=$2
     local solver=$3
+    echo $mod $param $solver 1>&2
     echo $mod $param $solver
     time python $mod.py $param $solver
 }
