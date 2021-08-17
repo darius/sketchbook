@@ -60,6 +60,9 @@ def hug(*vals): return vals
 program_pattern = ire.compile(grammar)
 program_semantics = globals()
 
+def parse(string):
+    return program_pattern.match(string).do(program_semantics)
+
 
 # Analyze
 
@@ -146,10 +149,10 @@ def match_term(term, constant, subst):
 
 # Smoke test
 
-## program_pattern.match(r' Hello.').do(program_semantics)
+## parse(r' Hello.')
 #. (Hello().,)
 
-## program_pattern.match(r'Aloha :- Hello. Aloha :- GoodBye("cruel"), World(x, y, Z).').do(program_semantics)
+## parse('Aloha :- Hello. Aloha :- GoodBye("cruel"), World(x, y, Z).')
 #. (Aloha() :- Hello()., Aloha() :- GoodBye('cruel',), World(x, y, 'Z').)
 
 eg_genealogy = """
@@ -162,7 +165,7 @@ GrandParent(x, z) :-
     Parent(y, z).
 """
 
-## genealogy_program = program_pattern.match(eg_genealogy).do(program_semantics)
+## genealogy_program = parse(eg_genealogy)
 # for x in genealogy_program: print x
 
 ## program_is_safe(genealogy_program)
@@ -187,7 +190,7 @@ Path(x, z) :-
     Edge(y, z).
 """
 
-## paths_program = program_pattern.match(eg_paths).do(program_semantics)
+## paths_program = parse(eg_paths)
 # for x in paths_program: print x
 
 ## program_is_safe(paths_program)
