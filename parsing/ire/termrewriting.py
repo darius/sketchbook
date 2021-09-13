@@ -10,7 +10,7 @@ import ire
 
 class Rule(Struct('pat expr')):
     def __repr__(self):
-        return "%r -> %r" % (self.pat, self.expr)
+        return "%r >> %r" % (self.pat, self.expr)
 
 class Term(Struct('symbol arguments')):
     def __repr__(self):
@@ -27,7 +27,7 @@ grammar = r"""  _ program .end
 
 - program:	rule*
 
-- rule:         \:/_ term \->/_ term   :Rule
+- rule:         \:/_ term \>>/_ term   :Rule
 
 - term:         sname [argument* :hug] :Term
 
@@ -104,15 +104,15 @@ def run(program):
 
 # Smoke test
 
-## parse(': F x (Y z w) -> B')
-#. (F(x, Y(z, w)) -> B(),)
+## parse(': F x (Y z w) >> B')
+#. (F(x, Y(z, w)) >> B(),)
 
 p = parse("""
-: Main -> Hash (Point X Y)
-: Hash (Point a b) -> Times a b
+: Main >> Hash (Point X Y)
+: Hash (Point a b) >> Times a b
 """)
 
 ## run(p)
-#. Main() -> Hash(Point(X(), Y()),) ::: Main[] ... Hash[Point[X[], Y[]]]
-#. Hash(Point(a, b),) -> Times(a, b) ::: Hash[Point[X[], Y[]]] ... Times[X[], Y[]]
+#. Main() >> Hash(Point(X(), Y()),) ::: Main[] ... Hash[Point[X[], Y[]]]
+#. Hash(Point(a, b),) >> Times(a, b) ::: Hash[Point[X[], Y[]]] ... Times[X[], Y[]]
 #. Times[X[], Y[]]
