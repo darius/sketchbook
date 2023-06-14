@@ -10,7 +10,8 @@ import numpy as np
 def einsum(spec_string, *arrays):
     instr, out = spec_string.split('->')
     ins = instr.split(',')
-    if ins == ['']: ins = []
+    if ins == ['']:
+        raise Exception("Must specify at least one operand")
 
     if len(arrays) != len(ins):
         raise Exception("Mismatch between spec_string and number of input arrays",
@@ -30,13 +31,12 @@ def einsum(spec_string, *arrays):
     out_shape = at(dims, out)
 
     acc = np.zeros(out_shape) # Result accumulator
-    if letters: # Ugh, needing this test makes me queasy
-        for indices in itertools.product(*[range(dims[letter]) for letter in letters]):
-            # Assign each letter its index value:
-            setting = dict(zip(letters, indices))
-            # At these indices, sum into the output the product of the inputs:
-            acc[at(setting, out)] += np.prod([arr[at(setting, arr_letters)]
-                                              for arr, arr_letters in zip(arrays, ins)])
+    for indices in itertools.product(*[range(dims[letter]) for letter in letters]):
+        # Assign each letter its index value:
+        setting = dict(zip(letters, indices))
+        # At these indices, sum into the output the product of the inputs:
+        acc[at(setting, out)] += np.prod([arr[at(setting, arr_letters)]
+                                          for arr, arr_letters in zip(arrays, ins)])
     return acc if out_shape else acc[()]
 
 def at(setting, index_string):
