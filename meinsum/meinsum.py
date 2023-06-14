@@ -1,7 +1,8 @@
 # Reimplement einsum to check my understanding. Efficiency not a goal.
-# in Python3
+# (in Python3)
+
 # An 'array' variable is a numpy ndarray.
-# spec_string looks like "mn,np->mp"
+# spec_string looks like e.g. "mn,np->mp".
 
 import itertools
 import numpy as np
@@ -14,9 +15,9 @@ def einsum(spec_string, *arrays):
     if len(arrays) != len(ins):
         raise Exception("Mismatch between spec_string and number of input arrays",
                         spec_string, len(arrays))
-    for indices in ins:
-        check_indices(indices)
-    check_indices(out)
+    for index_string in ins:
+        check_index_string(index_string)
+    check_index_string(out)
     in_set = set(''.join(ins))
     out_set = set(out)
     if len(out_set) != len(out):
@@ -38,16 +39,19 @@ def einsum(spec_string, *arrays):
                                               for arr, arr_letters in zip(arrays, ins)])
     return acc if out_shape else acc[()]
 
-def at(setting, idx_letters):
-    "Return a tuple indexing into an n-d array, as specified by idx_letters."
-    return tuple(setting[letter] for letter in idx_letters)
+def at(setting, index_string):
+    "Return a tuple indexing into an n-d array, as specified by index_string."
+    return tuple(setting[letter] for letter in index_string)
 
-def check_indices(indices):
-    for ch in indices:
+def check_index_string(index_string):
+    for ch in index_string:
         if not (ch.isalpha() and ch.isascii()):
             raise Exception("Index is not a letter", ch)
 
 def find_dimensions(ins, arrays):
+    """Given index strings like e.g. ['mn', 'np'] and corresponding ndarrays,
+    map 'm', 'n', and 'p' to the corresponding array dimensions. Complain
+    if the arrays don't match the patterns."""
     dims = {}
     for letters, array in zip(ins, arrays):
         shape = array.shape
