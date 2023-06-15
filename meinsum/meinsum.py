@@ -1,5 +1,10 @@
 # Reimplement einsum to check my understanding. Efficiency not a goal.
 # (in Python3)
+# https://numpy.org/doc/stable/reference/generated/numpy.einsum.html
+# Features skipped:
+#  - only takes the einsum required arguments, none of the extra keyword arguments
+#  - "->xyz" in spec_string is not optional (i.e. explicit mode only)
+#  - "..." in spec_string is not supported
 
 # An 'array' variable is a numpy ndarray.
 # spec_string looks like e.g. "mn,np->mp".
