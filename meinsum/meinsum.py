@@ -74,7 +74,8 @@ def test_einsum():
     b = np.ones((5, 5))
 
     # Case 1: trace of a matrix
-    assert np.allclose(einsum('ii->', a), np.einsum('ii', a))
+    assert np.allclose(einsum('ii->', a),
+                       np.einsum('ii', a))
 
     # Case 2: matrix multiplication
     assert np.allclose(einsum('ij,jk->ik', a, b),
