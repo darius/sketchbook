@@ -77,21 +77,25 @@ def test_einsum():
     assert np.allclose(einsum('ii->', a), np.einsum('ii', a))
 
     # Case 2: matrix multiplication
-    assert np.allclose(einsum('ij,jk->ik', a, b), np.einsum('ij,jk', a, b))
+    assert np.allclose(einsum('ij,jk->ik', a, b),
+                       np.einsum('ij,jk', a, b))
 
     # Case 3: outer product
     vec1 = np.array([1, 2, 3])
     vec2 = np.array([4, 5])
-    assert np.allclose(einsum('i,j->ij', vec1, vec2), np.einsum('i,j', vec1, vec2))
+    assert np.allclose(einsum('i,j->ij', vec1, vec2),
+                       np.einsum('i,j', vec1, vec2))
 
     # Case 4: tensor dot product
     c = np.arange(60.).reshape(3,4,5)
     d = np.arange(24.).reshape(4,3,2)
-    assert np.allclose(einsum('ijk,jil->kl', c, d), np.einsum('ijk,jil->kl', c, d))
+    assert np.allclose(einsum('ijk,jil->kl', c, d),
+                       np.einsum('ijk,jil->kl', c, d))
 
     # Case 5: batch matrix multiplication
     e = np.ones((10, 3, 3))
     f = np.ones((10, 3, 3))
-    assert np.allclose(einsum('ijk,ikl->ijl', e, f), np.einsum('ijk,ikl->ijl', e, f))
+    assert np.allclose(einsum('ijk,ikl->ijl', e, f),
+                       np.einsum('ijk,ikl->ijl', e, f))
 
 test_einsum()
