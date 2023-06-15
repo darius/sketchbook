@@ -3,7 +3,7 @@
 
 # An 'array' variable is a numpy ndarray.
 # spec_string looks like e.g. "mn,np->mp".
-# ref means a string of index letters, e.g "np".
+# ref means a string of subscripts, e.g "np".
 
 import itertools
 import numpy as np
@@ -23,9 +23,9 @@ def einsum(spec_string, *arrays):
         raise ValueError("Repeated index in output", out_ref)
     if not out_set.issubset(in_set):
         raise ValueError("Output unconnected to input", out_set.difference(in_set))
-    all_subscripts = ''.join(in_set)
+    all_ref = ''.join(in_set)
 
-    if len(arrays) != len(in_refs):
+    if len(in_refs) != len(arrays):
         raise ValueError("Mismatch between spec_string and number of arguments",
                         spec_string, len(arrays))
     dims = find_dimensions(in_refs, arrays)
@@ -33,9 +33,9 @@ def einsum(spec_string, *arrays):
 
     acc = np.zeros(out_shape) # Result accumulator
     for indices in itertools.product(*[range(dims[subscript])
-                                       for subscript in all_subscripts]):
+                                       for subscript in all_ref]):
         # Assign each subscript its index value:
-        setting = dict(zip(all_subscripts, indices))
+        setting = dict(zip(all_ref, indices))
         # At these indices, sum into the output the product of the inputs:
         acc[at(setting, out_ref)] += np.prod([arr[at(setting, ref)]
                                               for arr, ref in zip(arrays, in_refs)])
@@ -43,7 +43,7 @@ def einsum(spec_string, *arrays):
 
 def at(setting, ref):
     "Return a tuple indexing into an n-d array, as specified by ref."
-    return tuple(setting[letter] for letter in ref)
+    return tuple(setting[subscript] for subscript in ref)
 
 def check_ref(ref):
     for ch in ref:
@@ -55,14 +55,14 @@ def find_dimensions(refs, arrays):
     map 'm', 'n', and 'p' to the corresponding array dimensions. Complain
     if the array shapes don't match the refs."""
     dims = {}
-    for subscripts, array in zip(refs, arrays):
-        if len(subscripts) != len(array.shape):
-            raise ValueError("Rank mismatch", subscripts, array.shape)
-        for letter, dim in zip(subscripts, array.shape):
-            if letter not in dims:
-                dims[letter] = dim
-            elif dims[letter] != dim:
-                raise ValueError("Dimension mismatch", letter, dims[letter], dim)
+    for ref, array in zip(refs, arrays):
+        if len(ref) != len(array.shape):
+            raise ValueError("Rank mismatch", ref, array.shape)
+        for subscript, dim in zip(ref, array.shape):
+            if subscript not in dims:
+                dims[subscript] = dim
+            elif dims[subscript] != dim:
+                raise ValueError("Dimension mismatch", subscript, dims[subscript], dim)
     return dims
 
 
