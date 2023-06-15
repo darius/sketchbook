@@ -37,6 +37,7 @@ def einsum(spec_string, *arrays):
     out_shape = at(dims, out_ref)
 
     acc = np.zeros(out_shape) # Result accumulator
+    # For every value of every subscript:
     for indices in itertools.product(*[range(dims[subscript])
                                        for subscript in all_ref]):
         # Assign each subscript its index value:
