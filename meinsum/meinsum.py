@@ -71,38 +71,47 @@ def find_dimensions(refs, arrays):
     return dims
 
 
-# Smoke test from ChatGPT (tweaked)
-import pytest
+# Smoke test originally by ChatGPT
 
 def test_einsum():
-    # Define some arrays to use in the tests.
+
+    def check_einsum(spec_string, *arrays):
+        assert np.allclose(einsum(spec_string, *arrays),
+                           np.einsum(spec_string, *arrays))
+
+    # Example data to use in the tests.
     a = np.arange(25).reshape((5, 5))
     b = np.ones((5, 5))
-
-    # Case 1: trace of a matrix
-    assert np.allclose(einsum('ii->', a),
-                       np.einsum('ii', a))
-
-    # Case 2: matrix multiplication
-    assert np.allclose(einsum('ij,jk->ik', a, b),
-                       np.einsum('ij,jk', a, b))
-
-    # Case 3: outer product
     vec1 = np.array([1, 2, 3])
     vec2 = np.array([4, 5])
-    assert np.allclose(einsum('i,j->ij', vec1, vec2),
-                       np.einsum('i,j', vec1, vec2))
-
-    # Case 4: tensor dot product
+    vec5 = np.arange(5)
     c = np.arange(60.).reshape(3,4,5)
     d = np.arange(24.).reshape(4,3,2)
-    assert np.allclose(einsum('ijk,jil->kl', c, d),
-                       np.einsum('ijk,jil->kl', c, d))
-
-    # Case 5: batch matrix multiplication
     e = np.ones((10, 3, 3))
     f = np.ones((10, 3, 3))
-    assert np.allclose(einsum('ijk,ikl->ijl', e, f),
-                       np.einsum('ijk,ikl->ijl', e, f))
+
+    # The tests. In the comments, M for matrix, v for vector.
+    # Mostly from https://obilaniu6266h16.wordpress.com/2016/02/04/einstein-summation-in-numpy/
+
+    check_einsum('i->', vec1)                # 1-d sum
+    check_einsum('ij->', a)                  # 2-d sum
+    check_einsum('ijk->', c)                 # 3-d sum
+
+    check_einsum('i,i->', vec1, vec1)        # v dot v
+    check_einsum('i,i->i', vec1, vec1)       # v elementwise* v
+    check_einsum('i,j->ij', vec1, vec2)      # v outer* v
+
+    check_einsum('i,ij->j', vec5, a)         # vM
+    check_einsum('ij,j->i', a, vec5)         # Mv
+    check_einsum('i,ij,j->', vec5, a, vec5)  # vMv (quadratic form)
+
+    check_einsum('ij->ji', a)                # M transpose
+    check_einsum('ii->i', a)                 # M diagonal
+    check_einsum('ii->', a)                  # M trace
+    check_einsum('ij,ij->', a, a)            # M dot M (|M|^2)
+
+    check_einsum('ij,jk->ik', a, b)          # MM (matrix *)
+    check_einsum('Bij,Bjk->Bik', e, f)       # batch MM
+    check_einsum('ijk,jil->kl', c, d)        # tensor contraction
 
 test_einsum()
