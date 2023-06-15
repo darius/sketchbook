@@ -59,10 +59,9 @@ def find_dimensions(refs, arrays):
         if len(ref) != len(array.shape):
             raise ValueError("Rank mismatch", ref, array.shape)
         for subscript, dim in zip(ref, array.shape):
-            if subscript not in dims:
-                dims[subscript] = dim
-            elif dims[subscript] != dim:
+            if dims.get(subscript, dim) != dim:
                 raise ValueError("Dimension mismatch", subscript, dims[subscript], dim)
+            dims[subscript] = dim
     return dims
 
 
