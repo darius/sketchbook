@@ -27,7 +27,7 @@ def einsum(spec_string, *arrays):
 
     if len(in_refs) != len(arrays):
         raise ValueError("Mismatch between spec_string and number of arguments",
-                        spec_string, len(arrays))
+                         spec_string, len(arrays))
     dims = find_dimensions(in_refs, arrays)
     out_shape = at(dims, out_ref)
 
