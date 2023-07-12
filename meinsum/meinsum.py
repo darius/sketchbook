@@ -58,8 +58,9 @@ def check_ref(ref):
 
 def find_dimensions(refs, arrays):
     """Given refs like e.g. ['mn', 'np'] and corresponding ndarrays,
-    map 'm', 'n', and 'p' to the corresponding array dimensions. Complain
-    if the array shapes don't match the refs."""
+    return a dict from (again e.g.) 'm', 'n', and 'p' to the
+    corresponding array dimensions. Complain if the array shapes don't
+    match the refs."""
     dims = {}
     for ref, array in zip(refs, arrays):
         if len(ref) != len(array.shape):
