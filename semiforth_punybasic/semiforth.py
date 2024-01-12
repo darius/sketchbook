@@ -185,7 +185,7 @@ def eighth(program, input_text):
 eg = r"""
 main  = wc fib
 
-fib   = dup 2 <  drop 1
+fib   = 2 <  1
       | dup 1 - fib  swap 2 - fib +
 
 wc    = 0 _ words

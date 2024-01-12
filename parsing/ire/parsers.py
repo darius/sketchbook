@@ -71,7 +71,7 @@ class ParseOutcome(object):
 
     def do(self, semantics):
         # self.surely_full() # TODO but it's legitimate to interpret a prefix parse...
-        if not self: raise "Parse failed; nothing to do"
+        if not self: self.assert_full() # Raise a proper exception
         if not isinstance(semantics, dict):
             semantics = DictSemantics(semantics)
         frames = []

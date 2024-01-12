@@ -58,10 +58,14 @@ grammar = r"""  _ program .end
 def hug(*vals): return vals
 
 program_pattern = ire.compile(grammar)
-program_semantics = globals()
 
-def parse(string):
-    return program_pattern.match(string).do(program_semantics)
+_builtins = __builtins__ if isinstance(__builtins__, dict) else __builtins__.__dict__
+program_semantics = {k: v for k, v in _builtins.items() if callable(v)}
+program_semantics.update(globals())
+
+def parse(string, semantics=None):
+    if semantics is None: semantics = program_semantics
+    return program_pattern.match(string).do(semantics)
 
 
 # Analyze
@@ -70,6 +74,7 @@ def program_is_safe(clauses):
     return all(map(clause_is_safe, clauses))
 
 def clause_is_safe(clause):
+    "It's safe if all variables from its head are also in its body."
     head_vars = literal_variables(clause.head)
     body_vars = set().union(*map(literal_variables, clause.body))
     return head_vars.issubset(body_vars)
@@ -143,7 +148,7 @@ def match_term(term, constant, subst):
             return result
         term = t
     assert isinstance(term, Constant)
-    assert isinstance(constant, Constant)
+    assert isinstance(constant, Constant), constant
     return subst if term.value == constant.value else None
 
 
@@ -203,3 +208,158 @@ Path(x, z) :-
 #. Path('a', 'b')
 #. Path('a', 'c')
 #. Path('b', 'c')
+
+
+# Longer example
+
+maze_data = """\
+.#...
+.#.##
+.#...
+...#.
+##.#."""
+
+# TODO edit the first # to . to connect a large region to (0,0)
+#      (it hangs practically forever when I do)
+# TODO it's way too slow:
+maze_data2 = """\
+...#######...............####..
+###.#@#..#################..##.
+#...###......................#.
+#........########..####..##..#.
+###.####.....#..####..####..##.
+#@#.#..#.#.#.#.....#.....#...#.
+#@#.#..#.....#.##..#.##..##..#.
+###....###.###..#.##..#.##..##.
+.#...#.#@#......#.....#.#....#.
+.#...#.###..#####..####.#....#.
+.#####...#####..#######.######.
+.#...#.#.#@@#...............#..
+##.#.#...#@@#..#######..##..#..
+#....#########..#....#####.###.
+#.#.............#.o........#@#.
+#...#########..###.i#####..#@#.
+#####.......####.####...######.
+"""
+
+maze_2d = maze_data.splitlines()
+maze_height = len(maze_2d)
+maze_width = len(maze_2d[0])
+
+maze_facts = ['At(%d,%d,"%s").' % (x,y,ch)
+              for y,line in enumerate(maze_2d)
+              for x,ch in enumerate(line)]
+
+add1_facts = ['Add1(%d,%d).' % (n,n+1)
+              for n in range(max(maze_width, maze_height) - 1)]
+
+# (hacked Neighbor to ensure program is safe)
+# TODO add an automatic check of that condition
+
+# TODO would Reachable be equally fast in the other ordering?
+# Doesn't look like it
+
+# TODO seminaive eval
+
+maze_problem = """
+Reachable(0, 0).
+Reachable(x, y) :- Reachable(x1, y1), Arc(x1, y1, x, y).
+
+Arc(x1,y, x2,y) :- At(x1,y,"."), Neighbors(x1, x2), At(x2,y,".").
+Arc(x,y1, x,y2) :- At(x,y1,"."), Neighbors(y1, y2), At(x,y2,".").
+
+Neighbors(n1, n2) :- Add1(n1, n2).
+Neighbors(n1, n2) :- Add1(n2, n1).
+"""
+
+maze_source = '\n'.join([maze_problem] + maze_facts + add1_facts)
+## maze_program = parse(maze_source)
+# for line in maze_program: print line
+
+## assert(program_is_safe(maze_program))
+
+## results = saturate(maze_program)
+## for c in sorted(results): print c
+#. Add1(0, 1)
+#. Add1(1, 2)
+#. Add1(2, 3)
+#. Add1(3, 4)
+#. Arc(0, 0, 0, 1)
+#. Arc(0, 1, 0, 0)
+#. Arc(0, 1, 0, 2)
+#. Arc(0, 2, 0, 1)
+#. Arc(0, 2, 0, 3)
+#. Arc(0, 3, 0, 2)
+#. Arc(0, 3, 1, 3)
+#. Arc(1, 3, 0, 3)
+#. Arc(1, 3, 2, 3)
+#. Arc(2, 0, 2, 1)
+#. Arc(2, 0, 3, 0)
+#. Arc(2, 1, 2, 0)
+#. Arc(2, 1, 2, 2)
+#. Arc(2, 2, 2, 1)
+#. Arc(2, 2, 2, 3)
+#. Arc(2, 2, 3, 2)
+#. Arc(2, 3, 1, 3)
+#. Arc(2, 3, 2, 2)
+#. Arc(2, 3, 2, 4)
+#. Arc(2, 4, 2, 3)
+#. Arc(3, 0, 2, 0)
+#. Arc(3, 0, 4, 0)
+#. Arc(3, 2, 2, 2)
+#. Arc(3, 2, 4, 2)
+#. Arc(4, 0, 3, 0)
+#. Arc(4, 2, 3, 2)
+#. Arc(4, 2, 4, 3)
+#. Arc(4, 3, 4, 2)
+#. Arc(4, 3, 4, 4)
+#. Arc(4, 4, 4, 3)
+#. At(0, 0, '.')
+#. At(0, 1, '.')
+#. At(0, 2, '.')
+#. At(0, 3, '.')
+#. At(0, 4, '#')
+#. At(1, 0, '#')
+#. At(1, 1, '#')
+#. At(1, 2, '#')
+#. At(1, 3, '.')
+#. At(1, 4, '#')
+#. At(2, 0, '.')
+#. At(2, 1, '.')
+#. At(2, 2, '.')
+#. At(2, 3, '.')
+#. At(2, 4, '.')
+#. At(3, 0, '.')
+#. At(3, 1, '#')
+#. At(3, 2, '.')
+#. At(3, 3, '#')
+#. At(3, 4, '#')
+#. At(4, 0, '.')
+#. At(4, 1, '#')
+#. At(4, 2, '.')
+#. At(4, 3, '.')
+#. At(4, 4, '.')
+#. Neighbors(0, 1)
+#. Neighbors(1, 0)
+#. Neighbors(1, 2)
+#. Neighbors(2, 1)
+#. Neighbors(2, 3)
+#. Neighbors(3, 2)
+#. Neighbors(3, 4)
+#. Neighbors(4, 3)
+#. Reachable(0, 0)
+#. Reachable(0, 1)
+#. Reachable(0, 2)
+#. Reachable(0, 3)
+#. Reachable(1, 3)
+#. Reachable(2, 0)
+#. Reachable(2, 1)
+#. Reachable(2, 2)
+#. Reachable(2, 3)
+#. Reachable(2, 4)
+#. Reachable(3, 0)
+#. Reachable(3, 2)
+#. Reachable(4, 0)
+#. Reachable(4, 2)
+#. Reachable(4, 3)
+#. Reachable(4, 4)
